@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
     try {
@@ -12,16 +14,6 @@ export async function POST(request: Request) {
                 { status: 400 },
             );
         }
-
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || "smtp-mail.outlook.com",
-            port: Number(process.env.SMTP_PORT) || 587,
-            secure: false,
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-        });
 
         const servicesText = services?.length ? services.join(", ") : "Not specified";
 
@@ -40,8 +32,8 @@ export async function POST(request: Request) {
 <p style="white-space:pre-wrap;background:#f5f5f5;padding:16px;border-radius:8px;">${brief}</p>
 `;
 
-        await transporter.sendMail({
-            from: `"Orion Studio" <${process.env.SMTP_USER}>`,
+        await resend.emails.send({
+            from: "Orion Studio <onboarding@resend.dev>",
             to: "koraykunal85@outlook.com",
             replyTo: email,
             subject: `New Inquiry from ${name}${company ? ` — ${company}` : ""}`,
