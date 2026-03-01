@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
         await resend.emails.send({
             from: "Orion Studio <onboarding@resend.dev>",
-            to: "koraykunal85@outlook.com",
+            to: process.env.CONTACT_EMAIL || "koraykunal85@gmail.com",
             replyTo: email,
             subject: `New Inquiry from ${name}${company ? ` — ${company}` : ""}`,
             html: htmlBody,
