@@ -1,0 +1,12 @@
+:root {
+    --ease-brand:        cubic-bezier(0.05, 0, 0.133, 1);
+    --ease-brand-in:     cubic-bezier(0.55, 0, 1, 0.45);
+    --ease-brand-in-out: cubic-bezier(0.37, 0, 0.63, 1);
+    --ease-spring:       cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-out:          cubic-bezier(0.0, 0.0, 0.2, 1);
+
+    --transition-fast:   150ms var(--ease-brand);
+    --transition-base:   350ms var(--ease-brand);
+    --transition-slow:   600ms var(--ease-brand);
+    --transition-xslow:  900ms var(--ease-brand);
+}

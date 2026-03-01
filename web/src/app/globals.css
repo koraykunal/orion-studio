@@ -1,0 +1,421 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    /* ── Backgrounds — cold-shifted deep navy ── */
+    --background: oklch(0.08 0.012 280);
+    --surface-1: oklch(0.11 0.012 278);
+    --surface-2: oklch(0.15 0.012 276);
+    --surface-3: oklch(0.19 0.010 274);
+
+    /* ── Foreground ── */
+    --foreground: oklch(0.94 0.008 280);
+    --foreground-muted: oklch(0.55 0.012 275);
+    --foreground-subtle: oklch(0.34 0.010 278);
+
+    /* ── Accent — Lavender/Violet ── */
+    --accent: oklch(0.72 0.15 295);
+    --accent-warm: oklch(0.65 0.18 310);
+    --accent-bright: oklch(0.82 0.12 290);
+    --accent-foreground: oklch(0.08 0.012 280);
+
+    /* ── Borders ── */
+    --border: oklch(0.22 0.008 278);
+    --border-subtle: oklch(0.15 0.006 278);
+    --border-bright: oklch(0.30 0.010 280);
+
+    /* ── Glows ── */
+    --glow: oklch(0.72 0.15 295 / 0.10);
+    --glow-strong: oklch(0.72 0.15 295 / 0.22);
+
+    /* ── Semantic tokens ── */
+    --card: oklch(0.11 0.012 278);
+    --card-foreground: var(--foreground);
+
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+
+    --muted: var(--surface-2);
+    --muted-foreground: var(--foreground-muted);
+
+    --destructive: oklch(0.62 0.22 25);
+    --destructive-foreground: oklch(0.93 0.010 85);
+
+    --input: var(--surface-2);
+    --ring: var(--accent);
+
+    /* ── Radii ── */
+    --radius: 0.5rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.625rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* ── Spacing ── */
+    --section-py: clamp(6rem, 12vw, 14rem);
+    --section-gap: clamp(3rem, 6vw, 8rem);
+    --container-max: 88rem;
+    --container-px: clamp(1.5rem, 5vw, 5rem);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-surface-1: var(--surface-1);
+    --color-surface-2: var(--surface-2);
+    --color-surface-3: var(--surface-3);
+    --color-foreground: var(--foreground);
+    --color-foreground-muted: var(--foreground-muted);
+    --color-foreground-subtle: var(--foreground-subtle);
+    --color-accent: var(--accent);
+    --color-accent-warm: var(--accent-warm);
+    --color-accent-bright: var(--accent-bright);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-border: var(--border);
+    --color-border-subtle: var(--border-subtle);
+    --color-border-bright: var(--border-bright);
+    --color-glow: var(--glow);
+    --color-glow-strong: var(--glow-strong);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-destructive: var(--destructive);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --radius-sm: var(--radius-sm);
+    --radius-md: var(--radius-md);
+    --radius-lg: var(--radius-lg);
+    --radius-xl: var(--radius-xl);
+    --radius-2xl: var(--radius-2xl);
+    --radius-full: var(--radius-full);
+
+    --font-sans: var(--font-space), var(--font-inter), system-ui, sans-serif;
+    --font-display: var(--font-display-custom), var(--font-space), system-ui, sans-serif;
+    --font-mono: ui-monospace, "JetBrains Mono", monospace;
+}
+
+@layer base {
+
+    html,
+    html.lenis,
+    html.lenis body {
+        height: auto;
+        scroll-behavior: auto;
+    }
+
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    * {
+        @apply border-border;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+        cursor: default;
+    }
+
+    /* ── Grainy texture overlay — static PNG for GPU compositing ── */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        pointer-events: none;
+        opacity: 0.04;
+        background-image: url("/noise.png");
+        background-repeat: repeat;
+        background-size: 128px 128px;
+    }
+
+    ::selection {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+    }
+}
+
+@layer utilities {
+    .container-px {
+        padding-left: var(--container-px);
+        padding-right: var(--container-px);
+    }
+
+    .section-container {
+        max-width: var(--container-max);
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: var(--container-px);
+        padding-right: var(--container-px);
+    }
+
+    .grid-container {
+        @apply grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-4 lg:gap-x-6 px-6 md:px-12 w-full max-w-full lg:max-w-[1400px] mx-auto;
+    }
+
+    .section-py {
+        padding-top: var(--section-py);
+        padding-bottom: var(--section-py);
+    }
+
+    /* ── Display typography scale ──────────────── */
+    .text-display {
+        font-family: var(--font-unica);
+        font-size: clamp(6.5rem, 13vw, 15rem);
+        line-height: 0.88;
+        letter-spacing: -0.04em;
+        color: beige;
+        font-weight: 400;
+    }
+
+    .text-hero {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6.5vw, 8rem);
+        line-height: 0.88;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+        font-weight: 400;
+    }
+
+    .text-title {
+        font-size: clamp(2rem, 4vw, 4.5rem);
+        line-height: 1.0;
+        letter-spacing: -0.025em;
+        font-weight: 500;
+    }
+
+    .text-heading {
+        font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        font-weight: 500;
+    }
+
+    .text-body-lg {
+        font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+        line-height: 1.65;
+    }
+
+    .text-label {
+        font-size: 0.6875rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .text-caption {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--foreground-muted);
+    }
+
+    .text-index {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        letter-spacing: 0.08em;
+        color: var(--foreground-subtle);
+    }
+
+    .text-accent {
+        color: var(--accent);
+    }
+
+    .text-muted {
+        color: var(--foreground-muted);
+    }
+
+    .text-italic-accent {
+        font-style: italic;
+        color: var(--accent);
+    }
+
+    .text-metric {
+        font-family: var(--font-mono);
+        font-size: clamp(3rem, 8vw, 7rem);
+        font-weight: 300;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+    }
+
+    .text-editorial {
+        font-size: clamp(1.25rem, 2vw, 1.75rem);
+        line-height: 1.5;
+        font-style: italic;
+        color: var(--foreground-muted);
+    }
+
+    /* ── Surfaces ── */
+    .divider {
+        width: 100%;
+        height: 1px;
+        background-color: var(--border);
+    }
+
+    .divider-subtle {
+        width: 100%;
+        height: 1px;
+        background-color: var(--border-subtle);
+    }
+
+    .surface-card {
+        background-color: var(--surface-1);
+        border: 1px solid var(--border-subtle);
+    }
+
+    .surface-card-hover {
+        background-color: var(--surface-1);
+        border: 1px solid var(--border-subtle);
+        transition: border-color var(--transition-base), background-color var(--transition-base);
+    }
+
+    .surface-card-hover:hover {
+        background-color: var(--surface-2);
+        border-color: var(--border);
+    }
+
+    .glow-accent {
+        box-shadow: 0 0 48px var(--glow), 0 0 120px oklch(0.72 0.15 295 / 0.04);
+    }
+
+    .clip-reveal {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    .clip-visible {
+        clip-path: inset(0 0% 0 0);
+    }
+
+    .overflow-clip {
+        overflow: clip;
+    }
+
+    .no-select {
+        user-select: none;
+    }
+
+    /* ── Visibility helpers for GSAP mount animations ── */
+    .gsap-hidden {
+        visibility: hidden;
+    }
+
+    /* ── Animations ── */
+    @keyframes ticker {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .ticker-track {
+        animation: ticker 24s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ── Nav link hover underline ── */
+    .nav-link {
+        position: relative;
+    }
+
+    .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--accent);
+        transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+    }
+
+    /* ── Service item accent glow ── */
+    .service-glow {
+        position: relative;
+    }
+
+    .service-glow::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--glow), transparent 70%);
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .service-glow:hover::before {
+        opacity: 1;
+    }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 2;
+    mask-image: url('/star.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    animation: vt-close 0.7s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+}
+
+::view-transition-new(root) {
+    z-index: 1;
+    mask-image: url('/star.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 0% 0%;
+    animation: vt-open 0.7s cubic-bezier(0.05, 0, 0.133, 1) forwards;
+    animation-delay: 0.55s;
+}
+
+@keyframes vt-close {
+    0% {
+        mask-size: 500% 500%;
+    }
+    100% {
+        mask-size: 0% 0%;
+    }
+}
+
+@keyframes vt-open {
+    0% {
+        mask-size: 0% 0%;
+    }
+    100% {
+        mask-size: 500% 500%;
+    }
+}
