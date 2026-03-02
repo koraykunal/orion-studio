@@ -257,7 +257,6 @@ export function ComparisonSection() {
 
         if (sectionLabel) gsap.set(sectionLabel, { opacity: 0, y: 12 });
 
-        /* ── Entrance for label ── */
         const entranceTl = gsap.timeline({
             scrollTrigger: {
                 trigger: section,
@@ -265,14 +264,6 @@ export function ComparisonSection() {
                 toggleActions: "play none none none",
             },
         });
-
-        if (sectionLabel) {
-            entranceTl.to(sectionLabel, {
-                opacity: 1, y: 0,
-                duration: DURATIONS.base,
-                ease: EASES.expo,
-            }, 0.2);
-        }
 
         /* ── Scrub timeline ── */
         const mainTl = gsap.timeline({
@@ -291,7 +282,6 @@ export function ComparisonSection() {
             const pairs = mobileWrap.querySelectorAll<HTMLElement>(".comp-pair");
             if (!pairs.length) return;
 
-            // Z-stack: first on top so it clips away to reveal next below
             pairs.forEach((p, i) => {
                 gsap.set(p, {
                     zIndex: pairs.length - i,
@@ -299,15 +289,22 @@ export function ComparisonSection() {
                 });
             });
 
-            // Entrance: entire mobile wrapper clips from bottom
-            gsap.set(mobileWrap, { clipPath: "inset(100% 0 0 0)" });
-            entranceTl.to(mobileWrap, {
-                clipPath: "inset(0 0 0 0)",
-                duration: DURATIONS.slow,
-                ease: EASES.brand,
-            }, 0.15);
+            gsap.set(mobileWrap, { opacity: 0, yPercent: 8 });
 
-            // Scene transitions: top pair clips upward revealing next underneath
+            mainTl.to(mobileWrap, {
+                opacity: 1, yPercent: 0,
+                duration: 0.18,
+                ease: "none",
+            }, 0);
+
+            if (sectionLabel) {
+                mainTl.fromTo(sectionLabel,
+                    { opacity: 0, y: 12 },
+                    { opacity: 1, y: 0, duration: 0.12, ease: "none" },
+                    0.04,
+                );
+            }
+
             for (let i = 0; i < pairs.length - 1; i++) {
                 const transStart = 0.22 + i * 0.28;
                 const transDur = 0.16;
@@ -319,7 +316,6 @@ export function ComparisonSection() {
                 }, transStart);
             }
 
-            // Exit
             mainTl.to(mobileWrap, {
                 scale: 0.95, opacity: 0, filter: "blur(4px)",
                 duration: 0.12, ease: "none",
@@ -445,7 +441,7 @@ export function ComparisonSection() {
                 />
 
                 {/* Section label */}
-                <div className="comp-section-label absolute top-6 left-1/2 -translate-x-1/2 z-20 md:hidden">
+                <div className="comp-section-label absolute top-24 left-1/2 -translate-x-1/2 z-20 md:hidden">
                     <span className="text-label text-foreground-subtle">The difference</span>
                 </div>
 

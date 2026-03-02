@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
+import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 
 const routes = [
@@ -12,95 +13,91 @@ const routes = [
     { label: "Contact", link: "/contact" },
 ]
 
+const CYCLE_INTERVAL = 4;
+const FLIP_DURATION = 0.6;
+
 export function Navbar() {
     const pathname = usePathname()
-    const isHome = pathname === "/"
-    const logoWrapRef = useRef<HTMLDivElement>(null)
-    const dreamRef = useRef<HTMLSpanElement>(null)
-    const orionRef = useRef<HTMLSpanElement>(null)
-
     const handleClick = (e: React.MouseEvent, href: string) => {
         if (pathname === href) e.preventDefault()
     }
 
+    const containerRef = useRef<HTMLDivElement>(null)
+    const dreamRef = useRef<HTMLSpanElement>(null)
+    const orionRef = useRef<HTMLSpanElement>(null)
+    const logoRef = useRef<HTMLDivElement>(null)
+
     useGSAP(() => {
-        if (!isHome || !logoWrapRef.current || !dreamRef.current || !orionRef.current) return;
+        if (!containerRef.current || !dreamRef.current || !orionRef.current || !logoRef.current) return;
 
-        gsap.set(orionRef.current, { yPercent: 100 });
-        gsap.set(dreamRef.current, { yPercent: 0 });
+        const items = [dreamRef.current, orionRef.current, logoRef.current];
+        let current = 0;
 
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "+=600",
-                scrub: 0.6,
-            },
-        })
-            .to(dreamRef.current, {
-                yPercent: -100,
-                duration: 1,
-                ease: "none",
-            }, 0)
-            .to(orionRef.current, {
-                yPercent: 0,
-                duration: 1,
-                ease: "none",
-            }, 0);
-    }, { scope: logoWrapRef, dependencies: [isHome] });
+        items.forEach(el => el.style.transform = "");
+        gsap.set(items[0], { yPercent: 0 });
+        gsap.set(items[1], { yPercent: 100 });
+        gsap.set(items[2], { yPercent: 100 });
+
+        const flip = () => {
+            const outEl = items[current];
+            const next = (current + 1) % items.length;
+            const inEl = items[next];
+
+            gsap.timeline({
+                onComplete: () => { current = next; },
+            })
+                .to(outEl, { yPercent: -100, duration: FLIP_DURATION, ease: "orion.inOut" })
+                .fromTo(inEl, { yPercent: 100 }, { yPercent: 0, duration: FLIP_DURATION, ease: "orion.inOut" }, 0);
+        };
+
+        gsap.delayedCall(CYCLE_INTERVAL, function repeat() {
+            flip();
+            gsap.delayedCall(CYCLE_INTERVAL, repeat);
+        });
+    }, { scope: containerRef });
+
+    const textStyle = {
+        fontFamily: "var(--font-unica)",
+        fontSize: "clamp(0.75rem, 1.1vw, 0.95rem)",
+        letterSpacing: "0.12em",
+        lineHeight: "1.2",
+        textTransform: "uppercase" as const,
+    };
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50">
             <div className="section-container flex items-center justify-between h-20">
                 <Link href="/" onClick={(e) => handleClick(e, "/")} className="block" aria-label="Orion Studio">
                     <div
-                        ref={logoWrapRef}
+                        ref={containerRef}
                         className="relative overflow-hidden"
-                        style={{ height: "1.2em" }}
+                        style={{ ...textStyle, height: "1.2em" }}
                     >
-                        {isHome ? (
-                            <>
-                                <span
-                                    ref={dreamRef}
-                                    className="block whitespace-nowrap"
-                                    style={{
-                                        fontFamily: "var(--font-unica)",
-                                        fontSize: "clamp(0.75rem, 1.1vw, 0.95rem)",
-                                        letterSpacing: "0.08em",
-                                        lineHeight: "1.2",
-                                        textTransform: "uppercase",
-                                    }}
-                                >
-                                    Digital dreams designed for you
-                                </span>
-                                <span
-                                    ref={orionRef}
-                                    className="block absolute top-0 left-0"
-                                    style={{
-                                        fontFamily: "var(--font-unica)",
-                                        fontSize: "clamp(0.75rem, 1.1vw, 1.95rem)",
-                                        letterSpacing: "0.12em",
-                                        lineHeight: "1.2",
-                                        textTransform: "uppercase",
-                                    }}
-                                >
-                                    Orion Studio
-                                </span>
-                            </>
-                        ) : (
-                            <span
-                                className="block"
-                                style={{
-                                    fontFamily: "var(--font-unica)",
-                                    fontSize: "clamp(0.75rem, 1.1vw, 0.95rem)",
-                                    letterSpacing: "0.12em",
-                                    lineHeight: "1.2",
-                                    textTransform: "uppercase",
-                                }}
-                            >
-                                Orion
-                            </span>
-                        )}
+                        <span
+                            ref={dreamRef}
+                            className="block whitespace-nowrap"
+                            style={{ letterSpacing: "0.08em" }}
+                        >
+                            Digital dreams designed for you
+                        </span>
+                        <span
+                            ref={orionRef}
+                            className="absolute top-0 left-0 block"
+                        >
+                            Orion Studio
+                        </span>
+                        <div
+                            ref={logoRef}
+                            className="absolute top-0 left-0 flex items-center h-full"
+                        >
+                            <Image
+                                src="/logo.svg"
+                                alt="Orion Studio"
+                                width={60}
+                                height={60}
+                                className="w-[1.2em] h-[1.2em]"
+                            />
+                        </div>
                     </div>
                 </Link>
 

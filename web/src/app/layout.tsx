@@ -65,6 +65,9 @@ const arcaneWhispers = localFont({
 export const metadata: Metadata = {
     title: "Orion Studio — Digital Agency",
     description: "We design and engineer digital products for ambitious brands.",
+    icons: {
+        icon: "/logo.svg",
+    },
     openGraph: {
         title: "Orion Studio — Digital Agency",
         description: "We design and engineer digital products for ambitious brands.",

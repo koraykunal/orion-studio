@@ -46,7 +46,6 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       mediaQuery.removeEventListener("change", handleMotionChange);
       gsap.ticker.remove(rafCallback);
       instance.destroy();
-      ScrollTrigger.killAll();
       setLenis(null);
     };
   }, []);

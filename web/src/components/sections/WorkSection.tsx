@@ -14,22 +14,22 @@ type WorkItem = {
 
 const work: WorkItem[] = [
     {
-        client: "Nova Mobility",
-        focus: "Product Launch",
-        outcome: "Multi-market site with CMS-backed case stories.",
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=900&h=600&fit=crop&q=80",
+        client: "Apulso",
+        focus: "SaaS Launch",
+        outcome: "Multi-market automation platform with live onboarding flows.",
+        image: "/p_images/apulso.png",
     },
     {
-        client: "Atlar Finance",
-        focus: "Brand & Investor Hub",
-        outcome: "Modular landing kit with analytics-ready events.",
-        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&h=600&fit=crop&q=80",
+        client: "Atelier",
+        focus: "Gallery Platform",
+        outcome: "Virtual exhibition walkthroughs with ticketing integration.",
+        image: "/p_images/atelier.png",
     },
     {
-        client: "Museo Light",
-        focus: "Immersive Exhibition",
-        outcome: "Rich media stack and ticketing integrations.",
-        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=900&h=600&fit=crop&q=80",
+        client: "Neon Muse",
+        focus: "Brand & Analytics",
+        outcome: "Event-driven landing system with investor portal.",
+        image: "/p_images/neonmuse.png",
     },
 ];
 
@@ -66,14 +66,14 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
             <div
                 ref={imageWrapRef}
                 className="relative overflow-hidden rounded-lg lg:rounded-xl"
-                style={{ aspectRatio: "3/2", clipPath: "inset(6% 6% 6% 6%)" }}
+                style={{ aspectRatio: "6/3", clipPath: "inset(6% 6% 6% 6%)" }}
             >
                 <Image
                     src={item.image}
                     alt={`${item.client} — ${item.focus}`}
                     fill
                     sizes="(max-width: 1024px) 75vw, 45vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
             </div>
 
