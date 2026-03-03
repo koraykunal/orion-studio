@@ -1,0 +1,32 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+	<defs>
+		<linearGradient id="g1" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(482.591,0,0,475.369,31.592,31.569)">
+			<stop offset="0" stop-color="#4257a8"/>
+			<stop offset="1" stop-color="#9a95d1"/>
+		</linearGradient>
+		<linearGradient id="g2" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(475.369,0,0,482.591,515.539,32.296)">
+			<stop offset="0" stop-color="#4d5eac"/>
+			<stop offset="1" stop-color="#c2b0e4"/>
+		</linearGradient>
+		<linearGradient id="g3" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(475.369,0,0,482.591,31.592,507.621)">
+			<stop offset="0" stop-color="#4e5fad"/>
+			<stop offset="1" stop-color="#9894d0"/>
+		</linearGradient>
+		<linearGradient id="g4" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(482.591,0,0,475.369,507.644,515.635)">
+			<stop offset="0" stop-color="#8b8bca"/>
+			<stop offset="1" stop-color="#000000"/>
+		</linearGradient>
+	</defs>
+	<style>
+		.s0 { fill: url(#g1) } 
+		.s1 { fill: url(#g2) } 
+		.s2 { fill: url(#g3) } 
+		.s3 { fill: url(#g4) } 
+	</style>
+	<path id="Shape 1 copy 2" fill-rule="evenodd" class="s0" d="m31.59 506.02l282.11 0.8c0 0 196.35 12.02 198.75-205.17 2.41-217.19 1.61-270.08 1.61-270.08l-145.06 258.86c0 0-28.86 48.09-74.54 72.13-45.68 24.04-262.87 143.46-262.87 143.46z"/>
+	<path id="Shape 1 copy" fill-rule="evenodd" class="s1" d="m516.46 32.3l-0.8 282.1c0 0-12.02 196.35 205.16 198.76 217.19 2.4 270.09 1.6 270.09 1.6l-258.86-145.06c0 0-48.09-28.85-72.13-74.53-24.05-45.69-143.46-262.87-143.46-262.87z"/>
+	<path id="Shape 1" fill-rule="evenodd" class="s2" d="m506.04 990.21l0.8-282.1c0 0 12.02-196.35-205.16-198.76-217.19-2.4-270.09-1.6-270.09-1.6l258.86 145.06c0 0 48.09 28.85 72.13 74.53 24.05 45.68 143.46 262.87 143.46 262.87z"/>
+	<path id="Shape 1 copy 3" fill-rule="evenodd" class="s3" d="m990.23 516.56l-282.1-0.81c0 0-196.35-12.02-198.76 205.17-2.4 217.19-1.6 270.08-1.6 270.08l145.06-258.86c0 0 28.85-48.08 74.53-72.13 45.69-24.04 262.87-143.45 262.87-143.45z"/>
+	<g id="Layer 1">
+	</g>
+</svg>
