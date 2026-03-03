@@ -14,22 +14,22 @@ type WorkItem = {
 
 const work: WorkItem[] = [
     {
-        client: "Apulso",
-        focus: "SaaS Launch",
-        outcome: "Multi-market automation platform with live onboarding flows.",
-        image: "/p_images/apulso.png",
+        client: "Harlow & Finch",
+        focus: "Brand Revival",
+        outcome: "133-year-old botanical apothecary reimagined for the digital age.",
+        image: "https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=1400&h=900&fit=crop&q=80",
     },
     {
-        client: "Atelier",
-        focus: "Gallery Platform",
-        outcome: "Virtual exhibition walkthroughs with ticketing integration.",
-        image: "/p_images/atelier.png",
+        client: "NOCTIS",
+        focus: "Festival Platform",
+        outcome: "Electronic music festival in Berlin — brand, web platform, and ticket system.",
+        image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&h=900&fit=crop&q=80",
     },
     {
-        client: "Neon Muse",
-        focus: "Brand & Analytics",
-        outcome: "Event-driven landing system with investor portal.",
-        image: "/p_images/neonmuse.png",
+        client: "Forma",
+        focus: "Ceramics Studio",
+        outcome: "Copenhagen ceramics studio — brand, editorial e-commerce, and exhibition system.",
+        image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1400&h=900&fit=crop&q=80",
     },
 ];
 

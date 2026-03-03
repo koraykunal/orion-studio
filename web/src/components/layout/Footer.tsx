@@ -9,7 +9,8 @@ import {EASES, DURATIONS, STAGGER} from "@/lib/animations/config";
 
 const navLinks = [
     {label: "Studio", href: "/#capabilities"},
-    {label: "Work", href: "/#work"},
+    {label: "Work", href: "/work"},
+    {label: "About", href: "/about"},
     {label: "Process", href: "/#process"},
     {label: "Contact", href: "/contact"},
 ];
@@ -17,6 +18,8 @@ const navLinks = [
 const socials = [
     {label: "Instagram", href: "https://www.instagram.com/orionstud.io/"},
     {label: "LinkedIn", href: "https://www.linkedin.com/company/104592237"},
+    {label: "X", href: "https://x.com/orionstudio"},
+    {label: "Dribbble", href: "https://dribbble.com/orionstudio"},
 ];
 
 export function Footer() {
@@ -98,11 +101,24 @@ export function Footer() {
 
             <div ref={topRef} className="section-container pt-16 lg:pt-24 pb-20 lg:pb-28">
                 <div className="grid-container gap-y-10">
+                    {/* Tagline */}
                     <div
                         ref={(el) => {
                             colRefs.current[0] = el;
                         }}
-                        className="col-span-2 md:col-span-2 lg:col-span-2"
+                        className="col-span-4 md:col-span-4 lg:col-span-4"
+                    >
+                        <p className="text-body-lg text-foreground-muted max-w-[28ch]">
+                            Design-led studio crafting brands, products, and digital experiences that scale.
+                        </p>
+                    </div>
+
+                    {/* Navigate */}
+                    <div
+                        ref={(el) => {
+                            colRefs.current[1] = el;
+                        }}
+                        className="col-span-2 md:col-span-2 lg:col-span-2 lg:col-start-7"
                     >
                         <p className="text-label text-foreground-subtle mb-5">Navigate</p>
                         <ul className="space-y-3">
@@ -120,9 +136,10 @@ export function Footer() {
                         </ul>
                     </div>
 
+                    {/* Social */}
                     <div
                         ref={(el) => {
-                            colRefs.current[1] = el;
+                            colRefs.current[2] = el;
                         }}
                         className="col-span-2 md:col-span-2 lg:col-span-2"
                     >
@@ -144,9 +161,10 @@ export function Footer() {
                         </ul>
                     </div>
 
+                    {/* Get in touch */}
                     <div
                         ref={(el) => {
-                            colRefs.current[2] = el;
+                            colRefs.current[3] = el;
                         }}
                         className="col-span-4 md:col-span-2 lg:col-span-2"
                     >
@@ -175,29 +193,31 @@ export function Footer() {
                 </div>
             </div>
 
-            <div className="w-fit mx-auto px-4">
+            {/* Brand text */}
+            <div className="w-full overflow-hidden">
                 <div
                     ref={brandRef}
-                    className="overflow-hidden select-none pointer-events-none"
+                    className="select-none pointer-events-none px-4"
                 >
                     <p
-                        className="font-[var(--font-unica)] leading-[0.85] tracking-[-0.04em] text-foreground/55 whitespace-nowrap"
+                        className="font-[var(--font-unica)] leading-[0.85] tracking-[-0.04em] text-foreground/[0.04] whitespace-nowrap text-center"
                         style={{fontSize: "clamp(3rem, 14vw, 18rem)"}}
                     >
                         ORION STUDIO
                     </p>
                 </div>
+            </div>
 
-                <div ref={bottomBarRef} className="pb-6 lg:pb-8 pt-6 lg:pt-0">
-                    <div
-                        className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
-                        <p className="text-caption">
-                            &copy; {new Date().getFullYear()} Orion Studio
-                        </p>
-                        <p className="text-caption text-foreground-subtle">
-                            Crafted with precision
-                        </p>
-                    </div>
+            {/* Bottom bar */}
+            <div ref={bottomBarRef} className="section-container pb-6 lg:pb-8">
+                <div
+                    className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
+                    <p className="text-caption">
+                        &copy; {new Date().getFullYear()} Orion Studio
+                    </p>
+                    <p className="text-caption text-foreground-subtle">
+                        Crafted with precision
+                    </p>
                 </div>
             </div>
         </footer>

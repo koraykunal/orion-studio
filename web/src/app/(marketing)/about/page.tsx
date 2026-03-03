@@ -43,28 +43,14 @@ const stats = [
 
 const team = [
     {
-        name: "Corey Dalton",
-        role: "Creative Director",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=600&fit=crop&crop=face&q=80",
-        bio: "15 years shaping brand experiences for startups and Fortune 500s alike.",
+        name: "Koray Kunal",
+        role: "Co-Founder",
+        image: "/team/koray.png",
     },
     {
-        name: "Mara Tang",
-        role: "Strategy Lead",
-        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=480&h=600&fit=crop&crop=face&q=80",
-        bio: "Ex-IDEO. Specializes in turning ambiguous briefs into clear product roadmaps.",
-    },
-    {
-        name: "Zayd Ince",
-        role: "Engineering Lead",
-        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=480&h=600&fit=crop&crop=face&q=80",
-        bio: "Full-stack polyglot. Built platforms serving millions across three continents.",
-    },
-    {
-        name: "Lia Navarro",
-        role: "Design Engineer",
-        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=480&h=600&fit=crop&crop=face&q=80",
-        bio: "Bridges the gap between Figma and code. Motion systems and design tokens.",
+        name: "Mecit Keskin",
+        role: "Brand Strategist",
+        image: "/team/mecit.jpeg",
     },
 ];
 
@@ -202,7 +188,7 @@ function TeamCard({ member, index }: { member: (typeof team)[number]; index: num
                 duration: 1.2,
                 ease: EASES.brandInOut,
             },
-            index * 0.1
+            index * 0.15
         );
 
         tl.from(
@@ -213,7 +199,7 @@ function TeamCard({ member, index }: { member: (typeof team)[number]; index: num
                 duration: 0.7,
                 ease: EASES.expo,
             },
-            index * 0.1 + 0.3
+            index * 0.15 + 0.3
         );
     }, { scope: ref });
 
@@ -222,13 +208,13 @@ function TeamCard({ member, index }: { member: (typeof team)[number]; index: num
             <div
                 ref={imageRef}
                 className="relative overflow-hidden rounded-lg"
-                style={{ aspectRatio: "4/5", clipPath: "inset(8% 8% 8% 8%)" }}
+                style={{ aspectRatio: "3/4", clipPath: "inset(8% 8% 8% 8%)" }}
             >
                 <Image
                     src={member.image}
                     alt={member.name}
                     fill
-                    sizes="(max-width: 768px) 50vw, 25vw"
+                    sizes="(max-width: 768px) 45vw, 30vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -237,9 +223,6 @@ function TeamCard({ member, index }: { member: (typeof team)[number]; index: num
             <div className="team-info mt-5 space-y-1.5">
                 <h3 className="text-heading text-[1.125rem]">{member.name}</h3>
                 <span className="text-label text-accent block">{member.role}</span>
-                <p className="text-sm text-foreground-muted leading-relaxed max-w-[30ch]">
-                    {member.bio}
-                </p>
             </div>
         </div>
     );
@@ -388,7 +371,7 @@ export default function AboutPage() {
                         </TextReveal>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-2 gap-8 lg:gap-12 max-w-3xl">
                         {team.map((member, i) => (
                             <TeamCard key={member.name} member={member} index={i} />
                         ))}
@@ -399,7 +382,7 @@ export default function AboutPage() {
             {/* ────────────────────── Studio image ────────────────────── */}
             <section className="section-container">
                 <MaskImage
-                    src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=1600&h=700&fit=crop&q=80"
+                    src="/desktop.png"
                     alt="Orion Studio collaboration"
                     aspect="21/9"
                     inset={8}

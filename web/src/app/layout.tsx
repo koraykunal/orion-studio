@@ -1,5 +1,5 @@
 import type {Metadata} from "next";
-import {Inter, Space_Grotesk, Sora, Unica_One} from "next/font/google";
+import {Inter, Space_Grotesk, Sora, Unica_One, Playfair_Display} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import {ViewTransitions} from "next-view-transitions";
@@ -31,6 +31,14 @@ const unica = Unica_One({
     variable: "--font-unica",
     display: "swap",
     weight: "400",
+});
+
+const playfair = Playfair_Display({
+    subsets: ["latin"],
+    variable: "--font-playfair",
+    display: "swap",
+    weight: ["400", "500", "600"],
+    style: ["normal", "italic"],
 });
 
 const myglaos = localFont({
@@ -80,6 +88,7 @@ const fontVariables = [
     spaceGrotesk.variable,
     sora.variable,
     unica.variable,
+    playfair.variable,
     myglaos.variable,
     bechilo.variable,
     centralwell.variable,

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { gsap, DrawSVGPlugin, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -19,64 +20,68 @@ type Project = {
     outcome: string;
     image: string;
     featured?: boolean;
+    caseStudy?: boolean;
 };
 
 const projects: Project[] = [
     {
-        slug: "apulso",
-        client: "Apulso",
-        tagline: "Automation that moves markets",
+        slug: "harlow-finch",
+        client: "Harlow & Finch",
+        tagline: "Rooted in Remedy. Revived for Now.",
         year: "2025",
-        services: ["Brand Strategy", "Web Engineering", "Motion Systems"],
-        outcome: "Multi-market SaaS launch site with CMS-backed customer stories, live integration status dashboard, and automated onboarding flows. 180% increase in demo requests.",
-        image: "/p_images/apulso.png",
+        services: ["Brand Revival", "Visual Identity", "E-Commerce Platform", "Storytelling Microsite"],
+        outcome: "133-year-old botanical apothecary reimagined for the digital age. Headless e-commerce on Shopify Hydrogen with heritage storytelling, AR ingredient explorer, and editorial engine. 340% increase in online orders.",
+        image: "https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=1400&h=900&fit=crop&q=80",
         featured: true,
+        caseStudy: true,
     },
     {
-        slug: "atelier",
-        client: "Atelier",
-        tagline: "Curated spaces, digital presence",
+        slug: "noctis",
+        client: "NOCTIS",
+        tagline: "Where Night Becomes Sound",
         year: "2025",
-        services: ["Visual Identity", "Product Design", "Frontend Engineering"],
-        outcome: "Immersive portfolio platform with virtual exhibition walkthroughs, artist management CMS, and ticketing integration for gallery events.",
-        image: "/p_images/atelier.png",
+        services: ["Brand Identity", "Festival Website", "Motion Systems", "Ticket Platform"],
+        outcome: "Annual electronic music and digital art festival in Berlin. Immersive web platform with phased lineup reveals, interactive venue map, and real-time ticket system. Sold out in 72 hours — 8,000 attendees.",
+        image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&h=900&fit=crop&q=80",
         featured: true,
+        caseStudy: true,
     },
     {
-        slug: "neon-muse",
-        client: "Neon Muse",
-        tagline: "Where sound meets story",
-        year: "2024",
-        services: ["Brand Identity", "Web Design", "Analytics & Growth"],
-        outcome: "Modular landing system with event-driven analytics, investor portal, and editorial content engine. 2.4s avg load, 95+ Lighthouse score.",
-        image: "/p_images/neonmuse.png",
+        slug: "forma",
+        client: "Forma",
+        tagline: "Silence as Design Language",
+        year: "2025",
+        services: ["Brand Identity", "Editorial E-Commerce", "Motion Systems", "Exhibition Design"],
+        outcome: "Contemporary ceramics studio in Copenhagen. Gallery-like e-commerce with wabi-sabi editorial engine, exhibition booking system, and artisan process documentation. 280% increase in direct sales, €1.2M first-year revenue.",
+        image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1400&h=900&fit=crop&q=80",
         featured: true,
+        caseStudy: true,
     },
     {
-        slug: "velta-analytics",
-        client: "Velta Analytics",
-        tagline: "Clarity in complexity",
+        slug: "aksis-erp",
+        client: "Aksis ERP",
+        tagline: "End-to-end manufacturing intelligence",
+        year: "2025",
+        services: ["Product Design", "Full-Stack Engineering", "ERP Systems"],
+        outcome: "Modular ERP platform for manufacturing companies. Production planning, procurement, inventory, and real-time analytics — from raw material to shipment.",
+        image: "https://images.unsplash.com/photo-1516383274235-5f42d6c6426d?w=1400&h=900&fit=crop&q=80",
+    },
+    {
+        slug: "maison-verre",
+        client: "Maison Verre",
+        tagline: "Every stay, a story",
         year: "2024",
-        services: ["Product Design", "Data Visualization", "Frontend Engineering"],
-        outcome: "Real-time analytics dashboard with custom charting engine, 40+ widget types, and white-label theming for enterprise clients.",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1400&h=900&fit=crop&q=80",
+        services: ["Brand Strategy", "Web Design", "Booking Platform"],
+        outcome: "Boutique hotel group across Paris, Lisbon, and Copenhagen. Immersive booking experience with virtual room tours, seasonal editorial, and loyalty program integration.",
+        image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1400&h=900&fit=crop&q=80",
     },
     {
-        slug: "forma-architects",
-        client: "Forma Architects",
-        tagline: "Space as narrative",
+        slug: "kuro-supply",
+        client: "Kuro Supply",
+        tagline: "Wear the city",
         year: "2024",
-        services: ["Brand Strategy", "Web Design", "CMS Integration"],
-        outcome: "Portfolio platform with 3D project walkthroughs, filterable case archive, and procurement inquiry pipeline for commercial clients.",
-        image: "https://images.unsplash.com/photo-1486718448742-163732cd1544?w=1400&h=900&fit=crop&q=80",
-    },
-    {
-        slug: "kova-studio",
-        client: "Kova Studio",
-        tagline: "Craft meets commerce",
-        year: "2023",
         services: ["E-Commerce", "Motion Systems", "Visual Identity"],
-        outcome: "Headless storefront with AR product preview, editorial content engine, and subscription management for limited-edition drops.",
+        outcome: "Japanese-inspired streetwear label. Headless storefront with drop countdown system, lookbook engine, and limited-edition subscription management. Sold out 3 consecutive drops.",
         image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&h=900&fit=crop&q=80",
     },
 ];
@@ -194,15 +199,28 @@ function FeaturedCard({ project, index }: { project: Project; index: number }) {
                             ))}
                         </div>
 
-                        <span
-                            className="inline-flex items-center gap-2 text-label text-foreground-muted group-hover:text-accent transition-colors duration-300 cursor-pointer"
-                            data-cursor="hover"
-                        >
-                            View case study
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                <path d="M1 15L15 1M15 1H5M15 1V11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </span>
+                        {project.caseStudy ? (
+                            <Link
+                                href={`/work/${project.slug}`}
+                                className="inline-flex items-center gap-2 text-label text-foreground-muted group-hover:text-accent transition-colors duration-300"
+                                data-cursor="hover"
+                            >
+                                View case study
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                                    <path d="M1 15L15 1M15 1H5M15 1V11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </Link>
+                        ) : (
+                            <span
+                                className="inline-flex items-center gap-2 text-label text-foreground-muted group-hover:text-accent transition-colors duration-300 cursor-pointer"
+                                data-cursor="hover"
+                            >
+                                View case study
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                                    <path d="M1 15L15 1M15 1H5M15 1V11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>
