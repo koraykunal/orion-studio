@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
             { source: "/personal", destination: "/work", permanent: true },
             { source: "/ecom", destination: "/work", permanent: true },
             { source: "/corporation", destination: "/work", permanent: true },
+            { source: "/request", destination: "/contact", permanent: true },
         ];
     },
     async headers() {
