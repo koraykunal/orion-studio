@@ -21,6 +21,13 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    async redirects() {
+        return [
+            { source: "/personal", destination: "/work", permanent: true },
+            { source: "/ecom", destination: "/work", permanent: true },
+            { source: "/corporation", destination: "/work", permanent: true },
+        ];
+    },
     async headers() {
         return [
             {
