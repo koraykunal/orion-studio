@@ -70,16 +70,62 @@ const arcaneWhispers = localFont({
     weight: "400",
 });
 
+const BASE_URL = "https://orionstud.io";
+
 export const metadata: Metadata = {
-    title: "Orion Studio — Digital Agency",
-    description: "We design and engineer digital products for ambitious brands.",
-    icons: {
-        icon: "/logo.svg",
+    metadataBase: new URL(BASE_URL),
+    title: {
+        default: "Orion Studio — Digital Agency",
+        template: "%s | Orion Studio",
     },
+    description: "We design and engineer digital products for ambitious brands. Strategy, design, and engineering — from concept to launch.",
+    keywords: ["digital agency", "web design", "brand identity", "UI/UX design", "frontend engineering", "design studio"],
+    authors: [{ name: "Orion Studio", url: BASE_URL }],
+    creator: "Orion Studio",
+    icons: {
+        icon: [
+            { url: "/favicon.ico", sizes: "48x48" },
+            { url: "/logo.svg", type: "image/svg+xml" },
+        ],
+        apple: "/apple-touch-icon.png",
+    },
+    manifest: "/site.webmanifest",
     openGraph: {
         title: "Orion Studio — Digital Agency",
-        description: "We design and engineer digital products for ambitious brands.",
+        description: "We design and engineer digital products for ambitious brands. Strategy, design, and engineering — from concept to launch.",
+        url: BASE_URL,
+        siteName: "Orion Studio",
+        locale: "en_US",
         type: "website",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Orion Studio — Digital Agency",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Orion Studio — Digital Agency",
+        description: "We design and engineer digital products for ambitious brands.",
+        images: ["/og-image.png"],
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
+    other: {
+        "theme-color": "#0a0a12",
+        "msapplication-TileColor": "#0a0a12",
     },
 };
 
@@ -104,6 +150,28 @@ export default function RootLayout({
         <ViewTransitions>
             <html lang="en" className="dark">
             <body className={fontVariables}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Organization",
+                        name: "Orion Studio",
+                        url: BASE_URL,
+                        logo: `${BASE_URL}/logo.svg`,
+                        description: "We design and engineer digital products for ambitious brands.",
+                        sameAs: [
+                            "https://www.instagram.com/orionstud.io/",
+                            "https://www.linkedin.com/company/104592237",
+                        ],
+                        contactPoint: {
+                            "@type": "ContactPoint",
+                            email: "koraykunal85@outlook.com",
+                            contactType: "customer service",
+                        },
+                    }),
+                }}
+            />
             <SmoothScroll>
                 <Navbar/>
                 {children}
