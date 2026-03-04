@@ -70,7 +70,7 @@ const arcaneWhispers = localFont({
     weight: "400",
 });
 
-const BASE_URL = "https://orionstud.io";
+const BASE_URL = "https://orion-studio.net";
 
 export const metadata: Metadata = {
     metadataBase: new URL(BASE_URL),
