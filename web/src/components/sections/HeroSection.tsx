@@ -34,16 +34,15 @@ export function HeroSection() {
             y: "120%",
             opacity: 0,
             rotateX: -90,
-            filter: "blur(12px)",
             transformOrigin: "50% 100% -40px",
         });
-        gsap.set(ctaRef.current, { opacity: 0, y: 28, scale: 0.96, filter: "blur(6px)", visibility: "hidden" });
-        gsap.set(tickerRef.current, { opacity: 0, y: 14, filter: "blur(4px)", visibility: "hidden" });
+        gsap.set(ctaRef.current, { opacity: 0, y: 28, scale: 0.96, visibility: "hidden" });
+        gsap.set(tickerRef.current, { opacity: 0, y: 14, visibility: "hidden" });
         gsap.set(bgRef.current, { opacity: 0, scale: 1.05 });
 
         const ctaChildren = ctaRef.current?.children;
         if (ctaChildren) {
-            gsap.set(ctaChildren, { opacity: 0, y: 20, filter: "blur(4px)", visibility: "hidden" });
+            gsap.set(ctaChildren, { opacity: 0, y: 20, visibility: "hidden" });
         }
 
         const tl = gsap.timeline({
@@ -57,7 +56,6 @@ export function HeroSection() {
             y: "0%",
             opacity: 1,
             rotateX: 0,
-            filter: "blur(0px)",
             duration: 1.3,
             stagger: 0.08,
             ease: "orion.out",
@@ -65,17 +63,17 @@ export function HeroSection() {
 
         if (ctaChildren) {
             tl.to(ctaRef.current, {
-                opacity: 1, y: 0, scale: 1, filter: "blur(0px)", visibility: "visible",
+                opacity: 1, y: 0, scale: 1, visibility: "visible",
                 duration: 0.8,
             }, ">-0.5");
             tl.to(ctaChildren, {
-                opacity: 1, y: 0, filter: "blur(0px)", visibility: "visible",
+                opacity: 1, y: 0, visibility: "visible",
                 duration: 0.7, stagger: 0.12,
             }, "<0.05");
         }
 
         tl.to(tickerRef.current, {
-            opacity: 1, y: 0, filter: "blur(0px)", visibility: "visible",
+            opacity: 1, y: 0, visibility: "visible",
             duration: 0.7,
         }, "<0.15");
 
@@ -92,8 +90,8 @@ export function HeroSection() {
 
         scrollTl
             .fromTo(titleRef.current,
-                { scale: 1, y: 0, opacity: 1, filter: "blur(0px)" },
-                { scale: 1.1, y: "-5vh", opacity: 0, filter: "blur(14px)", duration: 1, ease: "power2.in" },
+                { scale: 1, y: 0, opacity: 1 },
+                { scale: 1.1, y: "-5vh", opacity: 0, duration: 1, ease: "power2.in" },
                 0
             )
             .fromTo(ctaRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: -15, duration: 0.4, ease: "power1.in" }, 0.1)

@@ -10,6 +10,7 @@ import {EASES, DURATIONS, STAGGER} from "@/lib/animations/config";
 const navLinks = [
     {label: "Studio", href: "/#capabilities"},
     {label: "Work", href: "/work"},
+    {label: "Blog", href: "/blog"},
     {label: "About", href: "/about"},
     {label: "Process", href: "/#process"},
     {label: "Contact", href: "/contact"},

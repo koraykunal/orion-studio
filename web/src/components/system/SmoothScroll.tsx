@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/animations/gsap";
 import { useScrollReset } from "@/hooks/use-scroll-reset";
 import { LenisContext } from "@/lib/lenis-context";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
+  const lenisRef = useRef<Lenis | null>(null);
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
   useScrollReset(lenis);
@@ -22,7 +23,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
     });
 
-    setLenis(instance);
+    lenisRef.current = instance;
 
     const rafCallback = (time: number) => {
       instance.raf(time * 1000);
@@ -42,10 +43,13 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
     mediaQuery.addEventListener("change", handleMotionChange);
 
+    queueMicrotask(() => setLenis(instance));
+
     return () => {
       mediaQuery.removeEventListener("change", handleMotionChange);
       gsap.ticker.remove(rafCallback);
       instance.destroy();
+      lenisRef.current = null;
       setLenis(null);
     };
   }, []);

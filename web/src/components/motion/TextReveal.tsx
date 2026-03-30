@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ElementType, type ReactNode } from "react";
-import { gsap, ScrollTrigger, SplitText, useGSAP } from "@/lib/animations/gsap";
+import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { DURATIONS, EASES, STAGGER } from "@/lib/animations/config";
 
 type SplitMode = "chars" | "words" | "lines";

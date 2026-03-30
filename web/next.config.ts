@@ -13,14 +13,6 @@ const nextConfig: NextConfig = {
     experimental: {
         viewTransition: true,
     },
-    images: {
-        remotePatterns: [
-            {
-                protocol: "https",
-                hostname: "images.unsplash.com",
-            },
-        ],
-    },
     async redirects() {
         return [
             { source: "/personal", destination: "/work", permanent: true },
@@ -28,6 +20,9 @@ const nextConfig: NextConfig = {
             { source: "/corporation", destination: "/work", permanent: true },
             { source: "/single-page", destination: "/work", permanent: true },
             { source: "/request", destination: "/contact", permanent: true },
+            { source: "/work/forma", destination: "/work", permanent: true },
+            { source: "/work/harlow-finch", destination: "/work", permanent: true },
+            { source: "/work/noctis", destination: "/work", permanent: true },
         ];
     },
     async headers() {

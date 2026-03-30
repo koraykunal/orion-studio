@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, DrawSVGPlugin, useGSAP } from "@/lib/animations/gsap";
+import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { DURATIONS, EASES } from "@/lib/animations/config";
 
 interface LineRevealProps {

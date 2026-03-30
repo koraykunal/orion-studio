@@ -3,9 +3,6 @@ import {Inter, Space_Grotesk, Sora, Unica_One, Playfair_Display} from "next/font
 import localFont from "next/font/local";
 import "./globals.css";
 import {ViewTransitions} from "next-view-transitions";
-import {SmoothScroll} from "@/components/system/SmoothScroll";
-import {Navbar} from "@/components/layout/Navbar";
-import {Footer} from "@/components/layout/Footer";
 
 
 const inter = Inter({
@@ -149,6 +146,7 @@ export default function RootLayout({
     return (
         <ViewTransitions>
             <html lang="en" className="dark">
+            <head />
             <body className={fontVariables}>
             <script
                 type="application/ld+json"
@@ -172,11 +170,7 @@ export default function RootLayout({
                     }),
                 }}
             />
-            <SmoothScroll>
-                <Navbar/>
-                {children}
-                <Footer/>
-            </SmoothScroll>
+            {children}
             </body>
             </html>
         </ViewTransitions>

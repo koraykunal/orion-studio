@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PostStatus {
+  draft
+  published
+}
+
+enum ProjectCategory {
+  client
+  concept
+  studio
+}
+
+enum MessageStatus {
+  unread
+  read
+  archived
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String     @default("")
+  content     Json?
+  contentHtml String     @default("")
+  tags        String[]
+  coverImage  String?
+  status      PostStatus @default(draft)
+  publishedAt DateTime?
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Project {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  client      String
+  tagline     String          @default("")
+  year        String          @default("")
+  services    String[]
+  outcome     String          @default("")
+  image       String          @default("")
+  category    ProjectCategory @default(client)
+  sections    Json            @default("[]")
+  featured    Boolean         @default(false)
+  order       Int             @default(0)
+  status      PostStatus      @default(draft)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  company   String?
+  services  String[]
+  budget    String?
+  timeline  String?
+  brief     String
+  referral  String?
+  status    MessageStatus @default(unread)
+  notes     String?
+  createdAt DateTime      @default(now())
+  readAt    DateTime?
+}

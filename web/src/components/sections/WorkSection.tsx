@@ -2,36 +2,20 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
+import { getCategoryLabel, type Project, type Section } from "@/lib/project-types";
 
 type WorkItem = {
     client: string;
     focus: string;
     outcome: string;
     image: string;
+    category: Project["category"];
+    slug: string;
+    sections: Section[];
 };
-
-const work: WorkItem[] = [
-    {
-        client: "Harlow & Finch",
-        focus: "Brand Revival",
-        outcome: "133-year-old botanical apothecary reimagined for the digital age.",
-        image: "https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=1400&h=900&fit=crop&q=80",
-    },
-    {
-        client: "NOCTIS",
-        focus: "Festival Platform",
-        outcome: "Electronic music festival in Berlin — brand, web platform, and ticket system.",
-        image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&h=900&fit=crop&q=80",
-    },
-    {
-        client: "Forma",
-        focus: "Ceramics Studio",
-        outcome: "Copenhagen ceramics studio — brand, editorial e-commerce, and exhibition system.",
-        image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1400&h=900&fit=crop&q=80",
-    },
-];
 
 function WorkCard({ item, index }: { item: WorkItem; index: number }) {
     const cardRef = useRef<HTMLDivElement>(null);
@@ -57,11 +41,10 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
         );
     }, { scope: cardRef });
 
-    return (
+    const inner = (
         <div
             ref={cardRef}
             className="shrink-0 w-[75vw] lg:w-[45vw] group transition-transform duration-500 ease-out hover:-translate-y-1"
-
         >
             <div
                 ref={imageWrapRef}
@@ -79,7 +62,12 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
 
             <div className="mt-5 lg:mt-6 flex items-start justify-between gap-4">
                 <div>
-                    <span className="text-index text-foreground-subtle mb-2 block">0{index + 1}</span>
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="text-index text-foreground-subtle">0{index + 1}</span>
+                        <span className="px-2 py-0.5 rounded-full border border-accent/30 text-[0.55rem] uppercase tracking-[0.12em] text-accent">
+                            {getCategoryLabel(item.category)}
+                        </span>
+                    </div>
                     <h3 className="text-heading">{item.client}</h3>
                 </div>
                 <span className="text-label text-foreground-muted mt-6">{item.focus}</span>
@@ -88,11 +76,27 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
             <p className="text-body-lg text-foreground-muted mt-2 max-w-[36ch]">{item.outcome}</p>
         </div>
     );
+
+    if (item.sections && item.sections.length > 0) {
+        return <Link href={`/work/${item.slug}`}>{inner}</Link>;
+    }
+
+    return inner;
 }
 
-export function WorkSection() {
+export function WorkSection({ projects }: { projects: Project[] }) {
     const sectionRef = useRef<HTMLElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
+
+    const work: WorkItem[] = projects.map((p) => ({
+        client: p.client,
+        focus: p.services[0],
+        outcome: p.outcome,
+        image: p.image,
+        category: p.category,
+        slug: p.slug,
+        sections: p.sections,
+    }));
 
     useGSAP(() => {
         if (!sectionRef.current || !trackRef.current) return;
@@ -123,14 +127,13 @@ export function WorkSection() {
                 ref={trackRef}
                 className="flex items-start gap-8 lg:gap-12 pl-6 md:pl-12 lg:pl-[max(3rem,calc((100vw-1400px)/2+3rem))] pt-24 lg:pt-32 pb-24 lg:pb-32"
             >
-                {/* Header card */}
                 <div className="shrink-0 w-[75vw] lg:w-[30vw] flex flex-col justify-center pr-8 lg:pr-0">
                     <span className="text-index text-foreground-subtle mb-6">02 — Selected Work</span>
                     <TextReveal as="h2" type="lines" className="text-title">
                         Projects that define our craft
                     </TextReveal>
                     <TextReveal as="p" type="lines" className="text-body-lg text-foreground-muted mt-6" delay={0.15}>
-                        Each engagement blends design systems, motion, and growth instrumentation so launches are ready for scale on day one.
+                        Real client work and our own studio — each project blends design, engineering, and strategy from concept to launch.
                     </TextReveal>
                 </div>
 

@@ -64,7 +64,7 @@ export function OrionMark({
     globalOpacity = 0.7,
     rotate = 0,
     mirror = false,
-    bgStarCount = 60,
+    bgStarCount = 30,
 }: OrionMarkProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number>(0);
@@ -108,17 +108,6 @@ export function OrionMark({
         ro.observe(canvas);
         resize();
 
-        const drawAtmosphere = (x: number, y: number, r: number, color: string, alpha: number) => {
-            const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-            grad.addColorStop(0, `${color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`);
-            grad.addColorStop(0.35, `${color}${Math.round(alpha * 0.35 * 255).toString(16).padStart(2, "0")}`);
-            grad.addColorStop(1, `${color}00`);
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fill();
-        };
-
         const drawStar = (x: number, y: number, r: number, b: number, id: string) => {
             ctx.save();
 
@@ -126,8 +115,12 @@ export function OrionMark({
 
             if (isBright) {
                 const atmosR = r * (id === "betelgeuse" ? 60 : 50);
-                const color = id === "betelgeuse" ? "#9070c0" : "#7080d0";
-                drawAtmosphere(x, y, atmosR, color, 0.07);
+                ctx.globalAlpha = globalOpacity * 0.07;
+                ctx.fillStyle = id === "betelgeuse" ? "rgba(144, 112, 192, 0.15)" : "rgba(112, 128, 208, 0.15)";
+                ctx.beginPath();
+                ctx.arc(x, y, atmosR, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = globalOpacity;
             }
 
             const glowAlpha = isBright ? 0.28 : 0.18;
@@ -151,14 +144,14 @@ export function OrionMark({
             ctx.fill();
 
             if (isBright) {
-                const spike = (angle: number, length: number) => {
+                ctx.globalAlpha = globalOpacity * b * 0.35;
+                ctx.fillStyle = "rgba(210, 200, 240, 1)";
+                const spikeLen = r * 9;
+
+                const drawSpike = (angle: number, length: number) => {
                     ctx.save();
                     ctx.translate(x, y);
                     ctx.rotate(angle);
-                    const sg = ctx.createLinearGradient(0, 0, length, 0);
-                    sg.addColorStop(0, `rgba(210, 200, 240, ${b * 0.35})`);
-                    sg.addColorStop(1, "rgba(210, 200, 240, 0)");
-                    ctx.fillStyle = sg;
                     ctx.beginPath();
                     ctx.moveTo(0, -0.6);
                     ctx.lineTo(length, 0);
@@ -167,11 +160,10 @@ export function OrionMark({
                     ctx.fill();
                     ctx.restore();
                 };
-                const spikeLen = r * 9;
-                spike(0, spikeLen);
-                spike(Math.PI, spikeLen);
-                spike(Math.PI / 2, spikeLen * 0.5);
-                spike(-Math.PI / 2, spikeLen * 0.5);
+                drawSpike(0, spikeLen);
+                drawSpike(Math.PI, spikeLen);
+                drawSpike(Math.PI / 2, spikeLen * 0.5);
+                drawSpike(-Math.PI / 2, spikeLen * 0.5);
             }
 
             ctx.restore();
@@ -180,7 +172,7 @@ export function OrionMark({
         const pos = (id: string) => {
             const s = STARS[id];
             let px = s.cx;
-            let py = s.cy;
+            const py = s.cy;
             if (mirror) px = 1 - px;
             return { x: px * W, y: py * H };
         };
@@ -188,20 +180,30 @@ export function OrionMark({
         const isVisible = { current: false };
         const observer = new IntersectionObserver(
             (entries) => { isVisible.current = entries[0].isIntersecting; },
-            { threshold: 0.01 }
+            { threshold: 0.15 }
         );
         observer.observe(canvas);
 
         let t0 = 0;
+        let lastFrameTime = 0;
+        const FRAME_INTERVAL = 1000 / 24;
 
         const frame = (ts: number) => {
             if (!t0) t0 = ts;
-            const t = (ts - t0) / 1000;
 
             if (!isVisible.current || document.hidden) {
                 rafRef.current = requestAnimationFrame(frame);
                 return;
             }
+
+            const elapsed = ts - lastFrameTime;
+            if (elapsed < FRAME_INTERVAL) {
+                rafRef.current = requestAnimationFrame(frame);
+                return;
+            }
+            lastFrameTime = ts;
+
+            const t = (ts - t0) / 1000;
 
             ctx.clearRect(0, 0, W, H);
 
@@ -215,13 +217,14 @@ export function OrionMark({
             ctx.globalAlpha = globalOpacity;
 
             ctx.fillStyle = "rgb(235, 230, 255)";
-            bgStarsData.forEach(s => {
+            for (let i = 0; i < bgStarsData.length; i++) {
+                const s = bgStarsData[i];
                 const flicker = Math.sin(t * s.spd + s.phase) * 0.1;
                 ctx.globalAlpha = Math.max(0, (s.op + flicker)) * globalOpacity;
                 ctx.beginPath();
                 ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
                 ctx.fill();
-            });
+            }
 
             ctx.globalAlpha = globalOpacity;
 

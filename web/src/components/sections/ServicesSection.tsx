@@ -1,30 +1,30 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, DrawSVGPlugin, useGSAP } from "@/lib/animations/gsap";
+import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { EASES, STAGGER } from "@/lib/animations/config";
 
 const services = [
     {
-        title: "We Build Brands That Command Attention",
+        title: "We Design Interfaces That Convert",
         description:
-            "Strategic positioning and identity systems designed for long-term equity.",
+            "Web platforms and mobile applications engineered for clarity, speed, and real business outcomes.",
     },
     {
-        title: "We Design Digital Products That Perform",
+        title: "We Build Complex Systems",
         description:
-            "Web platforms and interfaces engineered for speed, clarity, and conversion.",
+            "From ERP platforms to custom backends — scalable architecture that grows with your business.",
     },
     {
-        title: "We Create Visual Systems That Scale",
+        title: "We Craft Visual Identities",
         description:
-            "From concept to motion to deployment — cohesive and adaptable.",
+            "Brand systems, motion design, and design tokens that stay cohesive across every touchpoint.",
     },
     {
-        title: "We Turn Ideas Into Structured Execution",
+        title: "We Ship End-to-End",
         description:
-            "Clear process. Measurable output. No decorative design.",
+            "Strategy through production. No handoffs, no lost context — one team from concept to launch.",
     },
 ];
 

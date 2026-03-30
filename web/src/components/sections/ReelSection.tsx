@@ -13,7 +13,7 @@ export function ReelSection() {
 
             <div className="relative z-10 section-container">
                 <MaskImage
-                    src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1400&h=600&fit=crop&q=80"
+                    src="/desktop.png"
                     alt="Orion Studio — crafting digital experiences"
                     aspect="21/9"
                     inset={10}

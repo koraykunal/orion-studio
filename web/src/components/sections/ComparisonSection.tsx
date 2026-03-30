@@ -317,7 +317,7 @@ export function ComparisonSection() {
             }
 
             mainTl.to(mobileWrap, {
-                scale: 0.95, opacity: 0, filter: "blur(4px)",
+                scale: 0.95, opacity: 0,
                 duration: 0.12, ease: "none",
             }, 0.84);
 
@@ -404,7 +404,7 @@ export function ComparisonSection() {
             const exitStart = 0.84;
 
             mainTl.to(leftPanel, {
-                scale: 0.92, opacity: 0, filter: "blur(8px)",
+                scale: 0.92, opacity: 0,
                 duration: 0.12, ease: "none",
             }, exitStart);
 
@@ -421,7 +421,7 @@ export function ComparisonSection() {
             }
 
             mainTl.to(rightPanel, {
-                scale: 0.95, opacity: 0, filter: "blur(4px)",
+                scale: 0.95, opacity: 0,
                 duration: 0.12, ease: "none",
             }, exitStart + 0.04);
         }
