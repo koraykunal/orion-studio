@@ -4,10 +4,8 @@ import { CaseStudyClient } from "./CaseStudyClient";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-    const projects = await getAllProjects();
-    return projects.map((p) => ({ slug: p.slug }));
-}
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
 
 export default async function CaseStudyPage({ params }: Props) {
     const { slug } = await params;

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import { TextReveal } from "@/components/motion/TextReveal";

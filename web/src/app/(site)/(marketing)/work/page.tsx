@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getAllProjects } from "@/lib/projects";
 import { WorkPageClient } from "./WorkPageClient";
 
