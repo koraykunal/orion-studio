@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostBySlug, getAllPosts } from "@/lib/blog";
+import { getPostBySlug } from "@/lib/blog";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
 
