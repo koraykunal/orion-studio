@@ -13,7 +13,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  const isLoggedIn = !!session;
+  const isLoggedIn = !!session?.user;
 
   return (
     <SessionProvider session={session}>
