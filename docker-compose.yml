@@ -6,6 +6,8 @@ services:
     restart: always
     env_file:
       - ./web/.env.production
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - uploads:/app/public/uploads
     networks:
