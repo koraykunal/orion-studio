@@ -57,7 +57,15 @@ export type Project = {
     sections: Section[];
 };
 
-export function getCategoryLabel(category: ProjectCategory): string {
+export function getCategoryLabel(category: ProjectCategory, locale = "en"): string {
+    if (locale === "tr") {
+        const labels: Record<ProjectCategory, string> = {
+            client: "Müşteri Projesi",
+            concept: "Tasarım Keşfi",
+            studio: "Stüdyo Projesi",
+        };
+        return labels[category];
+    }
     const labels: Record<ProjectCategory, string> = {
         client: "Client Work",
         concept: "Design Exploration",

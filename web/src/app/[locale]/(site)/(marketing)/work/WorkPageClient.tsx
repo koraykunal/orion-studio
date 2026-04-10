@@ -8,9 +8,10 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES } from "@/lib/animations/config";
+import { useTranslations, useLocale } from "next-intl";
 import { getCategoryLabel, type Project } from "@/lib/project-types";
 
-function FeaturedCard({ project, index }: { project: Project; index: number }) {
+function FeaturedCard({ project, index, locale }: { project: Project; index: number; locale: string }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
 
@@ -117,13 +118,15 @@ function FeaturedCard({ project, index }: { project: Project; index: number }) {
     );
 
     if (project.sections && project.sections.length > 0) {
-        return <Link href={`/work/${project.slug}`}>{cardContent}</Link>;
+        return <Link href={`/${locale}/work/${project.slug}`}>{cardContent}</Link>;
     }
 
     return cardContent;
 }
 
 export function WorkPageClient({ featured, others }: { featured: Project[]; others: Project[] }) {
+    const t = useTranslations("work");
+    const locale = useLocale();
     return (
         <main className="relative bg-background overflow-hidden">
             <section className="relative section-py pt-32 overflow-hidden">
@@ -143,7 +146,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
 
                     <div className="grid-container gap-y-10">
                         <div className="col-span-12 lg:col-span-8 space-y-8">
-                            <span className="text-index text-foreground-muted">Selected Work</span>
+                            <span className="text-index text-foreground-muted">{t("pageLabel")}</span>
 
                             <TextReveal as="h1" type="words" className="text-title lg:text-[clamp(2.5rem,5vw,5rem)] lg:leading-[1.0]">
                                 Projects that define our craft
@@ -167,7 +170,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                 {featured.map((project, i) => (
                     <div key={project.slug}>
                         {i > 0 && <LineReveal className="mb-12 lg:mb-16" />}
-                        <FeaturedCard project={project} index={i} />
+                        <FeaturedCard project={project} index={i} locale={locale} />
                     </div>
                 ))}
             </section>
@@ -254,7 +257,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                     </TextReveal>
                     <div className="pt-4">
                         <a
-                            href="/contact"
+                            href={`/${locale}/contact`}
                             className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
                             data-cursor="hover"
                         >

@@ -1,27 +1,32 @@
+import createMiddleware from 'next-intl/middleware';
+import { routing } from '../i18n/routing';
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+const intlMiddleware = createMiddleware(routing);
 
 export const proxy = auth((req) => {
-  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
-  const isLoginPage = req.nextUrl.pathname === "/admin/login";
-  const isApiAdmin = req.nextUrl.pathname.startsWith("/api/admin");
-  const isAuthenticated = !!req.auth;
+  const pathname = req.nextUrl.pathname;
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
 
-  if (isLoginPage && isAuthenticated) {
-    return NextResponse.redirect(new URL("/admin", req.url));
+  if (isAdmin) {
+    const isLoginPage = pathname === "/admin/login";
+    const isApiAdmin = pathname.startsWith("/api/admin");
+    const isAuthenticated = !!req.auth;
+
+    if (isLoginPage && isAuthenticated) {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
+    if (!isLoginPage && !isAuthenticated) {
+      if (isApiAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
+    return NextResponse.next();
   }
 
-  if (isAdminRoute && !isLoginPage && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/admin/login", req.url));
-  }
-
-  if (isApiAdmin && !isAuthenticated) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  return NextResponse.next();
+  return intlMiddleware(req as NextRequest);
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ['/((?!_next|_vercel|.*\\..*).*)', '/api/admin/:path*'],
 };

@@ -18,7 +18,7 @@ export default async function PostsListPage() {
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
-      title: true,
+      title_en: true,
       status: true,
       tags: true,
       createdAt: true,
@@ -54,7 +54,7 @@ export default async function PostsListPage() {
                     href={`/admin/posts/${post.id}`}
                     className="font-medium text-foreground hover:text-accent"
                   >
-                    {post.title}
+                    {post.title_en}
                   </Link>
                 </TableCell>
                 <TableCell>

@@ -59,20 +59,20 @@ async function main() {
   const blogPost = await prisma.post.upsert({
     where: { slug: "building-orion-studio" },
     update: {
-      title: "Building Orion Studio: Behind the Scenes",
+      title_en: "Building Orion Studio: Behind the Scenes",
       description:
         "How we designed and built our own agency site — from design system to scroll-driven animations.",
-      contentHtml: blogContentHtml,
+      contentHtml_en: blogContentHtml,
       tags: ["Engineering", "Design", "Case Study"],
       status: "published",
       publishedAt: new Date("2025-03-29"),
     },
     create: {
-      title: "Building Orion Studio: Behind the Scenes",
+      title_en: "Building Orion Studio: Behind the Scenes",
       slug: "building-orion-studio",
       description:
         "How we designed and built our own agency site — from design system to scroll-driven animations.",
-      contentHtml: blogContentHtml,
+      contentHtml_en: blogContentHtml,
       tags: ["Engineering", "Design", "Case Study"],
       status: "published",
       publishedAt: new Date("2025-03-29"),

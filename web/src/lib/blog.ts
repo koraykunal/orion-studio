@@ -10,24 +10,31 @@ export type BlogPost = {
     coverImage: string | null;
 };
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+function getLocalizedStr(en: string, tr: string | null | undefined, locale: string): string {
+    if (locale === "tr" && tr) return tr;
+    return en;
+}
+
+export async function getAllPosts(locale: string): Promise<BlogPost[]> {
     const posts = await prisma.post.findMany({
         where: { status: "published" },
         orderBy: { publishedAt: "desc" },
         select: {
             slug: true,
-            title: true,
+            title_en: true,
+            title_tr: true,
             description: true,
             publishedAt: true,
             tags: true,
-            contentHtml: true,
+            contentHtml_en: true,
+            contentHtml_tr: true,
             coverImage: true,
         },
     });
 
     return posts.map((post) => ({
         slug: post.slug,
-        title: post.title,
+        title: getLocalizedStr(post.title_en, post.title_tr, locale),
         description: post.description,
         date: post.publishedAt?.toLocaleDateString("en-US", {
             month: "long",
@@ -35,21 +42,23 @@ export async function getAllPosts(): Promise<BlogPost[]> {
             year: "numeric",
         }) ?? "",
         tags: post.tags,
-        contentHtml: post.contentHtml,
+        contentHtml: getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale),
         coverImage: post.coverImage,
     }));
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
+export async function getPostBySlug(slug: string, locale: string): Promise<BlogPost | undefined> {
     const post = await prisma.post.findFirst({
         where: { slug, status: "published" },
         select: {
             slug: true,
-            title: true,
+            title_en: true,
+            title_tr: true,
             description: true,
             publishedAt: true,
             tags: true,
-            contentHtml: true,
+            contentHtml_en: true,
+            contentHtml_tr: true,
             coverImage: true,
         },
     });
@@ -58,7 +67,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | undefined>
 
     return {
         slug: post.slug,
-        title: post.title,
+        title: getLocalizedStr(post.title_en, post.title_tr, locale),
         description: post.description,
         date: post.publishedAt?.toLocaleDateString("en-US", {
             month: "long",
@@ -66,7 +75,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | undefined>
             year: "numeric",
         }) ?? "",
         tags: post.tags,
-        contentHtml: post.contentHtml,
+        contentHtml: getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale),
         coverImage: post.coverImage,
     };
 }

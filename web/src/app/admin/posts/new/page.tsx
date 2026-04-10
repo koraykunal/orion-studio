@@ -54,11 +54,13 @@ export default function NewPostPage() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const [title, setTitle] = useState("");
+  const [titleEn, setTitleEn] = useState("");
+  const [titleTr, setTitleTr] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [content, setContent] = useState<object | null>(null);
-  const [contentHtml, setContentHtml] = useState("");
+  const [contentEn, setContentEn] = useState<object | null>(null);
+  const [contentHtmlEn, setContentHtmlEn] = useState("");
+  const [contentHtmlTr, setContentHtmlTr] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<"draft" | "published">("draft");
@@ -67,12 +69,12 @@ export default function NewPostPage() {
   const [showPreview, setShowPreview] = useState(false);
 
   const handleTitleChange = (value: string) => {
-    setTitle(value);
+    setTitleEn(value);
     setSlug(slugify(value));
   };
 
   const handleSave = async () => {
-    if (!title || !slug) return;
+    if (!titleEn || !slug) return;
     setSaving(true);
     setError("");
 
@@ -81,11 +83,13 @@ export default function NewPostPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
+          title_en: titleEn,
+          title_tr: titleTr || null,
           slug,
           description,
-          content,
-          contentHtml,
+          content: contentEn,
+          contentHtml_en: contentHtmlEn,
+          contentHtml_tr: contentHtmlTr || null,
           coverImage: coverImage || null,
           tags,
           status,
@@ -108,7 +112,7 @@ export default function NewPostPage() {
   };
 
   if (showPreview) {
-    return <PostPreview title={title} description={description} tags={tags} contentHtml={contentHtml} onClose={() => setShowPreview(false)} />;
+    return <PostPreview title={titleEn} description={description} tags={tags} contentHtml={contentHtmlEn} onClose={() => setShowPreview(false)} />;
   }
 
   return (
@@ -126,7 +130,7 @@ export default function NewPostPage() {
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={() => setShowPreview(true)}>Preview</Button>
-          <Button onClick={handleSave} disabled={saving || !title}>
+          <Button onClick={handleSave} disabled={saving || !titleEn}>
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>
@@ -137,11 +141,20 @@ export default function NewPostPage() {
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_300px]">
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Title</Label>
+            <Label>Title (EN)</Label>
             <Input
-              value={title}
+              value={titleEn}
               onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Post title"
+              placeholder="Post title in English"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Title (TR)</Label>
+            <Input
+              value={titleTr}
+              onChange={(e) => setTitleTr(e.target.value)}
+              placeholder="Post title in Turkish"
             />
           </div>
 
@@ -165,13 +178,23 @@ export default function NewPostPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>Content</Label>
+            <Label>Content (EN)</Label>
             <TiptapEditor
-              content={content}
+              content={contentEn}
               onChange={(json, html) => {
-                setContent(json);
-                setContentHtml(html);
+                setContentEn(json);
+                setContentHtmlEn(html);
               }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Content (TR)</Label>
+            <Textarea
+              value={contentHtmlTr}
+              onChange={(e) => setContentHtmlTr(e.target.value)}
+              placeholder="Turkish content HTML..."
+              rows={8}
             />
           </div>
         </div>

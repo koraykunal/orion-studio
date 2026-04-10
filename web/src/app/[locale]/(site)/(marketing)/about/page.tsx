@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -9,54 +10,10 @@ import { MaskImage } from "@/components/motion/MaskImage";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 
-const values = [
-    {
-        index: "01",
-        title: "Craft over convention",
-        body: "Every detail serves a purpose. We obsess over typography, motion, and interaction until the experience feels inevitable — not designed.",
-    },
-    {
-        index: "02",
-        title: "Integrated delivery",
-        body: "Strategy, design, and engineering operate on the same sprint. No handoffs, no lost context, no momentum breaks.",
-    },
-    {
-        index: "03",
-        title: "Launch-ready thinking",
-        body: "We build with production in mind from day one. Analytics, performance, accessibility — baked in, not bolted on.",
-    },
-    {
-        index: "04",
-        title: "Transparent cadence",
-        body: "Weekly updates, shared Figma files, documented decisions. You always know where the project stands.",
-    },
-];
-
-const team = [
-    {
-        name: "Koray Kunal",
-        role: "Co-Founder",
-        image: "/team/koray.png",
-    },
-    {
-        name: "Mecit Keskin",
-        role: "Brand Strategist",
-        image: "/team/mecit.jpeg",
-    },
-];
-
-const capabilities = [
-    "Web Design & Engineering",
-    "Mobile Applications",
-    "Product Design",
-    "Brand Identity",
-    "Design Systems",
-];
-
 function ValueItem({
     value,
 }: {
-    value: (typeof values)[number];
+    value: { index: string; title: string; body: string };
     isLast?: boolean;
 }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -114,7 +71,7 @@ function ValueItem({
     );
 }
 
-function TeamCard({ member, index }: { member: (typeof team)[number]; index: number }) {
+function TeamCard({ member, index }: { member: { name: string; role: string; image: string }; index: number }) {
     const ref = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +136,25 @@ function TeamCard({ member, index }: { member: (typeof team)[number]; index: num
 }
 
 export default function AboutPage() {
+    const t = useTranslations("about");
+    const locale = useLocale();
+
+    const values = [
+        { index: "01", title: t("value0Title"), body: t("value0Body") },
+        { index: "02", title: t("value1Title"), body: t("value1Body") },
+        { index: "03", title: t("value2Title"), body: t("value2Body") },
+        { index: "04", title: t("value3Title"), body: t("value3Body") },
+    ];
+
+    const team = [
+        { name: t("member0Name"), role: t("member0Role"), image: "/team/koray.png" },
+        { name: t("member1Name"), role: t("member1Role"), image: "/team/mecit.jpeg" },
+    ];
+
+    const capabilities = [
+        t("cap0"), t("cap1"), t("cap2"), t("cap3"), t("cap4"),
+    ];
+
     const capsRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
@@ -222,10 +198,10 @@ export default function AboutPage() {
 
                     <div className="grid-container gap-y-12">
                         <div className="col-span-12 lg:col-span-8 space-y-8">
-                            <span className="text-index text-foreground-muted">About Orion</span>
+                            <span className="text-index text-foreground-muted">{t("heroLabel")}</span>
 
                             <TextReveal as="h1" type="words" className="text-title lg:text-[clamp(2.5rem,5vw,5rem)] lg:leading-[1.0]">
-                                A studio built for brands that refuse to blend in
+                                {t("heroTitle")}
                             </TextReveal>
 
                             <TextReveal
@@ -234,9 +210,7 @@ export default function AboutPage() {
                                 className="text-body-lg text-foreground-muted max-w-[52ch]"
                                 delay={0.2}
                             >
-                                We are a multidisciplinary design and engineering studio. We partner
-                                with ambitious companies to create digital experiences that are
-                                visually striking, technically sound, and built for growth.
+                                {t("heroDescription")}
                             </TextReveal>
                         </div>
                     </div>
@@ -260,9 +234,9 @@ export default function AboutPage() {
 
                 <div className="relative z-10 grid-container gap-y-12">
                     <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start space-y-6">
-                        <span className="text-index text-foreground-muted">Our values</span>
+                        <span className="text-index text-foreground-muted">{t("valuesLabel")}</span>
                         <TextReveal as="h2" type="lines" className="text-title">
-                            What drives us
+                            {t("valuesTitle")}
                         </TextReveal>
                         <TextReveal
                             as="p"
@@ -270,7 +244,7 @@ export default function AboutPage() {
                             className="text-body-lg text-foreground-muted max-w-[38ch]"
                             delay={0.15}
                         >
-                            Principles that shape how we work, what we build, and who we partner with.
+                            {t("valuesDescription")}
                         </TextReveal>
                     </div>
 
@@ -289,9 +263,9 @@ export default function AboutPage() {
             <section className="section-py">
                 <div className="section-container space-y-16 lg:space-y-20">
                     <div className="max-w-3xl space-y-6">
-                        <span className="text-index text-foreground-muted">The team</span>
+                        <span className="text-index text-foreground-muted">{t("teamLabel")}</span>
                         <TextReveal as="h2" type="lines" className="text-title">
-                            The people behind the work
+                            {t("teamTitle")}
                         </TextReveal>
                         <TextReveal
                             as="p"
@@ -299,8 +273,7 @@ export default function AboutPage() {
                             className="text-body-lg text-foreground-muted max-w-[50ch]"
                             delay={0.15}
                         >
-                            Senior-only, cross-functional, and fully committed. Every person on the
-                            team ships — no account managers, no middlemen.
+                            {t("teamDescription")}
                         </TextReveal>
                     </div>
 
@@ -325,9 +298,9 @@ export default function AboutPage() {
             <section className="section-py">
                 <div className="relative section-container">
                     <div className="max-w-3xl space-y-6 mb-12 lg:mb-16">
-                        <span className="text-index text-foreground-muted">Capabilities</span>
+                        <span className="text-index text-foreground-muted">{t("capsLabel")}</span>
                         <TextReveal as="h2" type="lines" className="text-title">
-                            End-to-end, by design
+                            {t("capsTitle")}
                         </TextReveal>
                         <TextReveal
                             as="p"
@@ -335,8 +308,7 @@ export default function AboutPage() {
                             className="text-body-lg text-foreground-muted max-w-[50ch]"
                             delay={0.15}
                         >
-                            From brand strategy to production-grade code, we cover the full spectrum
-                            so your project stays cohesive from concept to launch.
+                            {t("capsDescription")}
                         </TextReveal>
                     </div>
 
@@ -365,7 +337,7 @@ export default function AboutPage() {
 
                 <div className="relative z-10 section-container text-center space-y-8">
                     <TextReveal as="h2" type="words" className="text-title">
-                        Ready to build something remarkable?
+                        {t("ctaTitle")}
                     </TextReveal>
                     <TextReveal
                         as="p"
@@ -373,16 +345,15 @@ export default function AboutPage() {
                         className="text-body-lg text-foreground-muted max-w-[44ch] mx-auto"
                         delay={0.15}
                     >
-                        We take on a limited number of projects each quarter to ensure every
-                        engagement gets our full attention.
+                        {t("ctaDescription")}
                     </TextReveal>
                     <div className="pt-4">
                         <a
-                            href="/contact"
+                            href={`/${locale}/contact`}
                             className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
                             data-cursor="hover"
                         >
-                            <span className="relative z-10">Start a project</span>
+                            <span className="relative z-10">{t("ctaButton")}</span>
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
                         </a>
                     </div>

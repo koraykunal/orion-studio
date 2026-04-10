@@ -8,7 +8,7 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
-        title: true,
+        title_en: true,
         slug: true,
         status: true,
         tags: true,
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (!body.title || !body.title.trim()) {
+    if (!body.title_en || !body.title_en.trim()) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
@@ -38,11 +38,13 @@ export async function POST(request: Request) {
 
     const post = await prisma.post.create({
       data: {
-        title: body.title,
+        title_en: body.title_en,
+        title_tr: body.title_tr ?? null,
         slug: body.slug,
         description: body.description ?? "",
         content: body.content ?? null,
-        contentHtml: body.contentHtml ?? "",
+        contentHtml_en: body.contentHtml_en ?? "",
+        contentHtml_tr: body.contentHtml_tr ?? null,
         tags: body.tags ?? [],
         coverImage: body.coverImage ?? null,
         status: body.status ?? "draft",

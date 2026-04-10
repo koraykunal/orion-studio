@@ -1,31 +1,17 @@
 "use client";
 
 import { useRef, useState, useCallback, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 
-/* ── Data ── */
-
-const services = [
-    "Experience Strategy",
-    "Web Engineering",
-    "Visual Production",
-    "Product Integration",
-];
-
-const budgets = ["< $10K", "$10K – $25K", "$25K – $50K", "$50K – $100K", "$100K+"];
-
-const timelines = ["< 1 month", "1 – 3 months", "3 – 6 months", "6+ months", "Flexible"];
-
 const socials = [
     { label: "Instagram", href: "https://www.instagram.com/orionstud.io/" },
     { label: "LinkedIn", href: "https://www.linkedin.com/company/104592237" },
 ];
-
-/* ── Chip component ── */
 
 function Chip({
     label,
@@ -55,11 +41,14 @@ function Chip({
     );
 }
 
-/* ── Page ── */
-
 export default function ContactPage() {
+    const t = useTranslations("contact");
     const pageRef = useRef<HTMLElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
+
+    const services = [t("service0"), t("service1"), t("service2"), t("service3")];
+    const budgets = [t("budget0"), t("budget1"), t("budget2"), t("budget3"), t("budget4")];
+    const timelines = [t("timeline0"), t("timeline1"), t("timeline2"), t("timeline3"), t("timeline4")];
 
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedBudget, setSelectedBudget] = useState<string | null>(null);
@@ -106,7 +95,6 @@ export default function ContactPage() {
         }
     }, [selectedServices, selectedBudget, selectedTimeline]);
 
-    /* ── GSAP reveal for form fields ── */
     useGSAP(
         () => {
             if (!formRef.current) return;
@@ -134,7 +122,6 @@ export default function ContactPage() {
 
     return (
         <main ref={pageRef} className="relative min-h-screen bg-background overflow-hidden">
-            {/* Background effects */}
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
@@ -146,21 +133,19 @@ export default function ContactPage() {
                 <OrionMark variant="shoulders" lineOpacity={0.04} globalOpacity={0.3} rotate={15} />
             </div>
 
-            {/* Content */}
             <div className="relative z-10 section-py pt-32">
                 <div className="section-container">
                     <LineReveal className="mb-16 lg:mb-24" />
                 </div>
 
                 <div className="grid-container gap-y-16">
-                    {/* ── Left column: Info (sticky) ── */}
                     <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start space-y-8">
                         <span className="text-index text-foreground-subtle">
-                            Contact
+                            {t("pageLabel")}
                         </span>
 
                         <TextReveal as="h1" type="words" className="text-title">
-                            Start a project
+                            {t("pageTitle")}
                         </TextReveal>
 
                         <TextReveal
@@ -209,57 +194,53 @@ export default function ContactPage() {
                         </div>
                     </div>
 
-                    {/* ── Right column: Form ── */}
                     <form
                         ref={formRef}
                         className="col-span-12 lg:col-start-6 lg:col-span-7 space-y-10"
                         onSubmit={handleSubmit}
                     >
-                        {/* Name & Email row */}
                         <div className="form-field grid grid-cols-1 md:grid-cols-2 gap-6">
                             <label className="space-y-3">
                                 <span className="text-label text-foreground-muted block">
-                                    Name <span className="text-accent">*</span>
+                                    {t("fieldName")} <span className="text-accent">*</span>
                                 </span>
                                 <input
                                     name="name"
                                     type="text"
                                     required
-                                    placeholder="Ada Lovelace"
+                                    placeholder={t("fieldNamePlaceholder")}
                                     className="w-full bg-surface-1 border border-border rounded-lg px-5 py-4 text-foreground placeholder:text-foreground-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all duration-300"
                                 />
                             </label>
                             <label className="space-y-3">
                                 <span className="text-label text-foreground-muted block">
-                                    Email <span className="text-accent">*</span>
+                                    {t("fieldEmail")} <span className="text-accent">*</span>
                                 </span>
                                 <input
                                     name="email"
                                     type="email"
                                     required
-                                    placeholder="you@company.com"
+                                    placeholder={t("fieldEmailPlaceholder")}
                                     className="w-full bg-surface-1 border border-border rounded-lg px-5 py-4 text-foreground placeholder:text-foreground-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all duration-300"
                                 />
                             </label>
                         </div>
 
-                        {/* Company */}
                         <label className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
-                                Company / Organization
+                                {t("fieldCompany")}
                             </span>
                             <input
                                 name="company"
                                 type="text"
-                                placeholder="Acme Corp"
+                                placeholder={t("fieldCompanyPlaceholder")}
                                 className="w-full bg-surface-1 border border-border rounded-lg px-5 py-4 text-foreground placeholder:text-foreground-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all duration-300"
                             />
                         </label>
 
-                        {/* Services */}
                         <fieldset className="form-field space-y-4">
                             <legend className="text-label text-foreground-muted">
-                                What do you need? <span className="text-foreground-muted/60">(select all that apply)</span>
+                                {t("servicesLabel")}
                             </legend>
                             <div className="flex flex-wrap gap-3">
                                 {services.map((service) => (
@@ -273,11 +254,10 @@ export default function ContactPage() {
                             </div>
                         </fieldset>
 
-                        {/* Budget & Timeline row */}
                         <div className="form-field grid grid-cols-1 lg:grid-cols-2 gap-10">
                             <fieldset className="space-y-4">
                                 <legend className="text-label text-foreground-muted">
-                                    Budget range
+                                    {t("budgetLabel")}
                                 </legend>
                                 <div className="flex flex-wrap gap-3">
                                     {budgets.map((b) => (
@@ -295,17 +275,17 @@ export default function ContactPage() {
 
                             <fieldset className="space-y-4">
                                 <legend className="text-label text-foreground-muted">
-                                    Timeline
+                                    {t("timelineLabel")}
                                 </legend>
                                 <div className="flex flex-wrap gap-3">
-                                    {timelines.map((t) => (
+                                    {timelines.map((tl) => (
                                         <Chip
-                                            key={t}
-                                            label={t}
-                                            selected={selectedTimeline === t}
+                                            key={tl}
+                                            label={tl}
+                                            selected={selectedTimeline === tl}
                                             onClick={() =>
                                                 setSelectedTimeline(
-                                                    selectedTimeline === t ? null : t
+                                                    selectedTimeline === tl ? null : tl
                                                 )
                                             }
                                         />
@@ -314,34 +294,31 @@ export default function ContactPage() {
                             </fieldset>
                         </div>
 
-                        {/* Project Brief */}
                         <label className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
-                                Project brief <span className="text-accent">*</span>
+                                {t("fieldBrief")} <span className="text-accent">*</span>
                             </span>
                             <textarea
                                 name="brief"
                                 required
                                 rows={6}
-                                placeholder="Describe your project goals, scope, current status, and any relevant context..."
+                                placeholder={t("fieldBriefPlaceholder")}
                                 className="w-full bg-surface-1 border border-border rounded-lg px-5 py-4 text-foreground placeholder:text-foreground-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all duration-300 resize-y min-h-[160px]"
                             />
                         </label>
 
-                        {/* Referral */}
                         <label className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
-                                How did you hear about us?
+                                {t("fieldReferral")}
                             </span>
                             <input
                                 name="referral"
                                 type="text"
-                                placeholder="Referral, search, social media..."
+                                placeholder={t("fieldReferralPlaceholder")}
                                 className="w-full bg-surface-1 border border-border rounded-lg px-5 py-4 text-foreground placeholder:text-foreground-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all duration-300"
                             />
                         </label>
 
-                        {/* Submit */}
                         <div className="form-field pt-4 space-y-4">
                             <button
                                 type="submit"
@@ -350,18 +327,18 @@ export default function ContactPage() {
                                 data-cursor="hover"
                             >
                                 <span className="relative z-10">
-                                    {formStatus === "sending" ? "Sending..." : "Send inquiry"}
+                                    {formStatus === "sending" ? t("sending") : t("submit")}
                                 </span>
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
                             </button>
                             {formStatus === "sent" && (
                                 <p className="text-label text-green-400">
-                                    Message sent successfully. We&apos;ll be in touch within 48 hours.
+                                    {t("successTitle")} {t("successBody")}
                                 </p>
                             )}
                             {formStatus === "error" && (
                                 <p className="text-label text-red-400">
-                                    Something went wrong. Please try again or email us directly.
+                                    {t("errorTitle")} {t("errorBody")}
                                 </p>
                             )}
                         </div>

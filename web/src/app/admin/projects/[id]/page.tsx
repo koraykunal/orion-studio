@@ -30,8 +30,10 @@ export default function EditProjectPage({
   const [client, setClient] = useState("");
   const [slug, setSlug] = useState("");
   const [year, setYear] = useState("");
-  const [tagline, setTagline] = useState("");
-  const [outcome, setOutcome] = useState("");
+  const [taglineEn, setTaglineEn] = useState("");
+  const [taglineTr, setTaglineTr] = useState("");
+  const [outcomeEn, setOutcomeEn] = useState("");
+  const [outcomeTr, setOutcomeTr] = useState("");
   const [sections, setSections] = useState<Section[]>([]);
   const [image, setImage] = useState("");
   const [category, setCategory] = useState<"client" | "concept" | "studio">("client");
@@ -49,8 +51,10 @@ export default function EditProjectPage({
         setClient(project.client);
         setSlug(project.slug);
         setYear(project.year ?? "");
-        setTagline(project.tagline ?? "");
-        setOutcome(project.outcome ?? "");
+        setTaglineEn(project.tagline_en ?? "");
+        setTaglineTr(project.tagline_tr ?? "");
+        setOutcomeEn(project.outcome_en ?? "");
+        setOutcomeTr(project.outcome_tr ?? "");
         setSections((project.sections as Section[]) || []);
         setImage(project.image ?? "");
         setCategory(project.category ?? "client");
@@ -79,8 +83,10 @@ export default function EditProjectPage({
           client,
           slug,
           year,
-          tagline,
-          outcome,
+          tagline_en: taglineEn,
+          tagline_tr: taglineTr || null,
+          outcome_en: outcomeEn,
+          outcome_tr: outcomeTr || null,
           sections,
           image: image || "",
           category,
@@ -180,20 +186,39 @@ export default function EditProjectPage({
           </div>
 
           <div className="space-y-2">
-            <Label>Tagline</Label>
+            <Label>Tagline (EN)</Label>
             <Input
-              value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
-              placeholder="Short tagline"
+              value={taglineEn}
+              onChange={(e) => setTaglineEn(e.target.value)}
+              placeholder="Short tagline in English"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Outcome</Label>
+            <Label>Tagline (TR)</Label>
+            <Input
+              value={taglineTr}
+              onChange={(e) => setTaglineTr(e.target.value)}
+              placeholder="Short tagline in Turkish"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Outcome (EN)</Label>
             <Textarea
-              value={outcome}
-              onChange={(e) => setOutcome(e.target.value)}
-              placeholder="Project outcome..."
+              value={outcomeEn}
+              onChange={(e) => setOutcomeEn(e.target.value)}
+              placeholder="Project outcome in English..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Outcome (TR)</Label>
+            <Textarea
+              value={outcomeTr}
+              onChange={(e) => setOutcomeTr(e.target.value)}
+              placeholder="Project outcome in Turkish..."
               rows={3}
             />
           </div>

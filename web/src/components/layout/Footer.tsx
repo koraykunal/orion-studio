@@ -1,34 +1,37 @@
 "use client";
 
-import {useRef} from "react";
-import {Link} from "next-view-transitions";
-import {gsap, useGSAP} from "@/lib/animations/gsap";
-import {LineReveal} from "@/components/motion/LineReveal";
-import {OrionMark} from "@/components/effects/OrionMark";
-import {EASES, DURATIONS, STAGGER} from "@/lib/animations/config";
-
-const navLinks = [
-    {label: "Studio", href: "/#capabilities"},
-    {label: "Work", href: "/work"},
-    {label: "Blog", href: "/blog"},
-    {label: "About", href: "/about"},
-    {label: "Process", href: "/#process"},
-    {label: "Contact", href: "/contact"},
-];
+import { useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Link } from "next-view-transitions";
+import { gsap, useGSAP } from "@/lib/animations/gsap";
+import { LineReveal } from "@/components/motion/LineReveal";
+import { OrionMark } from "@/components/effects/OrionMark";
+import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 
 const socials = [
-    {label: "Instagram", href: "https://www.instagram.com/orionstud.io/"},
-    {label: "LinkedIn", href: "https://www.linkedin.com/company/104592237"},
-    {label: "X", href: "https://x.com/orionstudio"},
-    {label: "Dribbble", href: "https://dribbble.com/orionstudio"},
+    { label: "Instagram", href: "https://www.instagram.com/orionstud.io/" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/104592237" },
+    { label: "X", href: "https://x.com/orionstudio" },
+    { label: "Dribbble", href: "https://dribbble.com/orionstudio" },
 ];
 
 export function Footer() {
+    const locale = useLocale();
+    const t = useTranslations("footer");
     const footerRef = useRef<HTMLElement>(null);
     const topRef = useRef<HTMLDivElement>(null);
     const colRefs = useRef<(HTMLDivElement | null)[]>([]);
     const bottomBarRef = useRef<HTMLDivElement>(null);
     const brandRef = useRef<HTMLDivElement>(null);
+
+    const navLinks = [
+        { labelKey: "navStudio",  href: `/${locale}/#capabilities` },
+        { labelKey: "navWork",    href: `/${locale}/work` },
+        { labelKey: "navBlog",    href: `/${locale}/blog` },
+        { labelKey: "navAbout",   href: `/${locale}/about` },
+        { labelKey: "navProcess", href: `/${locale}/#process` },
+        { labelKey: "navContact", href: `/${locale}/contact` },
+    ];
 
     useGSAP(() => {
         if (!footerRef.current) return;
@@ -36,13 +39,10 @@ export function Footer() {
         colRefs.current.forEach((col, i) => {
             if (!col) return;
             gsap.fromTo(col,
-                {opacity: 0, y: 32, filter: "blur(4px)"},
+                { opacity: 0, y: 32, filter: "blur(4px)" },
                 {
-                    opacity: 1,
-                    y: 0,
-                    filter: "blur(0px)",
-                    duration: DURATIONS.slow,
-                    ease: EASES.expo,
+                    opacity: 1, y: 0, filter: "blur(0px)",
+                    duration: DURATIONS.slow, ease: EASES.expo,
                     delay: i * STAGGER.loose,
                     scrollTrigger: {
                         trigger: footerRef.current,
@@ -55,12 +55,9 @@ export function Footer() {
 
         if (bottomBarRef.current) {
             gsap.fromTo(bottomBarRef.current,
-                {opacity: 0, y: 16},
+                { opacity: 0, y: 16 },
                 {
-                    opacity: 1,
-                    y: 0,
-                    duration: DURATIONS.base,
-                    ease: EASES.expo,
+                    opacity: 1, y: 0, duration: DURATIONS.base, ease: EASES.expo,
                     scrollTrigger: {
                         trigger: footerRef.current,
                         start: "top 90%",
@@ -72,14 +69,10 @@ export function Footer() {
 
         if (brandRef.current) {
             gsap.fromTo(brandRef.current,
-                {opacity: 0, y: 80, filter: "blur(10px)", scale: 0.95},
+                { opacity: 0, y: 80, filter: "blur(10px)", scale: 0.95 },
                 {
-                    opacity: 1,
-                    y: 0,
-                    filter: "blur(0px)",
-                    scale: 1,
-                    duration: 1.4,
-                    ease: EASES.brand,
+                    opacity: 1, y: 0, filter: "blur(0px)", scale: 1,
+                    duration: 1.4, ease: EASES.brand,
                     scrollTrigger: {
                         trigger: footerRef.current,
                         start: "top 95%",
@@ -88,63 +81,54 @@ export function Footer() {
                 }
             );
         }
-    }, {scope: footerRef});
+    }, { scope: footerRef });
 
     return (
         <footer ref={footerRef} className="relative bg-background overflow-hidden">
             <div className="absolute -right-[8%] top-[5%] w-[40%] h-[60%] pointer-events-none">
-                <OrionMark variant="full" lineOpacity={0.05} globalOpacity={0.3} rotate={20}/>
+                <OrionMark variant="full" lineOpacity={0.05} globalOpacity={0.3} rotate={20} />
             </div>
 
             <div className="relative z-10 section-container">
-                <LineReveal/>
+                <LineReveal />
             </div>
 
             <div ref={topRef} className="section-container pt-16 lg:pt-24 pb-20 lg:pb-28">
                 <div className="grid-container gap-y-10">
-                    {/* Tagline */}
                     <div
-                        ref={(el) => {
-                            colRefs.current[0] = el;
-                        }}
+                        ref={(el) => { colRefs.current[0] = el; }}
                         className="col-span-4 md:col-span-4 lg:col-span-4"
                     >
                         <p className="text-body-lg text-foreground-muted max-w-[28ch]">
-                            Design-led studio crafting brands, products, and digital experiences that scale.
+                            {t("tagline")}
                         </p>
                     </div>
 
-                    {/* Navigate */}
                     <div
-                        ref={(el) => {
-                            colRefs.current[1] = el;
-                        }}
+                        ref={(el) => { colRefs.current[1] = el; }}
                         className="col-span-2 md:col-span-2 lg:col-span-2 lg:col-start-7"
                     >
-                        <p className="text-label text-foreground-subtle mb-5">Navigate</p>
+                        <p className="text-label text-foreground-subtle mb-5">{t("navigate")}</p>
                         <ul className="space-y-3">
                             {navLinks.map((link) => (
-                                <li key={link.label}>
+                                <li key={link.labelKey}>
                                     <Link
                                         href={link.href}
                                         className="text-body-lg text-foreground-muted hover:text-foreground transition-colors duration-300"
                                         data-cursor="hover"
                                     >
-                                        {link.label}
+                                        {t(link.labelKey as "navStudio" | "navWork" | "navBlog" | "navAbout" | "navProcess" | "navContact")}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Social */}
                     <div
-                        ref={(el) => {
-                            colRefs.current[2] = el;
-                        }}
+                        ref={(el) => { colRefs.current[2] = el; }}
                         className="col-span-2 md:col-span-2 lg:col-span-2"
                     >
-                        <p className="text-label text-foreground-subtle mb-5">Social</p>
+                        <p className="text-label text-foreground-subtle mb-5">{t("social")}</p>
                         <ul className="space-y-3">
                             {socials.map((link) => (
                                 <li key={link.label}>
@@ -162,14 +146,11 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    {/* Get in touch */}
                     <div
-                        ref={(el) => {
-                            colRefs.current[3] = el;
-                        }}
+                        ref={(el) => { colRefs.current[3] = el; }}
                         className="col-span-4 md:col-span-2 lg:col-span-2"
                     >
-                        <p className="text-label text-foreground-subtle mb-5">Get in touch</p>
+                        <p className="text-label text-foreground-subtle mb-5">{t("getInTouch")}</p>
                         <ul className="space-y-3">
                             <li>
                                 <a
@@ -182,11 +163,11 @@ export function Footer() {
                             </li>
                             <li>
                                 <Link
-                                    href="/contact"
+                                    href={`/${locale}/contact`}
                                     className="text-body-lg text-foreground-muted hover:text-foreground transition-colors duration-300"
                                     data-cursor="hover"
                                 >
-                                    Book a call
+                                    {t("bookCall")}
                                 </Link>
                             </li>
                         </ul>
@@ -194,30 +175,24 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Brand text */}
             <div className="w-full overflow-hidden">
-                <div
-                    ref={brandRef}
-                    className="select-none pointer-events-none px-4"
-                >
+                <div ref={brandRef} className="select-none pointer-events-none px-4">
                     <p
                         className="font-[var(--font-unica)] leading-[0.85] tracking-[-0.04em] text-foreground/[0.04] whitespace-nowrap text-center"
-                        style={{fontSize: "clamp(3rem, 14vw, 18rem)"}}
+                        style={{ fontSize: "clamp(3rem, 14vw, 18rem)" }}
                     >
                         ORION STUDIO
                     </p>
                 </div>
             </div>
 
-            {/* Bottom bar */}
             <div ref={bottomBarRef} className="section-container pb-6 lg:pb-8">
-                <div
-                    className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
+                <div className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
                     <p className="text-caption">
                         &copy; {new Date().getFullYear()} Orion Studio
                     </p>
                     <p className="text-caption text-foreground-subtle">
-                        Crafted with precision
+                        {t("crafted")}
                     </p>
                 </div>
             </div>

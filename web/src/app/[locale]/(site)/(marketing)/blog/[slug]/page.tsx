@@ -4,14 +4,14 @@ import { getPostBySlug } from "@/lib/blog";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export const dynamicParams = true;
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
-    const post = await getPostBySlug(slug);
+    const { slug, locale } = await params;
+    const post = await getPostBySlug(slug, locale);
     if (!post) return { title: "Not Found" };
 
     return {
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-    const { slug } = await params;
-    const post = await getPostBySlug(slug);
+    const { slug, locale } = await params;
+    const post = await getPostBySlug(slug, locale);
     if (!post) notFound();
 
     return (
@@ -30,7 +30,7 @@ export default async function BlogPostPage({ params }: Props) {
             <section className="relative section-py pt-32">
                 <div className="section-container">
                     <Link
-                        href="/blog"
+                        href={`/${locale}/blog`}
                         className="inline-flex items-center gap-2 text-label text-foreground-muted hover:text-foreground transition-colors duration-300 mb-12"
                     >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

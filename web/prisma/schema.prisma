@@ -34,30 +34,34 @@ model User {
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  description String     @default("")
-  content     Json?
-  contentHtml String     @default("")
-  tags        String[]
-  coverImage  String?
-  status      PostStatus @default(draft)
-  publishedAt DateTime?
-  author      User       @relation(fields: [authorId], references: [id])
-  authorId    String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id             String     @id @default(cuid())
+  title_en       String
+  title_tr       String?
+  slug           String     @unique
+  description    String     @default("")
+  content        Json?
+  contentHtml_en String     @default("")
+  contentHtml_tr String?
+  tags           String[]
+  coverImage     String?
+  status         PostStatus @default(draft)
+  publishedAt    DateTime?
+  author         User       @relation(fields: [authorId], references: [id])
+  authorId       String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 model Project {
   id          String          @id @default(cuid())
   slug        String          @unique
   client      String
-  tagline     String          @default("")
+  tagline_en  String          @default("")
+  tagline_tr  String?
   year        String          @default("")
   services    String[]
-  outcome     String          @default("")
+  outcome_en  String          @default("")
+  outcome_tr  String?
   image       String          @default("")
   category    ProjectCategory @default(client)
   sections    Json            @default("[]")

@@ -2,20 +2,19 @@
 
 import { useRef } from "react";
 import { Link } from "next-view-transitions";
+import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { Marquee } from "@/components/motion/Marquee";
 import { OrionConstellation } from "@/components/effects/OrionConstellation";
 
-const TICKER_ITEMS = [
-    "Brand Strategy",
-    "Web Design",
-    "Digital Products",
-    "Motion Design",
-    "Creative Direction",
-    "Development",
-];
-
 export function HeroSection() {
+    const t = useTranslations("home");
+    const locale = useLocale();
+
+    const TICKER_ITEMS = [
+        t("heroTicker0"), t("heroTicker1"), t("heroTicker2"),
+        t("heroTicker3"), t("heroTicker4"), t("heroTicker5"),
+    ];
     const sectionRef = useRef<HTMLElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
     const ctaRef = useRef<HTMLDivElement>(null);
@@ -126,20 +125,20 @@ export function HeroSection() {
 
                     <div ref={ctaRef} className="flex items-center gap-8">
                         <Link
-                            href="/contact"
+                            href={`/${locale}/contact`}
                             className="group flex items-center gap-3 text-label border-b border-border pb-1 hover:border-accent transition-colors duration-350"
                         >
-                            Start a project
+                            {t("heroStartProject")}
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
                                 className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-350">
                                 <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </Link>
                         <Link
-                            href="/#work"
+                            href={`/${locale}/#work`}
                             className="text-label text-foreground-muted hover:text-foreground transition-colors duration-350"
                         >
-                            View work
+                            {t("heroViewWork")}
                         </Link>
                     </div>
                 </div>

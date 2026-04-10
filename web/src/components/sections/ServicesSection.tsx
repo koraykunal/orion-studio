@@ -1,32 +1,10 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { EASES, STAGGER } from "@/lib/animations/config";
-
-const services = [
-    {
-        title: "We Design Interfaces That Convert",
-        description:
-            "Web platforms and mobile applications engineered for clarity, speed, and real business outcomes.",
-    },
-    {
-        title: "We Build Complex Systems",
-        description:
-            "From ERP platforms to custom backends — scalable architecture that grows with your business.",
-    },
-    {
-        title: "We Craft Visual Identities",
-        description:
-            "Brand systems, motion design, and design tokens that stay cohesive across every touchpoint.",
-    },
-    {
-        title: "We Ship End-to-End",
-        description:
-            "Strategy through production. No handoffs, no lost context — one team from concept to launch.",
-    },
-];
 
 function ServiceItem({
     title,
@@ -128,17 +106,25 @@ function ServiceItem({
 }
 
 export function ServicesSection() {
+    const t = useTranslations("home");
+
+    const services = [
+        { title: t("service0Title"), description: t("service0Description") },
+        { title: t("service1Title"), description: t("service1Description") },
+        { title: t("service2Title"), description: t("service2Description") },
+        { title: t("service3Title"), description: t("service3Description") },
+    ];
+
     return (
         <section className="section-py bg-background" id="capabilities">
             <div className="grid-container gap-y-12">
-                {/* Left column */}
                 <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start space-y-6">
                     <span className="text-index text-foreground-subtle">
-                        01 — Services
+                        {t("servicesLabel")}
                     </span>
 
                     <TextReveal as="h2" type="lines" className="text-title">
-                        What we do best
+                        {t("servicesTitle")}
                     </TextReveal>
 
                     <TextReveal
@@ -147,13 +133,10 @@ export function ServicesSection() {
                         className="text-body-lg text-foreground-muted"
                         delay={0.2}
                     >
-                        From positioning to polish, every capability stays in
-                        lockstep with engineering so there are no handoffs
-                        breaking momentum.
+                        {t("servicesDescription")}
                     </TextReveal>
                 </div>
 
-                {/* Right column */}
                 <div className="col-span-12 lg:col-start-6 lg:col-span-7">
                     {services.map((service, i) => (
                         <ServiceItem

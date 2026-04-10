@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { MaskImage } from "@/components/motion/MaskImage";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -15,6 +16,8 @@ export function CaseStudyClient({
     project: Project;
     nextProject: Project | null;
 }) {
+    const t = useTranslations("work");
+    const locale = useLocale();
     return (
         <main className="relative bg-background overflow-hidden">
             <CaseStudyHero project={project} />
@@ -38,13 +41,13 @@ export function CaseStudyClient({
                     <div className="section-container">
                         <LineReveal className="mb-16" />
                         <div className="text-center space-y-8">
-                            <span className="text-index text-foreground-muted">Next Project</span>
+                            <span className="text-index text-foreground-muted">{t("nextProject")}</span>
                             <TextReveal as="h2" type="words" className="text-title">
                                 {nextProject.client}
                             </TextReveal>
                             <div className="pt-4">
                                 <Link
-                                    href={`/work/${nextProject.slug}`}
+                                    href={`/${locale}/work/${nextProject.slug}`}
                                     className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
                                 >
                                     <span className="relative z-10">View project</span>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getProjectBySlug } from "@/lib/projects";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
-    const project = await getProjectBySlug(slug);
+    const { slug, locale } = await params;
+    const project = await getProjectBySlug(slug, locale);
 
     if (!project) {
         return { title: "Project Not Found — Orion Studio" };

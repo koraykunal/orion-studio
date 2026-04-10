@@ -57,11 +57,13 @@ export default function EditPostPage({
   const { id } = use(params);
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
+  const [titleEn, setTitleEn] = useState("");
+  const [titleTr, setTitleTr] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [content, setContent] = useState<object | null>(null);
-  const [contentHtml, setContentHtml] = useState("");
+  const [contentEn, setContentEn] = useState<object | null>(null);
+  const [contentHtmlEn, setContentHtmlEn] = useState("");
+  const [contentHtmlTr, setContentHtmlTr] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<"draft" | "published">("draft");
@@ -74,11 +76,13 @@ export default function EditPostPage({
     fetch(`/api/admin/posts/${id}`)
       .then((res) => res.json())
       .then((post) => {
-        setTitle(post.title);
+        setTitleEn(post.title_en ?? "");
+        setTitleTr(post.title_tr ?? "");
         setSlug(post.slug);
         setDescription(post.description ?? "");
-        setContent(post.content ?? null);
-        setContentHtml(post.contentHtml ?? "");
+        setContentEn(post.content ?? null);
+        setContentHtmlEn(post.contentHtml_en ?? "");
+        setContentHtmlTr(post.contentHtml_tr ?? "");
         setCoverImage(post.coverImage ?? "");
         setTags(post.tags ?? []);
         setStatus(post.status);
@@ -87,12 +91,12 @@ export default function EditPostPage({
   }, [id]);
 
   const handleTitleChange = (value: string) => {
-    setTitle(value);
+    setTitleEn(value);
     setSlug(slugify(value));
   };
 
   const handleSave = async () => {
-    if (!title || !slug) return;
+    if (!titleEn || !slug) return;
     setSaving(true);
     setError("");
 
@@ -101,11 +105,13 @@ export default function EditPostPage({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
+          title_en: titleEn,
+          title_tr: titleTr || null,
           slug,
           description,
-          content,
-          contentHtml,
+          content: contentEn,
+          contentHtml_en: contentHtmlEn,
+          contentHtml_tr: contentHtmlTr || null,
           coverImage: coverImage || null,
           tags,
           status,
@@ -147,7 +153,7 @@ export default function EditPostPage({
   }
 
   if (showPreview) {
-    return <PostPreview title={title} description={description} tags={tags} contentHtml={contentHtml} onClose={() => setShowPreview(false)} />;
+    return <PostPreview title={titleEn} description={description} tags={tags} contentHtml={contentHtmlEn} onClose={() => setShowPreview(false)} />;
   }
 
   return (
@@ -168,7 +174,7 @@ export default function EditPostPage({
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={() => setShowPreview(true)}>Preview</Button>
-          <Button onClick={handleSave} disabled={saving || !title}>
+          <Button onClick={handleSave} disabled={saving || !titleEn}>
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>
@@ -179,11 +185,20 @@ export default function EditPostPage({
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_300px]">
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Title</Label>
+            <Label>Title (EN)</Label>
             <Input
-              value={title}
+              value={titleEn}
               onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Post title"
+              placeholder="Post title in English"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Title (TR)</Label>
+            <Input
+              value={titleTr}
+              onChange={(e) => setTitleTr(e.target.value)}
+              placeholder="Post title in Turkish"
             />
           </div>
 
@@ -207,13 +222,23 @@ export default function EditPostPage({
           </div>
 
           <div className="space-y-2">
-            <Label>Content</Label>
+            <Label>Content (EN)</Label>
             <TiptapEditor
-              content={content}
+              content={contentEn}
               onChange={(json, html) => {
-                setContent(json);
-                setContentHtml(html);
+                setContentEn(json);
+                setContentHtmlEn(html);
               }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Content (TR)</Label>
+            <Textarea
+              value={contentHtmlTr}
+              onChange={(e) => setContentHtmlTr(e.target.value)}
+              placeholder="Turkish content HTML..."
+              rows={8}
             />
           </div>
         </div>

@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
                       href={`/admin/posts/${post.id}`}
                       className="font-medium text-foreground hover:text-accent"
                     >
-                      {post.title}
+                      {post.title_en}
                     </Link>
                   </TableCell>
                   <TableCell className="text-right text-foreground-muted">
