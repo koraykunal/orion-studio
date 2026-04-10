@@ -12,6 +12,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { getCategoryLabel, type Project } from "@/lib/project-types";
 
 function FeaturedCard({ project, index, locale }: { project: Project; index: number; locale: string }) {
+    const t = useTranslations("work");
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +106,7 @@ function FeaturedCard({ project, index, locale }: { project: Project; index: num
                                 className="inline-flex items-center gap-2 text-label text-foreground-muted group-hover:text-accent transition-colors duration-300"
                                 data-cursor="hover"
                             >
-                                View case study
+                                {t("viewCaseStudy")}
                                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
                                     <path d="M1 15L15 1M15 1H5M15 1V11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
@@ -149,7 +150,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                             <span className="text-index text-foreground-muted">{t("pageLabel")}</span>
 
                             <TextReveal as="h1" type="words" className="text-title lg:text-[clamp(2.5rem,5vw,5rem)] lg:leading-[1.0]">
-                                Projects that define our craft
+                                {t("pageTitle")}
                             </TextReveal>
 
                             <TextReveal
@@ -158,8 +159,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                                 className="text-body-lg text-foreground-muted max-w-[52ch]"
                                 delay={0.2}
                             >
-                                Real client work, design explorations, and our own studio — each
-                                project blends strategy, design, and engineering from concept to launch.
+                                {t("pageDescription")}
                             </TextReveal>
                         </div>
                     </div>
@@ -181,7 +181,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                         <div className="space-y-6 mb-14 lg:mb-20">
                             <LineReveal />
                             <TextReveal as="h2" type="words" className="text-heading">
-                                More projects
+                                {t("moreProjects")}
                             </TextReveal>
                         </div>
 
@@ -244,7 +244,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
 
                 <div className="relative z-10 section-container text-center space-y-8">
                     <TextReveal as="h2" type="words" className="text-title">
-                        Your project could be next
+                        {t("ctaTitle")}
                     </TextReveal>
                     <TextReveal
                         as="p"
@@ -252,8 +252,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                         className="text-body-lg text-foreground-muted max-w-[44ch] mx-auto"
                         delay={0.15}
                     >
-                        We partner with teams that care about quality as much as we do.
-                        Let&apos;s talk about what you&apos;re building.
+                        {t("ctaDescription")}
                     </TextReveal>
                     <div className="pt-4">
                         <a
@@ -261,7 +260,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                             className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
                             data-cursor="hover"
                         >
-                            <span className="relative z-10">Start a project</span>
+                            <span className="relative z-10">{t("ctaButton")}</span>
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
                         </a>
                     </div>

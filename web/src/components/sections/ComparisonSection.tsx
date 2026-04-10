@@ -1,29 +1,10 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { gsap, useGSAP, DrawSVGPlugin } from "@/lib/animations/gsap";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 import { OrionMark } from "@/components/effects/OrionMark";
-
-/* ── Data ───────────────────────────────────────────── */
-
-const COMPARISONS = [
-    {
-        index: "01",
-        them: { label: "Generic design", desc: "Templates stretched thin, blending into the crowd." },
-        us:   { label: "Bespoke craft", desc: "Every pixel from zero, rooted in your DNA." },
-    },
-    {
-        index: "02",
-        them: { label: "Disconnected pages", desc: "Inconsistent spacing, clashing type, no shared logic." },
-        us:   { label: "Unified system", desc: "Tokens, components, motion\u2009\u2014\u2009one system that scales." },
-    },
-    {
-        index: "03",
-        them: { label: "Decorative noise", desc: "Ornaments with no purpose or direction." },
-        us:   { label: "Intentional detail", desc: "Every decision traces back to strategy." },
-    },
-];
 
 /* ── Abstract Mockup Sub-components ─────────────────── */
 
@@ -240,9 +221,28 @@ const US_MOCKUPS = [UsMockup1, UsMockup2, UsMockup3];
 /* ── Main Section ───────────────────────────────────── */
 
 export function ComparisonSection() {
+    const t = useTranslations("home");
     const sectionRef = useRef<HTMLElement>(null);
     const stickyRef = useRef<HTMLDivElement>(null);
     const dividerRef = useRef<SVGLineElement>(null);
+
+    const COMPARISONS = [
+        {
+            index: "01",
+            them: { label: t("comp0ThemLabel"), desc: t("comp0ThemDesc") },
+            us:   { label: t("comp0UsLabel"), desc: t("comp0UsDesc") },
+        },
+        {
+            index: "02",
+            them: { label: t("comp1ThemLabel"), desc: t("comp1ThemDesc") },
+            us:   { label: t("comp1UsLabel"), desc: t("comp1UsDesc") },
+        },
+        {
+            index: "03",
+            them: { label: t("comp2ThemLabel"), desc: t("comp2ThemDesc") },
+            us:   { label: t("comp2UsLabel"), desc: t("comp2UsDesc") },
+        },
+    ];
 
     useGSAP(() => {
         if (!sectionRef.current || !stickyRef.current) return;
@@ -337,7 +337,6 @@ export function ComparisonSection() {
             const numScenes = Math.min(leftScenes.length, rightScenes.length);
             if (!numScenes || !leftPanel || !rightPanel) return;
 
-            // Stack order: first scene on top, rest clipped below
             leftScenes.forEach((s, i) => {
                 gsap.set(s, {
                     zIndex: leftScenes.length - i,
@@ -357,7 +356,6 @@ export function ComparisonSection() {
             if (dividerLine) gsap.set(dividerLine, { drawSVG: "50% 50%" });
             if (headers) gsap.set(headers, { opacity: 0, y: 8 });
 
-            // Entrance
             if (dividerLine) {
                 entranceTl.to(dividerLine, {
                     drawSVG: "0% 100%",
@@ -386,21 +384,17 @@ export function ComparisonSection() {
                 }, 0.5);
             }
 
-            // Scene transitions — current clips up to reveal next underneath
             for (let i = 0; i < numScenes - 1; i++) {
                 const transStart = 0.22 + i * 0.28;
                 const transDur = 0.16;
 
-                // Unclip next scenes right before transition
                 mainTl.set(leftScenes[i + 1], { clipPath: "inset(0 0 0 0)" }, transStart - 0.001);
                 mainTl.set(rightScenes[i + 1], { clipPath: "inset(0 0 0 0)" }, transStart - 0.001);
 
-                // Current scenes clip upward
                 mainTl.to(leftScenes[i], { clipPath: "inset(0 0 100% 0)", duration: transDur, ease: "none" }, transStart);
                 mainTl.to(rightScenes[i], { clipPath: "inset(0 0 100% 0)", duration: transDur, ease: "none" }, transStart);
             }
 
-            // Exit
             const exitStart = 0.84;
 
             mainTl.to(leftPanel, {
@@ -432,7 +426,6 @@ export function ComparisonSection() {
         <section ref={sectionRef} className="relative h-[300svh] bg-background">
             <div ref={stickyRef} className="sticky top-0 h-svh w-full flex flex-col items-center justify-center overflow-hidden">
 
-                {/* Ambient glow */}
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
@@ -440,9 +433,8 @@ export function ComparisonSection() {
                     }}
                 />
 
-                {/* Section label */}
                 <div className="comp-section-label absolute top-24 left-1/2 -translate-x-1/2 z-20 md:hidden">
-                    <span className="text-label text-foreground-subtle">The difference</span>
+                    <span className="text-label text-foreground-subtle">{t("comparisonLabel")}</span>
                 </div>
 
                 {/* ═══ MOBILE layout ═══ */}
@@ -456,22 +448,19 @@ export function ComparisonSection() {
 
                                 <span className="text-index">{comp.index}</span>
 
-                                {/* THEM */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="text-[9px] font-medium tracking-[0.2em] uppercase text-foreground-muted/60">THEM</span>
+                                        <span className="text-[9px] font-medium tracking-[0.2em] uppercase text-foreground-muted/60">{t("compHeaderThem")}</span>
                                         <span className="text-sm text-foreground-muted font-medium">{comp.them.label}</span>
                                     </div>
                                     <ThemMockup />
                                 </div>
 
-                                {/* Divider */}
                                 <div className="w-10 h-px bg-border-subtle mx-auto" />
 
-                                {/* ORION */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="text-[9px] font-medium tracking-[0.2em] uppercase text-accent/80">ORION</span>
+                                        <span className="text-[9px] font-medium tracking-[0.2em] uppercase text-accent/80">{t("compHeaderUs")}</span>
                                         <span className="text-sm text-foreground font-medium">{comp.us.label}</span>
                                     </div>
                                     <UsMockup />
@@ -484,15 +473,14 @@ export function ComparisonSection() {
                 {/* ═══ DESKTOP layout ═══ */}
                 <div className="comp-headers absolute top-24 left-0 right-0 z-20 hidden md:flex">
                     <div className="w-1/2 flex justify-center">
-                        <span className="text-label text-foreground-muted tracking-[0.25em]">THEM</span>
+                        <span className="text-label text-foreground-muted tracking-[0.25em]">{t("compHeaderThem")}</span>
                     </div>
                     <div className="w-1/2 flex justify-center">
-                        <span className="text-label text-accent tracking-[0.25em]">ORION</span>
+                        <span className="text-label text-accent tracking-[0.25em]">{t("compHeaderUs")}</span>
                     </div>
                 </div>
 
                 <div className="relative w-full h-full hidden md:flex">
-                    {/* Left: THEM */}
                     <div className="comp-left w-1/2 h-full flex items-center justify-center relative"
                          style={{ transformOrigin: "center center" }}>
                         {COMPARISONS.map((comp, i) => {
@@ -515,7 +503,6 @@ export function ComparisonSection() {
                         })}
                     </div>
 
-                    {/* Divider */}
                     <div className="absolute left-1/2 top-[8%] bottom-[8%] -translate-x-1/2 z-10 pointer-events-none">
                         <svg className="w-px h-full overflow-visible" preserveAspectRatio="none">
                             <line
@@ -528,7 +515,6 @@ export function ComparisonSection() {
                         </svg>
                     </div>
 
-                    {/* Right: ORION */}
                     <div className="comp-right w-1/2 h-full flex items-center justify-center relative"
                          style={{ transformOrigin: "center center" }}>
                         {COMPARISONS.map((comp, i) => {

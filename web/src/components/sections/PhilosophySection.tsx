@@ -1,37 +1,17 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES } from "@/lib/animations/config";
 
-const steps = [
-    {
-        index: "01",
-        title: "Alignment Sprint",
-        detail:
-            "Two-week intake focused on discovery, measurement frameworks, and scope locking. We surface every assumption before a line of code is written.",
-    },
-    {
-        index: "02",
-        title: "Build Loop",
-        detail:
-            "Weekly sprints covering design, engineering, QA, and stakeholder reviews. Momentum never pauses between disciplines.",
-    },
-    {
-        index: "03",
-        title: "Launch & Scale",
-        detail:
-            "Staging reviews, analytics setup, performance benchmarks, and handover for growth teams. Ready for scale on day one.",
-    },
-];
-
 function StepItem({
     step,
     isLast,
 }: {
-    step: (typeof steps)[number];
+    step: { index: string; title: string; detail: string };
     isLast: boolean;
 }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -71,7 +51,6 @@ function StepItem({
     return (
         <div ref={ref} className={`py-10 lg:py-14 ${!isLast ? "" : ""}`}>
             <div className="grid-container gap-y-6">
-                {/* Index number */}
                 <div className="col-span-4 md:col-span-2 lg:col-span-2">
                     <span
                         ref={numRef}
@@ -81,9 +60,7 @@ function StepItem({
                     </span>
                 </div>
 
-                {/* Content */}
                 <div className="col-span-12 md:col-span-6 lg:col-start-3 lg:col-span-6 space-y-4">
-                    {/* Divider line */}
                     <svg
                         viewBox="0 0 1000 2"
                         preserveAspectRatio="none"
@@ -123,6 +100,14 @@ function StepItem({
 }
 
 export function PhilosophySection() {
+    const t = useTranslations("home");
+
+    const steps = [
+        { index: "01", title: t("step0Title"), detail: t("step0Detail") },
+        { index: "02", title: t("step1Title"), detail: t("step1Detail") },
+        { index: "03", title: t("step2Title"), detail: t("step2Detail") },
+    ];
+
     return (
         <section className="relative section-py bg-background overflow-hidden" id="process">
             <div className="absolute -left-[15%] top-[10%] w-[55%] h-[70%] pointer-events-none">
@@ -131,10 +116,10 @@ export function PhilosophySection() {
 
             <div className="relative z-10 section-container mb-12 lg:mb-16">
                 <span className="text-index text-foreground-subtle block mb-6">
-                    03 — Process
+                    {t("processLabel")}
                 </span>
                 <TextReveal as="h2" type="lines" className="text-title max-w-2xl">
-                    Simple cadence, extraordinary output
+                    {t("processTitle")}
                 </TextReveal>
             </div>
 

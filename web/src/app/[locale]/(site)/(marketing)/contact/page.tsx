@@ -154,8 +154,7 @@ export default function ContactPage() {
                             className="text-body-lg text-foreground-muted max-w-[38ch]"
                             delay={0.15}
                         >
-                            Tell us about your vision. We&apos;ll reply within 48
-                            hours with a tailored roadmap and estimate.
+                            {t("pageDescription")}
                         </TextReveal>
 
                         <div className="space-y-6 pt-4">
@@ -163,7 +162,7 @@ export default function ContactPage() {
 
                             <div className="space-y-3">
                                 <span className="text-label text-foreground-muted block">
-                                    Direct
+                                    {t("directLabel")}
                                 </span>
                                 <a
                                     href="mailto:koraykunal85@outlook.com"
@@ -176,7 +175,7 @@ export default function ContactPage() {
 
                             <div className="space-y-3">
                                 <span className="text-label text-foreground-muted block">
-                                    Social
+                                    {t("socialLabel")}
                                 </span>
                                 <div className="flex items-center gap-6">
                                     {socials.map((s) => (

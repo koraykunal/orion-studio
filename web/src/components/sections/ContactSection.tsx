@@ -2,11 +2,14 @@
 
 import { useRef, useCallback } from "react";
 import { Link } from "next-view-transitions";
+import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 
 export function ContactSection() {
+    const t = useTranslations("home");
+    const locale = useLocale();
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLAnchorElement>(null);
     const charsRef = useRef<HTMLElement[]>([]);
@@ -108,12 +111,12 @@ export function ContactSection() {
 
                 <div className="flex flex-col items-center text-center">
                     <span className="text-index text-foreground-subtle mb-10 lg:mb-14">
-                        04 — Contact
+                        {t("contactLabel")}
                     </span>
 
                     <Link
                         ref={headingRef}
-                        href="/contact"
+                        href={`/${locale}/contact`}
                         className="text-hero block cursor-pointer select-none"
                         data-cursor="hover"
                         onMouseMove={(e) => {
@@ -135,7 +138,7 @@ export function ContactSection() {
                             }
                         }}
                     >
-                        Let&apos;s talk
+                        {t("contactHeading")}
                     </Link>
 
                     <div ref={metaRef} className="mt-12 lg:mt-16 flex flex-col items-center gap-6">

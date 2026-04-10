@@ -2,11 +2,14 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 import { getCategoryLabel, type Project } from "@/lib/project-types";
 
 export function CaseStudyHero({ project }: { project: Project }) {
+    const t = useTranslations("work");
+    const locale = useLocale();
     const heroRef = useRef<HTMLElement>(null);
 
     useGSAP(() => {
@@ -60,7 +63,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
         <section ref={heroRef} className="relative section-py pt-32 overflow-hidden">
             <div className="relative z-10 section-container">
                 <Link
-                    href="/work"
+                    href={`/${locale}/work`}
                     className="cs-label inline-flex items-center gap-2 text-label text-foreground-muted hover:text-foreground transition-colors duration-300 mb-12"
                 >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -72,7 +75,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
                             strokeLinejoin="round"
                         />
                     </svg>
-                    All Projects
+                    {t("allLabel")}
                 </Link>
 
                 <div className="grid-container gap-y-10">
@@ -98,7 +101,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
                     <div className="cs-meta col-span-12 lg:col-span-4 flex flex-col gap-6 lg:pt-2">
                         <div>
                             <span className="text-label text-foreground-muted block mb-2">
-                                Services
+                                {t("servicesLabel")}
                             </span>
                             <div className="flex flex-wrap gap-2">
                                 {project.services.map((s) => (

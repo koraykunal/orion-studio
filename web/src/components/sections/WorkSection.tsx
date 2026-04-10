@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { getCategoryLabel, type Project, type Section } from "@/lib/project-types";
@@ -85,6 +86,8 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
 }
 
 export function WorkSection({ projects }: { projects: Project[] }) {
+    const t = useTranslations("home");
+    const locale = useLocale();
     const sectionRef = useRef<HTMLElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
 
@@ -128,12 +131,12 @@ export function WorkSection({ projects }: { projects: Project[] }) {
                 className="flex items-start gap-8 lg:gap-12 pl-6 md:pl-12 lg:pl-[max(3rem,calc((100vw-1400px)/2+3rem))] pt-24 lg:pt-32 pb-24 lg:pb-32"
             >
                 <div className="shrink-0 w-[75vw] lg:w-[30vw] flex flex-col justify-center pr-8 lg:pr-0">
-                    <span className="text-index text-foreground-subtle mb-6">02 — Selected Work</span>
+                    <span className="text-index text-foreground-subtle mb-6">{t("workLabel")}</span>
                     <TextReveal as="h2" type="lines" className="text-title">
-                        Projects that define our craft
+                        {t("workTitle")}
                     </TextReveal>
                     <TextReveal as="p" type="lines" className="text-body-lg text-foreground-muted mt-6" delay={0.15}>
-                        Real client work and our own studio — each project blends design, engineering, and strategy from concept to launch.
+                        {t("workDescription")}
                     </TextReveal>
                 </div>
 

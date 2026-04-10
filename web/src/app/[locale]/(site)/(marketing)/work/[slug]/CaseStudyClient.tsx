@@ -50,7 +50,7 @@ export function CaseStudyClient({
                                     href={`/${locale}/work/${nextProject.slug}`}
                                     className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
                                 >
-                                    <span className="relative z-10">View project</span>
+                                    <span className="relative z-10">{t("viewProject")}</span>
                                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
                                 </Link>
                             </div>
