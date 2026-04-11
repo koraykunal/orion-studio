@@ -73,7 +73,7 @@ export function Navbar() {
         fontSize: "clamp(0.75rem, 1.1vw, 0.95rem)",
         letterSpacing: "0.12em",
         lineHeight: "1.2",
-        textTransform: "uppercase" as const,
+        textTransform: "none" as const,
     };
 
     return (
