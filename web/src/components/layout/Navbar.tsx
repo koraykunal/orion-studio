@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
@@ -12,12 +12,18 @@ const FLIP_DURATION = 0.6;
 
 export function Navbar() {
     const rawPathname = usePathname();
+    const router = useRouter();
     const locale = useLocale();
     const t = useTranslations("nav");
     const tHome = useTranslations("home");
     const [menuOpen, setMenuOpen] = useState(false);
 
     const localePath = rawPathname.replace(/^\/(en|tr)/, "") || "/";
+    const otherLocale = locale === "en" ? "tr" : "en";
+
+    const switchLocale = useCallback(() => {
+        router.push(`/${otherLocale}${localePath}`);
+    }, [router, otherLocale, localePath]);
 
     const routes = [
         { labelKey: "studio" as const, link: `/${locale}/#capabilities` },
@@ -124,23 +130,16 @@ export function Navbar() {
                             ))}
                         </ul>
 
-                        <div className="hidden md:flex items-center gap-2 text-label">
-                            <Link
-                                href={`/en${localePath}`}
-                                className={locale === "en" ? "font-semibold text-foreground" : "text-foreground-muted hover:text-foreground transition-colors"}
-                                style={{ transitionDuration: "350ms" }}
-                            >
-                                EN
-                            </Link>
-                            <span className="text-foreground-subtle opacity-40">|</span>
-                            <Link
-                                href={`/tr${localePath}`}
-                                className={locale === "tr" ? "font-semibold text-foreground" : "text-foreground-muted hover:text-foreground transition-colors"}
-                                style={{ transitionDuration: "350ms" }}
-                            >
-                                TR
-                            </Link>
-                        </div>
+                        <button
+                            onClick={switchLocale}
+                            className="hidden md:flex items-center gap-1.5 text-label border border-border-bright rounded-full px-3 py-1.5 hover:border-foreground-muted transition-colors"
+                            style={{ transitionDuration: "350ms" }}
+                            aria-label={`Switch to ${otherLocale === "en" ? "English" : "Türkçe"}`}
+                        >
+                            <span className="font-semibold text-foreground">{locale.toUpperCase()}</span>
+                            <span className="text-foreground-subtle opacity-40">/</span>
+                            <span className="text-foreground-muted">{otherLocale.toUpperCase()}</span>
+                        </button>
 
                         <Link
                             href={`/${locale}/contact`}
@@ -153,21 +152,21 @@ export function Navbar() {
 
                         <button
                             onClick={toggleMenu}
-                            className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
+                            className="md:hidden relative w-8 h-8 flex items-center justify-center"
                             aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
                             aria-expanded={menuOpen}
                         >
                             <span
-                                className="block w-5 h-px bg-foreground transition-all duration-300"
-                                style={{ transform: menuOpen ? "translateY(3.5px) rotate(45deg)" : "none" }}
+                                className="absolute block w-5 h-px bg-foreground transition-all duration-300 origin-center"
+                                style={{ transform: menuOpen ? "rotate(45deg)" : "translateY(-4px)" }}
                             />
                             <span
-                                className="block w-5 h-px bg-foreground transition-all duration-300"
+                                className="absolute block w-5 h-px bg-foreground transition-all duration-300"
                                 style={{ opacity: menuOpen ? 0 : 1 }}
                             />
                             <span
-                                className="block w-5 h-px bg-foreground transition-all duration-300"
-                                style={{ transform: menuOpen ? "translateY(-3.5px) rotate(-45deg)" : "none" }}
+                                className="absolute block w-5 h-px bg-foreground transition-all duration-300 origin-center"
+                                style={{ transform: menuOpen ? "rotate(-45deg)" : "translateY(4px)" }}
                             />
                         </button>
                     </div>
@@ -187,21 +186,15 @@ export function Navbar() {
                                 {t(route.labelKey)}
                             </Link>
                         ))}
-                        <div className="flex items-center gap-4 text-label mt-2">
-                            <Link
-                                href={`/en${localePath}`}
-                                className={locale === "en" ? "font-semibold text-foreground" : "text-foreground-muted"}
-                            >
-                                EN
-                            </Link>
-                            <span className="text-foreground-subtle opacity-40">|</span>
-                            <Link
-                                href={`/tr${localePath}`}
-                                className={locale === "tr" ? "font-semibold text-foreground" : "text-foreground-muted"}
-                            >
-                                TR
-                            </Link>
-                        </div>
+                        <button
+                            onClick={() => { switchLocale(); setMenuOpen(false); }}
+                            className="flex items-center gap-2 text-label border border-border-bright rounded-full px-5 py-2 mt-2 hover:border-foreground-muted transition-colors"
+                            style={{ transitionDuration: "350ms" }}
+                        >
+                            <span className="font-semibold text-foreground">{locale.toUpperCase()}</span>
+                            <span className="text-foreground-subtle opacity-40">/</span>
+                            <span className="text-foreground-muted">{otherLocale.toUpperCase()}</span>
+                        </button>
                         <Link
                             href={`/${locale}/contact`}
                             onClick={(e) => handleClick(e, `/${locale}/contact`)}

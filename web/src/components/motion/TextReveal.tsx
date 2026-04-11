@@ -63,6 +63,8 @@ export function TextReveal({
                 const wrapper = document.createElement("div");
                 wrapper.style.overflow = "hidden";
                 wrapper.style.display = "block";
+                wrapper.style.paddingBottom = "0.3em";
+                wrapper.style.marginBottom = "-0.3em";
                 el.parentNode!.insertBefore(wrapper, el);
                 wrapper.appendChild(el);
             });
