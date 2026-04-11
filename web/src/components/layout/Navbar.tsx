@@ -94,7 +94,7 @@ export function Navbar() {
                                 {tHome("heroTagline")}
                             </span>
                             <span ref={orionRef} className="absolute top-0 left-0 block">
-                                Orion Studio
+                                ORION STUDIO
                             </span>
                             <div ref={logoRef} className="absolute top-0 left-0 flex items-center h-full">
                                 <Image
