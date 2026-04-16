@@ -1,8 +1,23 @@
 import { prisma } from "@/lib/prisma";
-import type { Project, ProjectCategory, Section } from "@/lib/project-types";
+import type { Project, ProjectCategory, Section, SectionData, TextBlockData } from "@/lib/project-types";
+import { sanitizeRichHtml } from "@/lib/sanitize";
 
 export type { Project, ProjectCategory, Section };
 export { getCategoryLabel } from "@/lib/project-types";
+
+function sanitizeSection(section: Section): Section {
+    if (section.type === "textBlock") {
+        const data = section.data as TextBlockData;
+        return {
+            ...section,
+            data: {
+                ...data,
+                contentHtml: sanitizeRichHtml(data.contentHtml),
+            } satisfies TextBlockData as SectionData,
+        };
+    }
+    return section;
+}
 
 function getLocalizedStr(en: string, tr: string | null | undefined, locale: string): string {
     if (locale === "tr" && tr) return tr;
@@ -27,7 +42,7 @@ function mapProject(
         image: p.image,
         category: p.category as ProjectCategory,
         featured: p.featured,
-        sections: (p.sections as Section[]) || [],
+        sections: ((p.sections as Section[]) || []).map(sanitizeSection),
     };
 }
 

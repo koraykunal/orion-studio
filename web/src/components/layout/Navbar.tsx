@@ -132,9 +132,9 @@ export function Navbar() {
 
                         <button
                             onClick={switchLocale}
-                            className="hidden md:flex items-center gap-1.5 text-label border border-border-bright rounded-full px-3 py-1.5 hover:border-foreground-muted transition-colors"
+                            className="hidden md:flex items-center gap-1.5 text-label border border-border-bright rounded-full px-3 py-1.5 hover:border-foreground-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
                             style={{ transitionDuration: "350ms" }}
-                            aria-label={`Switch to ${otherLocale === "en" ? "English" : "Türkçe"}`}
+                            aria-label={otherLocale === "en" ? t("switchToEnglish") : t("switchToTurkish")}
                         >
                             <span className="font-semibold text-foreground">{locale.toUpperCase()}</span>
                             <span className="text-foreground-subtle opacity-40">/</span>

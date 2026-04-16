@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getPostBySlug } from "@/lib/blog";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
@@ -7,7 +8,7 @@ import type { Metadata } from "next";
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export const dynamicParams = true;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug, locale } = await params;
@@ -25,6 +26,8 @@ export default async function BlogPostPage({ params }: Props) {
     const post = await getPostBySlug(slug, locale);
     if (!post) notFound();
 
+    const t = await getTranslations({ locale, namespace: "blog" });
+
     return (
         <main className="relative bg-background overflow-hidden">
             <section className="relative section-py pt-32">
@@ -36,7 +39,7 @@ export default async function BlogPostPage({ params }: Props) {
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        All Posts
+                        {t("allPosts")}
                     </Link>
 
                     <div className="max-w-3xl space-y-6">

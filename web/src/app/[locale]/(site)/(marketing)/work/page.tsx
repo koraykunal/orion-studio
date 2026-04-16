@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 import { getAllProjects } from "@/lib/projects";
 import { WorkPageClient } from "./WorkPageClient";

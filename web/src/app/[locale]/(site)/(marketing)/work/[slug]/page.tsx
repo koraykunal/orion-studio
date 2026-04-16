@@ -5,7 +5,7 @@ import { CaseStudyClient } from "./CaseStudyClient";
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export const dynamicParams = true;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function CaseStudyPage({ params }: Props) {
     const { slug, locale } = await params;

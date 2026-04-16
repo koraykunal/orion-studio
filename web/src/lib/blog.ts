@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { sanitizeRichHtml } from "@/lib/sanitize";
 
 export type BlogPost = {
     slug: string;
@@ -42,7 +43,7 @@ export async function getAllPosts(locale: string): Promise<BlogPost[]> {
             year: "numeric",
         }) ?? "",
         tags: post.tags,
-        contentHtml: getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale),
+        contentHtml: sanitizeRichHtml(getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale)),
         coverImage: post.coverImage,
     }));
 }
@@ -75,7 +76,7 @@ export async function getPostBySlug(slug: string, locale: string): Promise<BlogP
             year: "numeric",
         }) ?? "",
         tags: post.tags,
-        contentHtml: getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale),
+        contentHtml: sanitizeRichHtml(getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale)),
         coverImage: post.coverImage,
     };
 }

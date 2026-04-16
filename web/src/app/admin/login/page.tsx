@@ -30,7 +30,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid credentials");
+      setError("Geçersiz kimlik bilgileri");
       return;
     }
 
@@ -45,13 +45,13 @@ export default function LoginPage() {
           <Image src="/logo.svg" alt="Orion Studio" width={40} height={40} className="mb-2" />
           <CardTitle className="text-heading">Orion Studio</CardTitle>
           <CardDescription className="text-body-lg">
-            Sign in to admin panel
+            Yönetim paneline giriş yap
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-posta</Label>
               <Input
                 id="email"
                 type="email"
@@ -63,7 +63,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -79,7 +79,7 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Giriş yapılıyor..." : "Giriş yap"}
             </Button>
           </form>
         </CardContent>

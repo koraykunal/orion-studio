@@ -3,13 +3,12 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 
-const ALLOWED_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-  "image/svg+xml",
-]);
+const MIME_TO_EXT: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+};
 
 const MAX_SIZE = 5 * 1024 * 1024;
 
@@ -22,9 +21,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (!ALLOWED_TYPES.has(file.type)) {
+    const ext = MIME_TO_EXT[file.type];
+    if (!ext) {
       return NextResponse.json(
-        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF, SVG" },
+        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
         { status: 400 },
       );
     }
@@ -39,7 +39,6 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const ext = path.extname(file.name) || ".png";
     const filename = `${randomUUID()}${ext}`;
     const uploadDir = path.join(process.cwd(), "public/uploads");
 

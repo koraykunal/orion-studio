@@ -7,7 +7,9 @@
     "contact": "İletişim",
     "startProject": "Proje Başlat",
     "openMenu": "Menüyü aç",
-    "closeMenu": "Menüyü kapat"
+    "closeMenu": "Menüyü kapat",
+    "switchToEnglish": "İngilizceye geç",
+    "switchToTurkish": "Türkçeye geç"
   },
   "footer": {
     "tagline": "Büyümeye hazır markalar, ürünler ve dijital deneyimler üreten tasarım stüdyosu.",
@@ -132,7 +134,8 @@
     "pageTitle": "Stüdyodan",
     "pageDescription": "Tasarım, mühendislik ve dijital ürün üretme sanatı üzerine düşünceler.",
     "comingSoon": "Yakında.",
-    "readMore": "Makaleyi oku"
+    "readMore": "Makaleyi oku",
+    "allPosts": "Tüm yazılar"
   },
   "contact": {
     "pageLabel": "Birlikte çalışalım",
@@ -173,6 +176,14 @@
     "successBody": "En kısa sürede size dönüş yapacağız.",
     "errorTitle": "Bir şeyler ters gitti.",
     "errorBody": "Lütfen tekrar deneyin veya doğrudan e-posta gönderin."
+  },
+  "admin": {
+    "signInTitle": "Yönetim paneline giriş yap",
+    "emailLabel": "E-posta",
+    "passwordLabel": "Şifre",
+    "signInButton": "Giriş yap",
+    "signingIn": "Giriş yapılıyor...",
+    "invalidCredentials": "Geçersiz kimlik bilgileri"
   },
   "meta": {
     "homeTitle": "Orion Studio | Dijital Ajans",

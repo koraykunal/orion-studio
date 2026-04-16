@@ -176,7 +176,7 @@
         font-size: clamp(6.5rem, 13vw, 15rem);
         line-height: 0.88;
         letter-spacing: -0.04em;
-        color: beige;
+        color: var(--foreground);
         font-weight: 400;
     }
 

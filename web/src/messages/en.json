@@ -7,7 +7,9 @@
     "contact": "Contact",
     "startProject": "Start a project",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "switchToEnglish": "Switch to English",
+    "switchToTurkish": "Switch to Turkish"
   },
   "footer": {
     "tagline": "Design-led studio crafting brands, products, and digital experiences that scale.",
@@ -132,7 +134,8 @@
     "pageTitle": "From the studio",
     "pageDescription": "Thoughts on design, engineering, and the craft of building digital products.",
     "comingSoon": "Coming soon.",
-    "readMore": "Read article"
+    "readMore": "Read article",
+    "allPosts": "All Posts"
   },
   "contact": {
     "pageLabel": "Let's work together",
@@ -173,6 +176,14 @@
     "successBody": "We'll be in touch soon.",
     "errorTitle": "Something went wrong.",
     "errorBody": "Please try again or email us directly."
+  },
+  "admin": {
+    "signInTitle": "Sign in to admin panel",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signInButton": "Sign in",
+    "signingIn": "Signing in...",
+    "invalidCredentials": "Invalid credentials"
   },
   "meta": {
     "homeTitle": "Orion Studio | Digital Agency",

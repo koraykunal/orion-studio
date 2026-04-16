@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { EASES, DURATIONS } from "@/lib/animations/config";
+import { PRIMARY_SOCIALS, CONTACT_EMAIL } from "@/lib/socials";
 
 export function ContactSection() {
     const t = useTranslations("home");
@@ -143,18 +144,15 @@ export function ContactSection() {
 
                     <div ref={metaRef} className="mt-12 lg:mt-16 flex flex-col items-center gap-6">
                         <a
-                            href="mailto:koraykunal85@outlook.com"
+                            href={`mailto:${CONTACT_EMAIL}`}
                             className="text-body-lg text-foreground-muted hover:text-accent transition-colors duration-350"
                             data-cursor="hover"
                         >
-                            koraykunal85@outlook.com
+                            {CONTACT_EMAIL}
                         </a>
 
                         <div className="flex items-center gap-8">
-                            {[
-                                { label: "Instagram", href: "https://www.instagram.com/orionstud.io/" },
-                                { label: "LinkedIn", href: "https://www.linkedin.com/company/104592237" },
-                            ].map((social) => (
+                            {PRIMARY_SOCIALS.map((social) => (
                                 <a
                                     key={social.label}
                                     href={social.href}

@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransitions } from "next-view-transitions";
 import { routing } from "../../../i18n/routing";
+import { CONTACT_EMAIL } from "@/lib/socials";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -110,7 +111,7 @@ export default async function LocaleLayout({
                                     ],
                                     contactPoint: {
                                         "@type": "ContactPoint",
-                                        email: "koraykunal85@outlook.com",
+                                        email: CONTACT_EMAIL,
                                         contactType: "customer service",
                                     },
                                 }),

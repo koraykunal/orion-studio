@@ -7,13 +7,7 @@ import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
-
-const socials = [
-    { label: "Instagram", href: "https://www.instagram.com/orionstud.io/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/company/104592237" },
-    { label: "X", href: "https://x.com/orionstudio" },
-    { label: "Dribbble", href: "https://dribbble.com/orionstudio" },
-];
+import { FOOTER_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";
 
 export function Footer() {
     const locale = useLocale();
@@ -154,11 +148,11 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li>
                                 <a
-                                    href="mailto:koraykunal85@outlook.com"
+                                    href={`mailto:${CONTACT_EMAIL}`}
                                     className="text-body-lg text-foreground-muted hover:text-foreground transition-colors duration-300"
                                     data-cursor="hover"
                                 >
-                                    koraykunal85@outlook.com
+                                    {CONTACT_EMAIL}
                                 </a>
                             </li>
                             <li>

@@ -7,11 +7,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
-
-const socials = [
-    { label: "Instagram", href: "https://www.instagram.com/orionstud.io/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/company/104592237" },
-];
+import { PRIMARY_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";
 
 function Chip({
     label,
@@ -29,6 +25,7 @@ function Chip({
             className={`
                 px-4 py-2.5 rounded-full text-label transition-all duration-300 cursor-pointer
                 border select-none whitespace-nowrap
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background
                 ${
                     selected
                         ? "border-accent bg-accent/10 text-accent shadow-[0_0_24px_var(--glow)]"
@@ -165,11 +162,11 @@ export default function ContactPage() {
                                     {t("directLabel")}
                                 </span>
                                 <a
-                                    href="mailto:koraykunal85@outlook.com"
+                                    href={`mailto:${CONTACT_EMAIL}`}
                                     className="text-body-lg text-foreground-muted hover:text-accent transition-colors duration-300 block"
                                     data-cursor="hover"
                                 >
-                                    koraykunal85@outlook.com
+                                    {CONTACT_EMAIL}
                                 </a>
                             </div>
 
