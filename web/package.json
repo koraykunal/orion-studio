@@ -53,6 +53,9 @@
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
+  "overrides": {
+    "@swc/helpers": "^0.5.21"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@types/bcryptjs": "^2.4.6",
