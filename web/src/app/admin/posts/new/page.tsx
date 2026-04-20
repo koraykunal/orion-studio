@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import TiptapEditor from "../../components/TiptapEditor";
 import ImageUpload from "../../components/ImageUpload";
 import ChipInput from "../../components/ChipInput";
@@ -52,7 +51,6 @@ function PostPreview({ title, description, tags, contentHtml, onClose }: {
 
 export default function NewPostPage() {
   const router = useRouter();
-  const { data: session } = useSession();
 
   const [titleEn, setTitleEn] = useState("");
   const [titleTr, setTitleTr] = useState("");
@@ -93,7 +91,6 @@ export default function NewPostPage() {
           coverImage: coverImage || null,
           tags,
           status,
-          authorId: (session?.user as { id?: string })?.id ?? "",
         }),
       });
 

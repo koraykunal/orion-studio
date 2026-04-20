@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { pingIndexNow } from "@/lib/indexnow";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -26,6 +28,20 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    const sessionUserId = (session?.user as { id?: string } | undefined)?.id;
+    if (!sessionUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const author = await prisma.user.findUnique({ where: { id: sessionUserId } });
+    if (!author) {
+      return NextResponse.json(
+        { error: "Session user no longer exists. Sign out and sign in again." },
+        { status: 401 },
+      );
+    }
+
     const body = await request.json();
 
     if (!body.title_en || !body.title_en.trim()) {
@@ -49,9 +65,13 @@ export async function POST(request: Request) {
         coverImage: body.coverImage ?? null,
         status: body.status ?? "draft",
         publishedAt: body.status === "published" ? new Date() : null,
-        authorId: body.authorId,
+        authorId: author.id,
       },
     });
+
+    if (post.status === "published") {
+      void pingIndexNow([`/blog/${post.slug}`, "/blog"]);
+    }
 
     return NextResponse.json(post, { status: 201 });
   } catch (error) {
