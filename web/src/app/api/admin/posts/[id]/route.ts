@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { pingIndexNow } from "@/lib/indexnow";
 
 export async function GET(
   _request: Request,
@@ -41,6 +42,10 @@ export async function PUT(
     }
 
     const post = await prisma.post.update({ where: { id }, data });
+
+    if (post.status === "published") {
+      void pingIndexNow([`/blog/${post.slug}`, "/blog"]);
+    }
 
     return NextResponse.json(post);
   } catch (error) {

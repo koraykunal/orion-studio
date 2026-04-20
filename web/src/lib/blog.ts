@@ -6,6 +6,7 @@ export type BlogPost = {
     title: string;
     description: string;
     date: string;
+    publishedAt: Date | null;
     tags: string[];
     contentHtml: string;
     coverImage: string | null;
@@ -42,6 +43,7 @@ export async function getAllPosts(locale: string): Promise<BlogPost[]> {
             day: "numeric",
             year: "numeric",
         }) ?? "",
+        publishedAt: post.publishedAt,
         tags: post.tags,
         contentHtml: sanitizeRichHtml(getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale)),
         coverImage: post.coverImage,
@@ -75,6 +77,7 @@ export async function getPostBySlug(slug: string, locale: string): Promise<BlogP
             day: "numeric",
             year: "numeric",
         }) ?? "",
+        publishedAt: post.publishedAt,
         tags: post.tags,
         contentHtml: sanitizeRichHtml(getLocalizedStr(post.contentHtml_en, post.contentHtml_tr, locale)),
         coverImage: post.coverImage,

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getPostBySlug } from "@/lib/blog";
+import { articleSchema, BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
 
@@ -15,9 +16,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await getPostBySlug(slug, locale);
     if (!post) return { title: "Not Found" };
 
+    const title = `${post.title} — Orion Studio`;
+    const image = post.coverImage
+        ? post.coverImage.startsWith("http")
+            ? post.coverImage
+            : `${BASE_URL}${post.coverImage}`
+        : `${BASE_URL}/og-image.png`;
+
     return {
-        title: `${post.title} — Orion Studio`,
+        title,
         description: post.description,
+        openGraph: {
+            title,
+            description: post.description,
+            url: `${BASE_URL}/${locale}/blog/${slug}`,
+            type: "article",
+            locale: locale === "tr" ? "tr_TR" : "en_US",
+            publishedTime: post.publishedAt?.toISOString(),
+            images: [{ url: image, width: 1200, height: 630, alt: post.title }],
+            tags: post.tags,
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description: post.description,
+            images: [image],
+        },
+        alternates: {
+            canonical: `${BASE_URL}/${locale}/blog/${slug}`,
+            languages: buildLanguageAlternates(`/blog/${slug}`),
+        },
     };
 }
 
@@ -28,8 +56,22 @@ export default async function BlogPostPage({ params }: Props) {
 
     const t = await getTranslations({ locale, namespace: "blog" });
 
+    const jsonLd = articleSchema({
+        title: post.title,
+        description: post.description,
+        slug: post.slug,
+        locale,
+        datePublished: post.publishedAt?.toISOString(),
+        image: post.coverImage,
+        tags: post.tags,
+    });
+
     return (
         <main className="relative bg-background overflow-hidden">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <section className="relative section-py pt-32">
                 <div className="section-container">
                     <Link

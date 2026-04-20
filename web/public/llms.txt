@@ -1,0 +1,34 @@
+# Orion Studio
+
+> Orion Studio is a digital design and engineering studio crafting brand identities, websites, and digital products for ambitious brands. We combine strategy, design, and frontend engineering to build memorable, performant experiences.
+
+## Services
+
+- Brand Identity & Strategy
+- Web & Product Design (UI/UX)
+- Frontend Engineering
+- Creative Direction
+- Motion & Interaction Design
+
+## Primary Pages
+
+- [Home](https://orion-studio.net/en): Studio overview, philosophy, and featured work
+- [About](https://orion-studio.net/en/about): Team, process, and studio values
+- [Work](https://orion-studio.net/en/work): Case studies of client projects with outcomes and deliverables
+- [Blog](https://orion-studio.net/en/blog): Articles on design, engineering, and creative process
+- [Contact](https://orion-studio.net/en/contact): Project inquiries and collaboration
+
+## Languages
+
+- English: https://orion-studio.net/en
+- Türkçe: https://orion-studio.net/tr
+
+## Contact
+
+- Email: koraykunal85@outlook.com
+- Instagram: https://www.instagram.com/orionstud.io/
+- LinkedIn: https://www.linkedin.com/company/104592237
+
+## Sitemap
+
+- https://orion-studio.net/sitemap.xml

@@ -6,7 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransitions } from "next-view-transitions";
 import { routing } from "../../../i18n/routing";
-import { CONTACT_EMAIL } from "@/lib/socials";
+import { rootGraph, buildLanguageAlternates } from "@/lib/schema";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -68,7 +68,7 @@ export async function generateMetadata({
         },
         alternates: {
             canonical: `${BASE_URL}/${locale}`,
-            languages: { en: `${BASE_URL}/en`, tr: `${BASE_URL}/tr` },
+            languages: buildLanguageAlternates("/"),
         },
         other: { "theme-color": "#0a0a12", "msapplication-TileColor": "#0a0a12" },
     };
@@ -97,25 +97,7 @@ export default async function LocaleLayout({
                     <NextIntlClientProvider messages={messages}>
                         <script
                             type="application/ld+json"
-                            dangerouslySetInnerHTML={{
-                                __html: JSON.stringify({
-                                    "@context": "https://schema.org",
-                                    "@type": "Organization",
-                                    name: "Orion Studio",
-                                    url: BASE_URL,
-                                    logo: `${BASE_URL}/logo.svg`,
-                                    description: "We design and engineer digital products for ambitious brands.",
-                                    sameAs: [
-                                        "https://www.instagram.com/orionstud.io/",
-                                        "https://www.linkedin.com/company/104592237",
-                                    ],
-                                    contactPoint: {
-                                        "@type": "ContactPoint",
-                                        email: CONTACT_EMAIL,
-                                        contactType: "customer service",
-                                    },
-                                }),
-                            }}
+                            dangerouslySetInnerHTML={{ __html: JSON.stringify(rootGraph(locale)) }}
                         />
                         {children}
                     </NextIntlClientProvider>
