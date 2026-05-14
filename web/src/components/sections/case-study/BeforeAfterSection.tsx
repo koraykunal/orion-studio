@@ -9,6 +9,8 @@ import type { BeforeAfterData } from "@/lib/project-types";
 
 export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
     const wrapRef = useRef<HTMLDivElement>(null);
+    const aspect = data.aspectRatio ?? "auto";
+    const useFixedAspect = aspect !== "auto";
 
     useGSAP(() => {
         if (!wrapRef.current) return;
@@ -30,40 +32,58 @@ export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
         });
     }, { scope: wrapRef });
 
+    const renderImage = (src: string, alt: string) => {
+        if (useFixedAspect) {
+            return (
+                <div
+                    className="relative overflow-hidden rounded-lg lg:rounded-xl"
+                    style={{ aspectRatio: aspect }}
+                >
+                    <Image
+                        src={src}
+                        alt={alt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 45vw"
+                        className="object-cover"
+                    />
+                </div>
+            );
+        }
+        return (
+            <div className="relative overflow-hidden rounded-lg lg:rounded-xl">
+                <Image
+                    src={src}
+                    alt={alt}
+                    width={1600}
+                    height={1200}
+                    sizes="(max-width: 768px) 100vw, 45vw"
+                    className="block w-full h-auto"
+                />
+            </div>
+        );
+    };
+
     return (
         <div className="section-container">
-            <div ref={wrapRef} className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-8 items-start">
-                <div className="ba-col space-y-4">
+            <div
+                ref={wrapRef}
+                className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 md:gap-3 lg:gap-4 items-start"
+            >
+                <div className="ba-col space-y-3">
                     <span className="text-label text-foreground-muted">{data.before.label}</span>
-                    <div className="relative overflow-hidden rounded-lg lg:rounded-xl" style={{ aspectRatio: "4/3" }}>
-                        <Image
-                            src={data.before.src}
-                            alt={data.before.alt}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 45vw"
-                            className="object-cover"
-                        />
-                    </div>
+                    {renderImage(data.before.src, data.before.alt)}
                 </div>
 
-                <div className="hidden md:flex items-center justify-center h-full py-12">
+                <div className="hidden md:flex items-stretch justify-center self-stretch py-10">
                     <LineReveal className="w-px h-full rotate-90 origin-center" />
                 </div>
                 <div className="md:hidden">
                     <LineReveal />
                 </div>
 
-                <div className="ba-col space-y-4">
+                <div className="ba-col space-y-3">
                     <span className="text-label text-foreground-muted">{data.after.label}</span>
-                    <div className="relative overflow-hidden rounded-lg lg:rounded-xl" style={{ aspectRatio: "4/3" }}>
-                        <Image
-                            src={data.after.src}
-                            alt={data.after.alt}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 45vw"
-                            className="object-cover"
-                        />
-                    </div>
+                    {renderImage(data.after.src, data.after.alt)}
                 </div>
             </div>
         </div>

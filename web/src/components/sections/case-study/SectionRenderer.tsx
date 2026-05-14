@@ -55,9 +55,9 @@ export function SectionRenderer({ sections }: { sections: Section[] }) {
     if (!sections.length) return null;
 
     return (
-        <div className="cs-sections" style={{ paddingTop: "clamp(3rem, 6vw, 5rem)" }}>
+        <div className="cs-sections" style={{ paddingTop: "clamp(4rem, 7vw, 6.5rem)" }}>
             {sections.map((section) => (
-                <div key={section.id} className="cs-section" style={{ paddingBottom: "clamp(3rem, 6vw, 5rem)" }}>
+                <div key={section.id} className="cs-section" style={{ paddingBottom: "clamp(4rem, 7vw, 6.5rem)" }}>
                     {renderSection(section)}
                 </div>
             ))}

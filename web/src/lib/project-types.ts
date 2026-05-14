@@ -16,14 +16,22 @@ export type DeviceType = "phone" | "tablet" | "laptop" | "desktop";
 export type DeviceItem = { type: DeviceType; image: string; alt: string };
 
 export type FullImageData = { image: string; alt: string };
-export type TextBlockData = { title: string; content: object | null; contentHtml: string };
+export type TextBlockLayout = "side" | "stackedLeft" | "stackedCenter" | "stackedRight";
+export type TextBlockData = {
+    title: string;
+    content: object | null;
+    contentHtml: string;
+    layout?: TextBlockLayout;
+};
 export type GalleryData = { columns: 1 | 2 | 3; images: { src: string; alt: string }[] };
 export type MetricsData = { items: { value: string; label: string }[] };
 export type TechStackData = { items: string[] };
 export type QuoteData = { text: string; author: string; role: string };
+export type BeforeAfterAspect = "auto" | "4/3" | "16/9" | "1/1" | "3/2";
 export type BeforeAfterData = {
     before: { src: string; alt: string; label: string };
     after: { src: string; alt: string; label: string };
+    aspectRatio?: BeforeAfterAspect;
 };
 export type VideoEmbedData = { url: string };
 export type DeviceShowcaseData = { devices: DeviceItem[] };
@@ -102,7 +110,7 @@ export function createEmptySection(type: SectionType): Section {
     const id = crypto.randomUUID();
     const defaults: Record<SectionType, SectionData> = {
         fullImage: { image: "", alt: "" },
-        textBlock: { title: "", content: null, contentHtml: "" },
+        textBlock: { title: "", content: null, contentHtml: "", layout: "side" },
         gallery: { columns: 2, images: [] },
         metrics: { items: [{ value: "", label: "" }] },
         techStack: { items: [] },
@@ -110,6 +118,7 @@ export function createEmptySection(type: SectionType): Section {
         beforeAfter: {
             before: { src: "", alt: "", label: "Before" },
             after: { src: "", alt: "", label: "After" },
+            aspectRatio: "auto",
         },
         videoEmbed: { url: "" },
         deviceShowcase: { devices: [{ type: "laptop", image: "", alt: "" }] },
