@@ -59,7 +59,7 @@ export async function generateMetadata({
             card: "summary_large_image",
             title: t("homeTitle"),
             description: t("homeDescription"),
-            images: ["/og-image.png"],
+            images: [{ url: "/og-image.png", alt: "Orion Studio — Digital Agency" }],
         },
         robots: {
             index: true,

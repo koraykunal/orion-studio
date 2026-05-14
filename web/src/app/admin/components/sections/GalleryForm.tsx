@@ -67,6 +67,7 @@ export default function GalleryForm({
                 value={img.src}
                 onChange={(src) => updateImage(i, "src", src)}
                 label={`Image ${i + 1}`}
+                aspectRatio="auto"
               />
               <Input
                 value={img.alt}

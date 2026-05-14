@@ -7,9 +7,9 @@ import { EASES, STAGGER } from "@/lib/animations/config";
 import type { GalleryData } from "@/lib/project-types";
 
 const columnClasses: Record<1 | 2 | 3, string> = {
-    1: "grid-cols-1",
-    2: "grid-cols-1 md:grid-cols-2",
-    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    1: "columns-1",
+    2: "columns-1 md:columns-2",
+    3: "columns-1 md:columns-2 lg:columns-3",
 };
 
 export function GallerySection({ data }: { data: GalleryData }) {
@@ -41,17 +41,21 @@ export function GallerySection({ data }: { data: GalleryData }) {
 
     return (
         <div className="section-container">
-            <div ref={gridRef} className={`grid ${columnClasses[data.columns]} gap-4 lg:gap-6`}>
+            <div
+                ref={gridRef}
+                className={`${columnClasses[data.columns]} gap-4 lg:gap-6 [column-fill:_balance]`}
+            >
                 {data.images.map((img, i) => (
                     <div
                         key={i}
-                        className="gallery-item relative overflow-hidden rounded-lg lg:rounded-xl"
-                        style={{ aspectRatio: "4/3", clipPath: "inset(8% 8% 8% 8%)" }}
+                        className="gallery-item relative mb-4 lg:mb-6 break-inside-avoid overflow-hidden rounded-lg lg:rounded-xl"
+                        style={{ clipPath: "inset(8% 8% 8% 8%)" }}
                     >
                         <Image
                             src={img.src}
                             alt={img.alt}
-                            fill
+                            width={1600}
+                            height={1200}
                             sizes={
                                 data.columns === 1
                                     ? "100vw"
@@ -59,7 +63,7 @@ export function GallerySection({ data }: { data: GalleryData }) {
                                       ? "(max-width: 768px) 100vw, 50vw"
                                       : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             }
-                            className="object-cover"
+                            className="block w-full h-auto"
                         />
                     </div>
                 ))}

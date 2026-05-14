@@ -20,6 +20,20 @@ const DEVICE_LABELS: Record<DeviceType, string> = {
     desktop: "Desktop Monitor",
 };
 
+const DEVICE_ASPECT: Record<DeviceType, string> = {
+    phone: "393/852",
+    tablet: "820/1180",
+    laptop: "1440/900",
+    desktop: "16/10",
+};
+
+const DEVICE_HINT: Record<DeviceType, string> = {
+    phone: "Önerilen oran: 9:19.5 (örn. 1290×2796)",
+    tablet: "Önerilen oran: 4:5.7 (örn. 1640×2360)",
+    laptop: "Önerilen oran: 16:10 (örn. 2880×1800)",
+    desktop: "Önerilen oran: 16:10 (örn. 2560×1600)",
+};
+
 export default function DeviceShowcaseForm({
     data,
     onChange,
@@ -88,7 +102,11 @@ export default function DeviceShowcaseForm({
                             value={device.image}
                             onChange={(url) => updateDevice(i, "image", url)}
                             label="Screenshot"
+                            aspectRatio={DEVICE_ASPECT[device.type]}
                         />
+                        <p className="text-[11px] text-foreground-muted -mt-1">
+                            {DEVICE_HINT[device.type]}
+                        </p>
                         <Input
                             value={device.alt}
                             onChange={(e) => updateDevice(i, "alt", e.target.value)}

@@ -11,6 +11,7 @@ import type {
     BeforeAfterData,
     VideoEmbedData,
     DeviceShowcaseData,
+    MediaData,
 } from "@/lib/project-types";
 import { FullImageSection } from "./FullImageSection";
 import { TextBlockSection } from "./TextBlockSection";
@@ -21,6 +22,7 @@ import { QuoteSection } from "./QuoteSection";
 import { BeforeAfterSection } from "./BeforeAfterSection";
 import { VideoEmbedSection } from "./VideoEmbedSection";
 import { DeviceShowcaseSection } from "./DeviceShowcaseSection";
+import { MediaSection } from "./MediaSection";
 
 function renderSection(section: Section) {
     switch (section.type) {
@@ -42,6 +44,8 @@ function renderSection(section: Section) {
             return <VideoEmbedSection data={section.data as VideoEmbedData} />;
         case "deviceShowcase":
             return <DeviceShowcaseSection data={section.data as DeviceShowcaseData} />;
+        case "media":
+            return <MediaSection data={section.data as MediaData} />;
         default:
             return null;
     }

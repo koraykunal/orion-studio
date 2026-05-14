@@ -21,6 +21,7 @@ import type {
   BeforeAfterData,
   VideoEmbedData,
   DeviceShowcaseData,
+  MediaData,
 } from "@/lib/project-types";
 import { SECTION_TYPE_LABELS, createEmptySection } from "@/lib/project-types";
 import FullImageForm from "./sections/FullImageForm";
@@ -32,6 +33,7 @@ import QuoteForm from "./sections/QuoteForm";
 import BeforeAfterForm from "./sections/BeforeAfterForm";
 import VideoEmbedForm from "./sections/VideoEmbedForm";
 import DeviceShowcaseForm from "./sections/DeviceShowcaseForm";
+import MediaForm from "./sections/MediaForm";
 
 export function SectionEditor({
   sections,
@@ -140,6 +142,13 @@ export function SectionEditor({
         return (
           <DeviceShowcaseForm
             data={section.data as DeviceShowcaseData}
+            onChange={(d) => handleDataChange(section.id, d)}
+          />
+        );
+      case "media":
+        return (
+          <MediaForm
+            data={section.data as MediaData}
             onChange={(d) => handleDataChange(section.id, d)}
           />
         );

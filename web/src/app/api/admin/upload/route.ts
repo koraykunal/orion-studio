@@ -8,9 +8,15 @@ const MIME_TO_EXT: Record<string, string> = {
   "image/png": ".png",
   "image/webp": ".webp",
   "image/gif": ".gif",
+  "video/mp4": ".mp4",
+  "video/webm": ".webm",
+  "video/quicktime": ".mov",
 };
 
-const MAX_SIZE = 5 * 1024 * 1024;
+const VIDEO_MIMES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 30 * 1024 * 1024;
 
 export async function POST(request: Request) {
   try {
@@ -24,14 +30,17 @@ export async function POST(request: Request) {
     const ext = MIME_TO_EXT[file.type];
     if (!ext) {
       return NextResponse.json(
-        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
+        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF, MP4, WebM, MOV" },
         { status: 400 },
       );
     }
 
-    if (file.size > MAX_SIZE) {
+    const isVideo = VIDEO_MIMES.has(file.type);
+    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (file.size > maxSize) {
+      const limitMb = isVideo ? 30 : 5;
       return NextResponse.json(
-        { error: "File too large. Maximum size is 5MB" },
+        { error: `File too large. Maximum size is ${limitMb}MB` },
         { status: 400 },
       );
     }
