@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
-import { LineReveal } from "@/components/motion/LineReveal";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 import type { BeforeAfterData } from "@/lib/project-types";
 
@@ -67,20 +66,12 @@ export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
         <div className="section-container">
             <div
                 ref={wrapRef}
-                className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 md:gap-3 lg:gap-4 items-start"
+                className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2 lg:gap-3 items-start"
             >
                 <div className="ba-col space-y-3">
                     <span className="text-label text-foreground-muted">{data.before.label}</span>
                     {renderImage(data.before.src, data.before.alt)}
                 </div>
-
-                <div className="hidden md:flex items-stretch justify-center self-stretch py-10">
-                    <LineReveal className="w-px h-full rotate-90 origin-center" />
-                </div>
-                <div className="md:hidden">
-                    <LineReveal />
-                </div>
-
                 <div className="ba-col space-y-3">
                     <span className="text-label text-foreground-muted">{data.after.label}</span>
                     {renderImage(data.after.src, data.after.alt)}
