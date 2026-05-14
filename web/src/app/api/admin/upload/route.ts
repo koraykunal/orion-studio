@@ -13,10 +13,7 @@ const MIME_TO_EXT: Record<string, string> = {
   "video/quicktime": ".mov",
 };
 
-const VIDEO_MIMES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 30 * 1024 * 1024;
+const MAX_SIZE = 30 * 1024 * 1024;
 
 export async function POST(request: Request) {
   try {
@@ -35,12 +32,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const isVideo = VIDEO_MIMES.has(file.type);
-    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
-    if (file.size > maxSize) {
-      const limitMb = isVideo ? 30 : 5;
+    if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: `File too large. Maximum size is ${limitMb}MB` },
+        { error: "File too large. Maximum size is 30MB" },
         { status: 400 },
       );
     }
