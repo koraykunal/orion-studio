@@ -22,7 +22,6 @@ export function Footer() {
         { labelKey: "navStudio",  href: `/${locale}/#capabilities` },
         { labelKey: "navWork",    href: `/${locale}/work` },
         { labelKey: "navBlog",    href: `/${locale}/blog` },
-        { labelKey: "navAbout",   href: `/${locale}/about` },
         { labelKey: "navProcess", href: `/${locale}/#process` },
         { labelKey: "navContact", href: `/${locale}/contact` },
     ];

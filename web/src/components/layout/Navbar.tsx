@@ -29,7 +29,6 @@ export function Navbar() {
         { labelKey: "studio" as const, link: `/${locale}/#capabilities` },
         { labelKey: "work"   as const, link: `/${locale}/work` },
         { labelKey: "blog"   as const, link: `/${locale}/blog` },
-        { labelKey: "about"  as const, link: `/${locale}/about` },
         { labelKey: "contact"as const, link: `/${locale}/contact` },
     ];
 

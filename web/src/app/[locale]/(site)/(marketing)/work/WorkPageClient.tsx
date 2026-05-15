@@ -186,46 +186,61 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 lg:gap-x-12 lg:gap-y-20">
-                            {others.map((project) => (
-                                <div key={project.slug} className="group cursor-pointer">
-                                    <div
-                                        className="relative overflow-hidden rounded-lg"
-                                        style={{ aspectRatio: "4/3" }}
-                                    >
-                                        <Image
-                                            src={project.image}
-                                            alt={`${project.client} — ${project.tagline}`}
-                                            fill
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    </div>
+                            {others.map((project) => {
+                                const hasCaseStudy = project.sections && project.sections.length > 0;
+                                const card = (
+                                    <div className={`group ${hasCaseStudy ? "cursor-pointer" : ""}`}>
+                                        <div
+                                            className="relative overflow-hidden rounded-lg"
+                                            style={{ aspectRatio: "4/3" }}
+                                        >
+                                            <Image
+                                                src={project.image}
+                                                alt={`${project.client} — ${project.tagline}`}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                        </div>
 
-                                    <div className="mt-5 space-y-2">
-                                        <div className="flex items-center justify-between gap-4">
-                                            <h3 className="text-heading">{project.client}</h3>
-                                            <span className="text-index text-foreground-muted shrink-0">{project.year}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="px-2.5 py-1 rounded-full border border-accent/30 text-[0.6rem] uppercase tracking-[0.12em] text-accent">
-                                                {getCategoryLabel(project.category)}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-foreground-muted leading-relaxed max-w-[42ch]">{project.tagline}</p>
-                                        <div className="flex flex-wrap gap-2 pt-1">
-                                            {project.services.map((s) => (
-                                                <span
-                                                    key={s}
-                                                    className="px-2.5 py-1 rounded-full border border-border-subtle text-[0.6rem] uppercase tracking-[0.12em] text-foreground-muted"
-                                                >
-                                                    {s}
+                                        <div className="mt-5 space-y-2">
+                                            <div className="flex items-center justify-between gap-4">
+                                                <h3 className="text-heading">{project.client}</h3>
+                                                <span className="text-index text-foreground-muted shrink-0">{project.year}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="px-2.5 py-1 rounded-full border border-accent/30 text-[0.6rem] uppercase tracking-[0.12em] text-accent">
+                                                    {getCategoryLabel(project.category)}
                                                 </span>
-                                            ))}
+                                            </div>
+                                            <p className="text-sm text-foreground-muted leading-relaxed max-w-[42ch]">{project.tagline}</p>
+                                            <div className="flex flex-wrap gap-2 pt-1">
+                                                {project.services.map((s) => (
+                                                    <span
+                                                        key={s}
+                                                        className="px-2.5 py-1 rounded-full border border-border-subtle text-[0.6rem] uppercase tracking-[0.12em] text-foreground-muted"
+                                                    >
+                                                        {s}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+
+                                return hasCaseStudy ? (
+                                    <Link
+                                        key={project.slug}
+                                        href={`/${locale}/work/${project.slug}`}
+                                        data-cursor="hover"
+                                    >
+                                        {card}
+                                    </Link>
+                                ) : (
+                                    <div key={project.slug}>{card}</div>
+                                );
+                            })}
                         </div>
                     </div>
                 </section>
