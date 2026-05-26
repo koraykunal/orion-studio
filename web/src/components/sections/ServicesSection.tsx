@@ -76,7 +76,7 @@ function ServiceItem({
                         <span className="text-index text-foreground-subtle">
                             0{index + 1}
                         </span>
-                        <h3 className="text-heading group-hover:translate-x-2 transition-transform duration-300">
+                        <h3 className="text-heading">
                             {title}
                         </h3>
                     </div>
@@ -84,22 +84,6 @@ function ServiceItem({
                         {description}
                     </p>
                 </div>
-
-                <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    className="mt-1 opacity-0 group-hover:opacity-60 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 shrink-0"
-                >
-                    <path
-                        d="M1 15L15 1M15 1H5M15 1V11"
-                        stroke="currentColor"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
             </div>
         </div>
     );

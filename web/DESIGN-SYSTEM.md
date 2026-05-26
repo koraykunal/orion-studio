@@ -1,12 +1,12 @@
 # Orion Studio — Design System
 
-> Dark, violet-accented digital agency aesthetic with grainy texture overlay, cinematic animations, and OKLCh color space.
+> Dark, violet-accented (with amber/gold warm accent) digital agency aesthetic with grainy texture overlay, cinematic animations, and OKLCh color space.
 
 ---
 
 ## 1. Overview
 
-**Theme:** Dark mode only, deep navy backgrounds with lavender/violet accents.
+**Theme:** Dark mode only, deep navy backgrounds with lavender/violet accents and an amber/gold warm accent.
 **Aesthetic:** Grainy texture, constellation motifs, cinematic scroll-driven animations.
 **Tech stack:** Next.js 16 (App Router), React 19, Tailwind CSS 4.1 (OKLCh), GSAP 3.14, Lenis smooth scroll, Canvas-based effects.
 
@@ -38,7 +38,7 @@ All colors use **OKLCh** color space for perceptual uniformity.
 | Token               | Value                     | Usage              |
 |----------------------|---------------------------|--------------------|
 | `--accent`           | `oklch(0.72 0.15 295)`   | Primary accent     |
-| `--accent-warm`      | `oklch(0.65 0.18 310)`   | Warm variant       |
+| `--accent-warm`      | `oklch(0.80 0.13 80)`    | Warm variant (amber/gold) |
 | `--accent-bright`    | `oklch(0.82 0.12 290)`   | Bright variant     |
 | `--accent-foreground`| `oklch(0.08 0.012 280)`  | Text on accent bg  |
 
@@ -52,10 +52,19 @@ All colors use **OKLCh** color space for perceptual uniformity.
 
 ### Glows
 
-| Token           | Value                              | Usage           |
-|-----------------|-------------------------------------|-----------------|
-| `--glow`        | `oklch(0.72 0.15 295 / 0.10)`     | Subtle glow     |
-| `--glow-strong` | `oklch(0.72 0.15 295 / 0.22)`     | Hover glow      |
+| Token           | Value                              | Usage                       |
+|-----------------|-------------------------------------|-----------------------------|
+| `--glow-subtle` | `oklch(0.72 0.15 295 / 0.04)`     | Ambient radial washes       |
+| `--glow`        | `oklch(0.72 0.15 295 / 0.10)`     | Subtle glow                 |
+| `--glow-strong` | `oklch(0.72 0.15 295 / 0.22)`     | Hover glow                  |
+
+### Semantic status
+
+| Token           | Value                     | Usage                |
+|-----------------|---------------------------|----------------------|
+| `--success`     | `oklch(0.72 0.15 155)`   | Success messages     |
+| `--destructive` | `oklch(0.62 0.22 25)`    | Errors / destructive |
+| `--secondary`   | `var(--surface-2)`       | shadcn secondary (admin) |
 
 ---
 
@@ -63,23 +72,23 @@ All colors use **OKLCh** color space for perceptual uniformity.
 
 ### Fonts
 
-| Variable                 | Font             | Role           |
-|--------------------------|------------------|----------------|
-| `--font-display-custom`  | Myglaos          | Display/hero   |
-| `--font-unica`           | Unica One        | ORION title    |
-| `--font-bechilo`         | Bechilo          | Editorial      |
-| `--font-centralwell`     | Centralwell      | Decorative     |
-| `--font-arcane`          | Arcane Whispers  | Decorative     |
-| `--font-space`           | Space Grotesk    | Interface/sans |
-| `--font-inter`           | Inter            | Fallback sans  |
-| `--font-mono`            | JetBrains Mono   | Data/code      |
+| Variable             | Font                | Role                       |
+|----------------------|---------------------|----------------------------|
+| `--font-rh-display`  | Red Hat Display     | Display, headings, logo    |
+| `--font-bricolage`   | Bricolage Grotesque | Interface / body (default) |
+| `--font-rh-mono`     | Red Hat Mono        | Numbers, metrics, index    |
+
+Semantic CSS variables (in `globals.css`):
+- `--font-sans` → Bricolage Grotesque (body default)
+- `--font-display` → Red Hat Display (`.text-hero`, `.text-display`)
+- `--font-mono` → Red Hat Mono (`.text-metric`, `.text-index`)
 
 ### Utility Classes
 
 | Class            | Size                          | Line Height | Weight | Notes                    |
 |------------------|-------------------------------|-------------|--------|--------------------------|
-| `.text-display`  | `clamp(6.5rem, 13vw, 15rem)` | 0.88        | 400    | Unica One, color: beige  |
-| `.text-hero`     | `clamp(2.5rem, 6.5vw, 8rem)` | 0.88        | 400    | Myglaos, uppercase       |
+| `.text-display`  | `clamp(6.5rem, 13vw, 15rem)` | 0.88        | 400    | Red Hat Display          |
+| `.text-hero`     | `clamp(2.5rem, 6.5vw, 8rem)` | 0.88        | 400    | Red Hat Display, uppercase |
 | `.text-title`    | `clamp(2rem, 4vw, 4.5rem)`   | 1.0         | 500    |                          |
 | `.text-heading`  | `clamp(1.5rem, 2.5vw, 2.5rem)` | 1.1       | 500    |                          |
 | `.text-body-lg`  | `clamp(1.0625rem, 1.25vw, 1.25rem)` | 1.65 | —      |                          |

@@ -45,7 +45,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
     const inner = (
         <div
             ref={cardRef}
-            className="shrink-0 w-[75vw] lg:w-[45vw] group transition-transform duration-500 ease-out hover:-translate-y-1"
+            className="shrink-0 w-full md:w-[75vw] lg:w-[45vw] group transition-transform duration-500 ease-out hover:-translate-y-1"
         >
             <div
                 ref={imageWrapRef}
@@ -65,7 +65,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <span className="text-index text-foreground-subtle">0{index + 1}</span>
-                        <span className="px-2 py-0.5 rounded-full border border-accent/30 text-[0.55rem] uppercase tracking-[0.12em] text-accent">
+                        <span className="px-2 py-0.5 rounded-full border border-accent/30 text-caption text-accent">
                             {getCategoryLabel(item.category)}
                         </span>
                     </div>
@@ -102,35 +102,41 @@ export function WorkSection({ projects }: { projects: Project[] }) {
     }));
 
     useGSAP(() => {
-        if (!sectionRef.current || !trackRef.current) return;
+        const mm = gsap.matchMedia();
 
-        const track = trackRef.current;
-        const totalScroll = track.scrollWidth - window.innerWidth;
+        mm.add("(min-width: 768px)", () => {
+            if (!sectionRef.current || !trackRef.current) return;
 
-        if (totalScroll <= 0) return;
+            const track = trackRef.current;
+            const totalScroll = track.scrollWidth - window.innerWidth;
 
-        gsap.to(track, {
-            x: -totalScroll,
-            ease: "none",
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: () => `+=${totalScroll}`,
-                pin: true,
-                scrub: 1,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-            },
+            if (totalScroll <= 0) return;
+
+            gsap.to(track, {
+                x: -totalScroll,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top top",
+                    end: () => `+=${totalScroll}`,
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                },
+            });
         });
+
+        return () => mm.revert();
     }, { scope: sectionRef });
 
     return (
         <section ref={sectionRef} className="bg-background overflow-hidden" id="work">
             <div
                 ref={trackRef}
-                className="flex items-start gap-8 lg:gap-12 pl-6 md:pl-12 lg:pl-[max(3rem,calc((100vw-1400px)/2+3rem))] pt-24 lg:pt-32 pb-24 lg:pb-32"
+                className="flex flex-col gap-16 container-px py-24 md:flex-row md:items-start md:gap-8 lg:gap-12 md:px-0 md:py-0 md:pl-12 lg:pl-[max(3rem,calc((100vw-1400px)/2+3rem))] md:pt-24 lg:pt-32 md:pb-24 lg:pb-32"
             >
-                <div className="shrink-0 w-[75vw] lg:w-[30vw] flex flex-col justify-center pr-8 lg:pr-0">
+                <div className="shrink-0 w-full md:w-[75vw] lg:w-[30vw] flex flex-col justify-center md:pr-8 lg:pr-0">
                     <span className="text-index text-foreground-subtle mb-6">{t("workLabel")}</span>
                     <TextReveal as="h2" type="lines" className="text-title">
                         {t("workTitle")}
@@ -144,7 +150,7 @@ export function WorkSection({ projects }: { projects: Project[] }) {
                     <WorkCard key={item.client} item={item} index={i} />
                 ))}
 
-                <div className="shrink-0 w-[10vw]" />
+                <div className="hidden md:block shrink-0 w-[10vw]" />
             </div>
         </section>
     );

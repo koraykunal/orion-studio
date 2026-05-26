@@ -189,7 +189,7 @@ export default function AboutPage() {
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "radial-gradient(ellipse 60% 50% at 70% 30%, oklch(0.72 0.15 295 / 0.04), transparent 70%)",
+                        background: "radial-gradient(ellipse 60% 50% at 70% 30%, var(--glow-subtle), transparent 70%)",
                     }}
                 />
 
@@ -331,11 +331,15 @@ export default function AboutPage() {
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "radial-gradient(ellipse 50% 60% at 50% 50%, oklch(0.72 0.15 295 / 0.05), transparent 70%)",
+                        background: "radial-gradient(ellipse 50% 60% at 50% 50%, var(--glow-subtle), transparent 70%)",
                     }}
                 />
 
                 <div className="relative z-10 section-container text-center space-y-8">
+                    <span className="inline-flex items-center gap-2 text-caption text-accent-warm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-warm" />
+                        {t("availabilityLabel")}
+                    </span>
                     <TextReveal as="h2" type="words" className="text-title">
                         {t("ctaTitle")}
                     </TextReveal>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
@@ -41,6 +41,23 @@ export function Navbar() {
         setMenuOpen((prev) => !prev);
     }, []);
 
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setMenuOpen(false);
+        };
+        window.addEventListener("keydown", onKeyDown);
+
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            window.removeEventListener("keydown", onKeyDown);
+        };
+    }, [menuOpen]);
+
     const containerRef = useRef<HTMLDivElement>(null);
     const dreamRef = useRef<HTMLSpanElement>(null);
     const orionRef = useRef<HTMLSpanElement>(null);
@@ -74,7 +91,7 @@ export function Navbar() {
     }, { scope: containerRef });
 
     const textStyle = {
-        fontFamily: "var(--font-unica)",
+        fontFamily: "var(--font-rh-display)",
         fontSize: "clamp(0.75rem, 1.1vw, 0.95rem)",
         letterSpacing: "0.12em",
         lineHeight: "1.2",
@@ -151,7 +168,7 @@ export function Navbar() {
 
                         <button
                             onClick={toggleMenu}
-                            className="md:hidden relative w-8 h-8 flex items-center justify-center"
+                            className="md:hidden relative w-11 h-11 -mr-2 flex items-center justify-center"
                             aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
                             aria-expanded={menuOpen}
                         >

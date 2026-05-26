@@ -51,7 +51,7 @@ export function MediaSection({ data }: { data: MediaData }) {
                         poster={data.poster || undefined}
                         autoPlay={data.autoplay}
                         loop={data.loop}
-                        controls={data.controls}
+                        controls={data.controls || !data.autoplay}
                         muted
                         playsInline
                         preload="metadata"

@@ -1,16 +1,20 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { gsap, useGSAP, DrawSVGPlugin } from "@/lib/animations/gsap";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 import { OrionMark } from "@/components/effects/OrionMark";
 
+const THEM_FRAME = "w-full aspect-[4/3] rounded-lg bg-surface-1/70 border border-border-subtle overflow-hidden grayscale opacity-50 contrast-[0.92]";
+const US_FRAME = "w-full aspect-[4/3] rounded-xl bg-surface-1 border border-border-bright overflow-hidden relative glow-warm shadow-[0_24px_64px_-20px_rgba(0,0,0,0.7)] ring-1 ring-inset ring-foreground/[0.05]";
+
 /* ── Abstract Mockup Sub-components ─────────────────── */
 
 function ThemMockup1() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-subtle overflow-hidden grayscale opacity-80">
+        <div className={THEM_FRAME}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border-subtle">
                 <div className="flex gap-1.5">
                     <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-foreground-subtle/40" />
@@ -39,7 +43,7 @@ function ThemMockup1() {
 
 function UsMockup1() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-bright overflow-hidden relative glow-accent">
+        <div className={US_FRAME}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border">
                 <div className="flex gap-1.5">
                     <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-accent/60" />
@@ -53,10 +57,10 @@ function UsMockup1() {
                     <div className="w-8 md:w-12 h-1.5 md:h-2 rounded-full bg-foreground/25" />
                 </div>
             </div>
-            <div className="mx-3 md:mx-5 mt-3 md:mt-4 h-[35%] rounded-md relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-surface-2 to-accent-warm/15" />
+            <div className="mx-3 md:mx-5 mt-3 md:mt-4 h-[35%] rounded-md relative overflow-hidden border border-accent/15">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/25 via-surface-2 to-accent-warm/20" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] md:text-sm font-medium tracking-[0.3em] uppercase text-foreground/70">ORION</span>
+                    <Image src="/logo.svg" alt="Orion Studio" width={40} height={40} className="w-7 h-7 md:w-10 md:h-10 opacity-90" />
                 </div>
             </div>
             <div className="flex gap-2 md:gap-3 mx-3 md:mx-5 mt-2 md:mt-3">
@@ -76,7 +80,7 @@ function UsMockup1() {
 
 function ThemMockup2() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-subtle overflow-hidden grayscale opacity-80">
+        <div className={THEM_FRAME}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border-subtle">
                 <div className="flex gap-1.5">
                     <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-foreground-subtle/40" />
@@ -103,7 +107,7 @@ function ThemMockup2() {
 
 function UsMockup2() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-bright overflow-hidden relative glow-accent">
+        <div className={US_FRAME}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border">
                 <span className="text-[7px] md:text-[9px] font-mono tracking-wider text-foreground-muted uppercase">Design System</span>
             </div>
@@ -156,7 +160,7 @@ function UsMockup2() {
 
 function ThemMockup3() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-subtle overflow-hidden grayscale opacity-80 relative">
+        <div className={`${THEM_FRAME} relative`}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border-subtle">
                 <div className="flex gap-1.5">
                     <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-foreground-subtle/40" />
@@ -181,7 +185,7 @@ function ThemMockup3() {
 
 function UsMockup3() {
     return (
-        <div className="w-full aspect-[4/3] rounded-lg bg-surface-1 border border-border-bright overflow-hidden relative glow-accent">
+        <div className={US_FRAME}>
             <div className="flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-3 border-b border-border">
                 <span className="text-[7px] md:text-[9px] font-mono tracking-wider text-foreground-muted uppercase">Interaction</span>
             </div>
@@ -251,82 +255,11 @@ export function ComparisonSection() {
 
         const section = sectionRef.current;
         const sticky = stickyRef.current;
-        const isMobile = window.matchMedia("(max-width: 767px)").matches;
-
         const sectionLabel = sticky.querySelector<HTMLElement>(".comp-section-label");
 
-        if (sectionLabel) gsap.set(sectionLabel, { opacity: 0, y: 12 });
+        const mm = gsap.matchMedia();
 
-        const entranceTl = gsap.timeline({
-            scrollTrigger: {
-                trigger: section,
-                start: "top 70%",
-                toggleActions: "play none none none",
-            },
-        });
-
-        /* ── Scrub timeline ── */
-        const mainTl = gsap.timeline({
-            scrollTrigger: {
-                trigger: section,
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 1.2,
-            },
-        });
-
-        if (isMobile) {
-            /* ═══ MOBILE ═══ */
-            const mobileWrap = sticky.querySelector<HTMLElement>(".comp-mobile");
-            if (!mobileWrap) return;
-            const pairs = mobileWrap.querySelectorAll<HTMLElement>(".comp-pair");
-            if (!pairs.length) return;
-
-            pairs.forEach((p, i) => {
-                gsap.set(p, {
-                    zIndex: pairs.length - i,
-                    clipPath: "inset(0 0 0 0)",
-                });
-            });
-
-            gsap.set(mobileWrap, { opacity: 0, yPercent: 8 });
-
-            mainTl.to(mobileWrap, {
-                opacity: 1, yPercent: 0,
-                duration: 0.18,
-                ease: "none",
-            }, 0);
-
-            if (sectionLabel) {
-                mainTl.fromTo(sectionLabel,
-                    { opacity: 0, y: 12 },
-                    { opacity: 1, y: 0, duration: 0.12, ease: "none" },
-                    0.04,
-                );
-            }
-
-            for (let i = 0; i < pairs.length - 1; i++) {
-                const transStart = 0.22 + i * 0.28;
-                const transDur = 0.16;
-
-                mainTl.to(pairs[i], {
-                    clipPath: "inset(0 0 100% 0)",
-                    duration: transDur,
-                    ease: "none",
-                }, transStart);
-            }
-
-            mainTl.to(mobileWrap, {
-                scale: 0.95, opacity: 0,
-                duration: 0.12, ease: "none",
-            }, 0.84);
-
-            if (sectionLabel) {
-                mainTl.to(sectionLabel, { opacity: 0, duration: 0.06, ease: "none" }, 0.84);
-            }
-
-        } else {
-            /* ═══ DESKTOP ═══ */
+        mm.add("(min-width: 768px)", () => {
             const leftScenes = sticky.querySelectorAll<HTMLElement>(".comp-left .comp-scene");
             const rightScenes = sticky.querySelectorAll<HTMLElement>(".comp-right .comp-scene");
             const leftPanel = sticky.querySelector<HTMLElement>(".comp-left");
@@ -337,89 +270,81 @@ export function ComparisonSection() {
             const numScenes = Math.min(leftScenes.length, rightScenes.length);
             if (!numScenes || !leftPanel || !rightPanel) return;
 
+            const entranceTl = gsap.timeline({
+                scrollTrigger: { trigger: section, start: "top 70%", toggleActions: "play none none none" },
+            });
+            const mainTl = gsap.timeline({
+                scrollTrigger: { trigger: section, start: "top top", end: "bottom bottom", scrub: 1.2 },
+            });
+
             leftScenes.forEach((s, i) => {
-                gsap.set(s, {
-                    zIndex: leftScenes.length - i,
-                    clipPath: i === 0 ? "inset(0 0 0 0)" : "inset(100% 0 0 0)",
-                });
+                gsap.set(s, { zIndex: leftScenes.length - i, clipPath: i === 0 ? "inset(0 0 0 0)" : "inset(100% 0 0 0)" });
             });
             rightScenes.forEach((s, i) => {
-                gsap.set(s, {
-                    zIndex: rightScenes.length - i,
-                    clipPath: i === 0 ? "inset(0 0 0 0)" : "inset(100% 0 0 0)",
-                });
+                gsap.set(s, { zIndex: rightScenes.length - i, clipPath: i === 0 ? "inset(0 0 0 0)" : "inset(100% 0 0 0)" });
             });
 
             gsap.set(leftPanel, { clipPath: "inset(0 100% 0 0)" });
             gsap.set(rightPanel, { clipPath: "inset(0 0 0 100%)" });
-
             if (dividerLine) gsap.set(dividerLine, { drawSVG: "50% 50%" });
             if (headers) gsap.set(headers, { opacity: 0, y: 8 });
 
             if (dividerLine) {
-                entranceTl.to(dividerLine, {
-                    drawSVG: "0% 100%",
-                    duration: 1.2,
-                    ease: EASES.brand,
-                }, 0);
+                entranceTl.to(dividerLine, { drawSVG: "0% 100%", duration: 1.2, ease: EASES.brand }, 0);
             }
-
-            entranceTl.to(leftPanel, {
-                clipPath: "inset(0 0% 0 0)",
-                duration: DURATIONS.slow,
-                ease: EASES.brand,
-            }, 0.3);
-
-            entranceTl.to(rightPanel, {
-                clipPath: "inset(0 0 0 0%)",
-                duration: DURATIONS.slow,
-                ease: EASES.brand,
-            }, 0.3);
-
+            entranceTl.to(leftPanel, { clipPath: "inset(0 0% 0 0)", duration: DURATIONS.slow, ease: EASES.brand }, 0.3);
+            entranceTl.to(rightPanel, { clipPath: "inset(0 0 0 0%)", duration: DURATIONS.slow, ease: EASES.brand }, 0.3);
             if (headers) {
-                entranceTl.to(headers, {
-                    opacity: 1, y: 0,
-                    duration: DURATIONS.base,
-                    ease: EASES.expo,
-                }, 0.5);
+                entranceTl.to(headers, { opacity: 1, y: 0, duration: DURATIONS.base, ease: EASES.expo }, 0.5);
             }
 
             for (let i = 0; i < numScenes - 1; i++) {
                 const transStart = 0.22 + i * 0.28;
                 const transDur = 0.16;
-
                 mainTl.set(leftScenes[i + 1], { clipPath: "inset(0 0 0 0)" }, transStart - 0.001);
                 mainTl.set(rightScenes[i + 1], { clipPath: "inset(0 0 0 0)" }, transStart - 0.001);
-
                 mainTl.to(leftScenes[i], { clipPath: "inset(0 0 100% 0)", duration: transDur, ease: "none" }, transStart);
                 mainTl.to(rightScenes[i], { clipPath: "inset(0 0 100% 0)", duration: transDur, ease: "none" }, transStart);
             }
 
             const exitStart = 0.84;
+            mainTl.to(leftPanel, { scale: 0.92, opacity: 0, duration: 0.12, ease: "none" }, exitStart);
+            if (dividerLine) mainTl.to(dividerLine, { opacity: 0, duration: 0.08, ease: "none" }, exitStart);
+            if (headers) mainTl.to(headers, { opacity: 0, duration: 0.06, ease: "none" }, exitStart);
+            mainTl.to(rightPanel, { scale: 0.95, opacity: 0, duration: 0.12, ease: "none" }, exitStart + 0.04);
+        });
 
-            mainTl.to(leftPanel, {
-                scale: 0.92, opacity: 0,
-                duration: 0.12, ease: "none",
-            }, exitStart);
+        mm.add("(max-width: 767px)", () => {
+            const mobileWrap = sticky.querySelector<HTMLElement>(".comp-mobile");
+            if (!mobileWrap) return;
+            const pairs = mobileWrap.querySelectorAll<HTMLElement>(".comp-pair");
+            if (!pairs.length) return;
 
-            if (dividerLine) {
-                mainTl.to(dividerLine, { opacity: 0, duration: 0.08, ease: "none" }, exitStart);
-            }
+            const mainTl = gsap.timeline({
+                scrollTrigger: { trigger: section, start: "top top", end: "bottom bottom", scrub: 1.2 },
+            });
 
+            if (sectionLabel) gsap.set(sectionLabel, { opacity: 0, y: 12 });
+            pairs.forEach((p, i) => {
+                gsap.set(p, { zIndex: pairs.length - i, clipPath: "inset(0 0 0 0)" });
+            });
+            gsap.set(mobileWrap, { opacity: 0, yPercent: 8 });
+
+            mainTl.to(mobileWrap, { opacity: 1, yPercent: 0, duration: 0.18, ease: "none" }, 0);
             if (sectionLabel) {
-                mainTl.to(sectionLabel, { opacity: 0, y: -10, duration: 0.06, ease: "none" }, exitStart);
+                mainTl.fromTo(sectionLabel, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.12, ease: "none" }, 0.04);
             }
 
-            if (headers) {
-                mainTl.to(headers, { opacity: 0, duration: 0.06, ease: "none" }, exitStart);
+            for (let i = 0; i < pairs.length - 1; i++) {
+                const transStart = 0.22 + i * 0.28;
+                mainTl.to(pairs[i], { clipPath: "inset(0 0 100% 0)", duration: 0.16, ease: "none" }, transStart);
             }
 
-            mainTl.to(rightPanel, {
-                scale: 0.95, opacity: 0,
-                duration: 0.12, ease: "none",
-            }, exitStart + 0.04);
-        }
+            mainTl.to(mobileWrap, { scale: 0.95, opacity: 0, duration: 0.12, ease: "none" }, 0.84);
+            if (sectionLabel) mainTl.to(sectionLabel, { opacity: 0, duration: 0.06, ease: "none" }, 0.84);
+        });
 
+        return () => mm.revert();
     }, { scope: sectionRef });
 
     return (
@@ -429,7 +354,7 @@ export function ComparisonSection() {
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "radial-gradient(ellipse 60% 50% at 50% 50%, oklch(0.72 0.15 295 / 0.025), transparent 70%)",
+                        background: "radial-gradient(ellipse 60% 50% at 50% 50%, var(--glow-subtle), transparent 70%)",
                     }}
                 />
 
@@ -460,7 +385,7 @@ export function ComparisonSection() {
 
                                 <div>
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="text-[9px] font-medium tracking-[0.2em] uppercase text-accent/80">{t("compHeaderUs")}</span>
+                                        <Image src="/logo.svg" alt="Orion Studio" width={16} height={16} className="w-3.5 h-3.5" />
                                         <span className="text-sm text-foreground font-medium">{comp.us.label}</span>
                                     </div>
                                     <UsMockup />
@@ -476,7 +401,7 @@ export function ComparisonSection() {
                         <span className="text-label text-foreground-muted tracking-[0.25em]">{t("compHeaderThem")}</span>
                     </div>
                     <div className="w-1/2 flex justify-center">
-                        <span className="text-label text-accent tracking-[0.25em]">{t("compHeaderUs")}</span>
+                        <Image src="/logo.svg" alt="Orion Studio" width={28} height={28} className="w-6 h-6" />
                     </div>
                 </div>
 

@@ -44,7 +44,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
                                 href={`/${locale}/blog/${post.slug}`}
                                 className="group block py-8 border-b border-border-subtle hover:border-border transition-colors duration-300"
                             >
-                                <div className="flex items-start justify-between gap-8">
+                                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-8">
                                     <div className="flex-1 space-y-3">
                                         <h2 className="text-heading group-hover:text-accent transition-colors duration-300">{post.title}</h2>
                                         <p className="text-body text-foreground-muted max-w-[60ch]">{post.description}</p>
@@ -55,7 +55,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
                                             ))}
                                         </div>
                                     </div>
-                                    <span className="text-label text-foreground-subtle group-hover:text-accent transition-colors duration-300 shrink-0 mt-1">{t("readMore")}</span>
+                                    <span className="text-label text-foreground-subtle group-hover:text-accent transition-colors duration-300 shrink-0 md:mt-1">{t("readMore")}</span>
                                 </div>
                             </Link>
                         ))}

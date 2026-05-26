@@ -37,7 +37,7 @@ export function MetricsSection({ data }: { data: MetricsData }) {
                 <div ref={gridRef} className={`grid grid-cols-2 md:grid-cols-3 ${cols} gap-8 lg:gap-12`}>
                     {data.items.map((metric, i) => (
                         <div key={i} className="metric-item text-center lg:text-left space-y-2">
-                            <span className="block text-[clamp(2rem,4vw,3.5rem)] font-light tracking-tight text-foreground font-mono leading-none">
+                            <span className="block text-metric text-[clamp(2rem,4vw,3.5rem)] text-accent-warm">
                                 {metric.value}
                             </span>
                             <span className="block text-label text-foreground-muted mt-3">

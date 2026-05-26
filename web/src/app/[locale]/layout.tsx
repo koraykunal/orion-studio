@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Sora, Unica_One, Playfair_Display } from "next/font/google";
-import localFont from "next/font/local";
+import { Red_Hat_Display, Bricolage_Grotesque, Red_Hat_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -9,21 +8,14 @@ import { routing } from "../../../i18n/routing";
 import { rootGraph, buildLanguageAlternates } from "@/lib/schema";
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space", display: "swap" });
-const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap", weight: ["600", "700"] });
-const unica = Unica_One({ variable: "--font-unica", display: "swap", weight: "400" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap", weight: ["400", "500", "600"], style: ["normal", "italic"] });
-const myglaos = localFont({ src: "../../fonts/Myglaos.woff", variable: "--font-display-custom", display: "swap", weight: "400" });
-const bechilo = localFont({ src: "../../fonts/bechilo.woff", variable: "--font-bechilo", display: "swap", weight: "400" });
-const centralwell = localFont({ src: "../../fonts/Centralwell.ttf", variable: "--font-centralwell", display: "swap", weight: "400" });
-const arcaneWhispers = localFont({ src: "../../fonts/ArcaneWhispers.ttf", variable: "--font-arcane", display: "swap", weight: "400" });
+const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700", "800", "900"], style: ["normal", "italic"] });
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap", weight: ["400", "500", "600", "700"] });
+const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
 
 const BASE_URL = "https://orion-studio.net";
 
 const fontVariables = [
-    inter.variable, spaceGrotesk.variable, sora.variable, unica.variable,
-    playfair.variable, myglaos.variable, bechilo.variable, centralwell.variable, arcaneWhispers.variable,
+    redHatDisplay.variable, bricolage.variable, redHatMono.variable,
 ].join(" ");
 
 export async function generateMetadata({

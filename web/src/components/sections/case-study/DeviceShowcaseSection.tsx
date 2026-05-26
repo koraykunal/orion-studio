@@ -242,7 +242,7 @@ export function DeviceShowcaseSection({ data }: { data: DeviceShowcaseData }) {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] w-[60%] h-[80%]">
                     <OrionMark variant="minimal" lineOpacity={0.03} globalOpacity={0.15} rotate={12} bgStarCount={15} />
                 </div>
-                <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full" style={{ background: "radial-gradient(ellipse 60% 50%, oklch(0.72 0.15 295 / 0.06) 0%, transparent 70%)" }} />
+                <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full" style={{ background: "radial-gradient(ellipse 60% 50%, var(--glow-subtle) 0%, transparent 70%)" }} />
                 <div className="absolute bottom-0 left-0 right-0 h-[30%]" style={{ background: "linear-gradient(to top, var(--background) 0%, transparent 100%)" }} />
             </div>
 
@@ -266,27 +266,32 @@ export function DeviceShowcaseSection({ data }: { data: DeviceShowcaseData }) {
                         </div>
                     </div>
                 ) : isMixed && count > 2 ? (
-                    <div className="relative mx-auto flex items-end justify-center" style={{ maxWidth: "1100px" }}>
-                        {[...small, ...large].map((d, i) => (
-                            <div
-                                key={i}
-                                className="dv-wrap relative"
-                                style={{
-                                    width: d.type === "phone" ? "clamp(52px,8vw,100px)"
-                                        : d.type === "tablet" ? "clamp(80px,14vw,175px)"
-                                        : d.type === "laptop" ? "clamp(180px,32vw,390px)"
-                                        : undefined,
-                                    flex: d.type === "desktop" ? "1 1 0" : undefined,
-                                    maxWidth: d.type === "desktop" ? "620px" : undefined,
-                                    zIndex: d.type === "desktop" ? 10 : 20,
-                                    marginLeft: i > 0 ? "clamp(-12px,-2vw,-24px)" : undefined,
-                                    filter: d.type !== "desktop" ? "drop-shadow(0 12px 32px rgba(0,0,0,0.55))" : undefined,
-                                }}
-                            >
-                                <Device device={d} />
-                            </div>
-                        ))}
-                    </div>
+                    <>
+                        <div className="hidden sm:flex relative mx-auto items-end justify-center" style={{ maxWidth: "1100px" }}>
+                            {[...small, ...large].map((d, i) => (
+                                <div
+                                    key={i}
+                                    className="dv-wrap relative"
+                                    style={{
+                                        width: d.type === "phone" ? "clamp(52px,8vw,100px)"
+                                            : d.type === "tablet" ? "clamp(80px,14vw,175px)"
+                                            : d.type === "laptop" ? "clamp(180px,32vw,390px)"
+                                            : undefined,
+                                        flex: d.type === "desktop" ? "1 1 0" : undefined,
+                                        maxWidth: d.type === "desktop" ? "620px" : undefined,
+                                        zIndex: d.type === "desktop" ? 10 : 20,
+                                        marginLeft: i > 0 ? "clamp(-12px,-2vw,-24px)" : undefined,
+                                        filter: d.type !== "desktop" ? "drop-shadow(0 12px 32px rgba(0,0,0,0.55))" : undefined,
+                                    }}
+                                >
+                                    <Device device={d} />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="block sm:hidden">
+                            <MobileShowcaseLayout devices={devices} />
+                        </div>
+                    </>
                 ) : count === 1 ? (
                     <div className="dv-wrap mx-auto" style={{ width: devices[0].type === "phone" ? "clamp(180px,30vw,280px)" : devices[0].type === "tablet" ? "clamp(260px,40vw,420px)" : "clamp(320px,70vw,780px)" }}>
                         <Device device={devices[0]} />

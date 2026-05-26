@@ -171,7 +171,7 @@ export function Footer() {
             <div className="w-full overflow-hidden">
                 <div ref={brandRef} className="select-none pointer-events-none px-4">
                     <p
-                        className="font-[var(--font-unica)] leading-[0.85] tracking-[-0.04em] text-foreground/[0.04] whitespace-nowrap text-center"
+                        className="font-[var(--font-rh-display)] leading-[0.85] tracking-[-0.04em] text-foreground/[0.04] whitespace-nowrap text-center"
                         style={{ fontSize: "clamp(3rem, 14vw, 18rem)" }}
                     >
                         ORION STUDIO

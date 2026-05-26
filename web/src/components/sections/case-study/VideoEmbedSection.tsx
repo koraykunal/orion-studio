@@ -39,6 +39,7 @@ export function VideoEmbedSection({ data }: { data: VideoEmbedData }) {
             <div ref={wrapRef} className="relative aspect-video overflow-hidden rounded-lg lg:rounded-xl">
                 <iframe
                     src={toEmbedUrl(data.url)}
+                    title="Project video"
                     className="absolute inset-0 w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

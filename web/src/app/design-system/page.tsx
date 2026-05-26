@@ -8,7 +8,7 @@ export default function DesignSystemPage() {
         { name: "foreground-muted", token: "--foreground-muted", value: "oklch(0.55 0.012 275)" },
         { name: "foreground-subtle", token: "--foreground-subtle", value: "oklch(0.34 0.010 278)" },
         { name: "accent", token: "--accent", value: "oklch(0.72 0.15 295)" },
-        { name: "accent-warm", token: "--accent-warm", value: "oklch(0.65 0.18 310)" },
+        { name: "accent-warm", token: "--accent-warm", value: "oklch(0.80 0.13 80)" },
         { name: "accent-bright", token: "--accent-bright", value: "oklch(0.82 0.12 290)" },
         { name: "border", token: "--border", value: "oklch(0.22 0.008 278)" },
         { name: "border-subtle", token: "--border-subtle", value: "oklch(0.15 0.006 278)" },
@@ -110,29 +110,21 @@ export default function DesignSystemPage() {
                     <div className="space-y-2">
                         <p className="text-index">02</p>
                         <h2 className="text-heading">Typography</h2>
-                        <p className="text-body-lg text-foreground-muted">5 font families, 10+ utility classes</p>
+                        <p className="text-body-lg text-foreground-muted">3 font families, 10+ utility classes</p>
                     </div>
 
                     {/* Font Families */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8 border-b border-border">
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Display — Myglaos</p>
-                            <p style={{ fontFamily: "var(--font-display-custom)", fontSize: "2.5rem", lineHeight: 1, letterSpacing: "-0.03em" }}>Orion Studio</p>
+                            <p className="text-label text-accent">Display — Red Hat Display</p>
+                            <p style={{ fontFamily: "var(--font-rh-display)", fontSize: "2.5rem", lineHeight: 1, letterSpacing: "-0.03em" }}>Orion Studio</p>
                         </div>
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Title — Unica One</p>
-                            <p style={{ fontFamily: "var(--font-unica)", fontSize: "2.5rem", lineHeight: 1 }}>ORION STUDIO</p>
+                            <p className="text-label text-accent">Interface — Bricolage Grotesque</p>
+                            <p style={{ fontFamily: "var(--font-bricolage)", fontSize: "1.5rem", lineHeight: 1.3 }}>Bricolage Grotesque 400</p>
                         </div>
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Interface — Space Grotesk</p>
-                            <p style={{ fontFamily: "var(--font-space)", fontSize: "1.5rem", lineHeight: 1.3 }}>Space Grotesk 400</p>
-                        </div>
-                        <div className="space-y-2">
-                            <p className="text-label text-accent">Editorial — Bechilo</p>
-                            <p style={{ fontFamily: "var(--font-bechilo)", fontSize: "2rem", lineHeight: 1.2, fontStyle: "italic" }}>Bechilo Italic</p>
-                        </div>
-                        <div className="space-y-2">
-                            <p className="text-label text-accent">Data — JetBrains Mono</p>
+                            <p className="text-label text-accent">Data — Red Hat Mono</p>
                             <p style={{ fontFamily: "var(--font-mono)", fontSize: "1.25rem", lineHeight: 1.4 }}>0123456789 — 98.7%</p>
                         </div>
                     </div>

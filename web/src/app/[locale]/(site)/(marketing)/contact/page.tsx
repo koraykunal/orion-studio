@@ -22,6 +22,7 @@ function Chip({
         <button
             type="button"
             onClick={onClick}
+            aria-pressed={selected}
             className={`
                 px-4 py-2.5 rounded-full text-label transition-all duration-300 cursor-pointer
                 border select-none whitespace-nowrap
@@ -123,7 +124,7 @@ export default function ContactPage() {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     background:
-                        "radial-gradient(ellipse 70% 60% at 30% 40%, oklch(0.72 0.15 295 / 0.04), transparent 70%)",
+                        "radial-gradient(ellipse 70% 60% at 30% 40%, var(--glow-subtle), transparent 70%)",
                 }}
             />
             <div className="absolute -right-[15%] top-[20%] w-[50%] h-[60%] pointer-events-none">
@@ -328,12 +329,12 @@ export default function ContactPage() {
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
                             </button>
                             {formStatus === "sent" && (
-                                <p className="text-label text-green-400">
+                                <p className="text-label text-success" role="status" aria-live="polite">
                                     {t("successTitle")} {t("successBody")}
                                 </p>
                             )}
                             {formStatus === "error" && (
-                                <p className="text-label text-red-400">
+                                <p className="text-label text-destructive" role="alert" aria-live="assertive">
                                     {t("errorTitle")} {t("errorBody")}
                                 </p>
                             )}

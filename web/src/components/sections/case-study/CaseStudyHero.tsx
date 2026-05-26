@@ -84,7 +84,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
                             <span className="text-index text-foreground-muted">
                                 {project.year}
                             </span>
-                            <span className="px-2.5 py-1 rounded-full border border-accent/30 text-[0.6rem] uppercase tracking-[0.15em] text-accent">
+                            <span className="px-2.5 py-1 rounded-full border border-accent/30 text-caption text-accent">
                                 {getCategoryLabel(project.category)}
                             </span>
                         </div>
@@ -107,7 +107,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
                                 {project.services.map((s) => (
                                     <span
                                         key={s}
-                                        className="px-3 py-1.5 rounded-full border border-border text-[0.625rem] uppercase tracking-[0.15em] text-foreground-muted"
+                                        className="px-3 py-1.5 rounded-full border border-border text-caption text-foreground-muted"
                                     >
                                         {s}
                                     </span>

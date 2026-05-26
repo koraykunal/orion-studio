@@ -138,7 +138,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "radial-gradient(ellipse 60% 50% at 40% 35%, oklch(0.72 0.15 295 / 0.04), transparent 70%)",
+                        background: "radial-gradient(ellipse 60% 50% at 40% 35%, var(--glow-subtle), transparent 70%)",
                     }}
                 />
 
@@ -250,7 +250,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "radial-gradient(ellipse 50% 60% at 50% 50%, oklch(0.72 0.15 295 / 0.05), transparent 70%)",
+                        background: "radial-gradient(ellipse 50% 60% at 50% 50%, var(--glow-subtle), transparent 70%)",
                     }}
                 />
                 <div className="absolute -left-[12%] bottom-[5%] w-[40%] h-[60%] pointer-events-none">

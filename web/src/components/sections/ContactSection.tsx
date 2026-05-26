@@ -76,7 +76,7 @@ export function ContactSection() {
         gsap.to(char, {
             y: -12,
             scale: 1.15,
-            color: "oklch(0.72 0.15 295)",
+            color: "var(--accent)",
             duration: 0.35,
             ease: EASES.brandSpring,
         });
@@ -103,7 +103,7 @@ export function ContactSection() {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     background:
-                        "radial-gradient(ellipse 60% 50% at 50% 60%, oklch(0.72 0.15 295 / 0.03), transparent 70%)",
+                        "radial-gradient(ellipse 60% 50% at 50% 60%, var(--glow-subtle), transparent 70%)",
                 }}
             />
 
