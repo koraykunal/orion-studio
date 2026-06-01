@@ -75,11 +75,11 @@ export async function POST(request: Request) {
 <table style="border-collapse:collapse;width:100%;max-width:600px;">
   <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Name</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(name)}</td></tr>
   <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Email</td><td style="padding:8px 12px;border-bottom:1px solid #eee;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
-  <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Company</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(company) || "—"}</td></tr>
+  <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Company</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(company) || "-"}</td></tr>
   <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Services</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(servicesText)}</td></tr>
   <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Budget</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(budget) || "Not specified"}</td></tr>
   <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Timeline</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(timeline) || "Not specified"}</td></tr>
-  <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Referral</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(referral) || "—"}</td></tr>
+  <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Referral</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(referral) || "-"}</td></tr>
 </table>
 <h3 style="margin-top:24px;">Project Brief</h3>
 <p style="white-space:pre-wrap;background:#f5f5f5;padding:16px;border-radius:8px;">${escapeHtml(brief)}</p>
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
                 from: "Orion Studio <onboarding@resend.dev>",
                 to: process.env.CONTACT_EMAIL!,
                 replyTo: email,
-                subject: `New Inquiry from ${name}${company ? ` — ${company}` : ""}`,
+                subject: `New Inquiry from ${name}${company ? ` - ${company}` : ""}`,
                 html: htmlBody,
             });
         } catch (emailError) {

@@ -14,7 +14,7 @@ export async function generateMetadata({
         title: t("aboutTitle"),
         description: t("aboutDescription"),
         openGraph: {
-            title: `${t("aboutTitle")} — Orion Studio`,
+            title: `${t("aboutTitle")} · Orion Studio`,
             description: t("aboutDescription"),
         },
         alternates: {

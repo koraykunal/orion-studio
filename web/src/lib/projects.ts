@@ -1,9 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import type { Project, ProjectCategory, Section, SectionData, TextBlockData } from "@/lib/project-types";
+import type {
+    Project,
+    ProjectCategory,
+    ProjectServiceCategory,
+    Section,
+    SectionData,
+    TextBlockData,
+} from "@/lib/project-types";
 import { sanitizeRichHtml } from "@/lib/sanitize";
 
-export type { Project, ProjectCategory, Section };
-export { getCategoryLabel } from "@/lib/project-types";
+export type { Project, ProjectCategory, ProjectServiceCategory, Section };
+export { getCategoryLabel, getServiceCategoryLabel } from "@/lib/project-types";
 
 function sanitizeSection(section: Section): Section {
     if (section.type === "textBlock") {
@@ -28,7 +35,7 @@ function mapProject(
     p: {
         slug: string; client: string; tagline_en: string; tagline_tr: string | null;
         year: string; services: string[]; outcome_en: string; outcome_tr: string | null;
-        image: string; category: string; featured: boolean; sections: unknown;
+        image: string; category: string; serviceCategory?: string | null; featured: boolean; sections: unknown;
     },
     locale: string
 ): Project {
@@ -41,6 +48,7 @@ function mapProject(
         outcome: getLocalizedStr(p.outcome_en, p.outcome_tr, locale),
         image: p.image,
         category: p.category as ProjectCategory,
+        serviceCategory: (p.serviceCategory ?? "web") as ProjectServiceCategory,
         featured: p.featured,
         sections: ((p.sections as Section[]) || []).map(sanitizeSection),
     };

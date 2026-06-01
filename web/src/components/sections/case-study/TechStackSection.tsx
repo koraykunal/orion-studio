@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
+import { EASES, DURATIONS } from "@/lib/animations/config";
 import type { TechStackData } from "@/lib/project-types";
 
 export function TechStackSection({ data }: { data: TechStackData }) {

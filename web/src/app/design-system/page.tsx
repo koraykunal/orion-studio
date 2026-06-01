@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function DesignSystemPage() {
     const colors = [
         { name: "background", token: "--background", value: "oklch(0.08 0.012 280)" },
@@ -33,10 +35,10 @@ export default function DesignSystemPage() {
 
     const eases = [
         { name: "brand", css: "cubic-bezier(0.05, 0, 0.133, 1)", gsap: "orion.out" },
-        { name: "brand-in", css: "cubic-bezier(0.55, 0, 1, 0.45)", gsap: "—" },
+        { name: "brand-in", css: "cubic-bezier(0.55, 0, 1, 0.45)", gsap: "-" },
         { name: "brand-in-out", css: "cubic-bezier(0.37, 0, 0.63, 1)", gsap: "orion.inOut" },
         { name: "spring", css: "cubic-bezier(0.175, 0.885, 0.32, 1.275)", gsap: "orion.spring" },
-        { name: "expo", css: "—", gsap: "expo.out" },
+        { name: "expo", css: "-", gsap: "expo.out" },
     ];
 
     const durations = [
@@ -60,7 +62,17 @@ export default function DesignSystemPage() {
                 {/* ── Header ── */}
                 <header className="space-y-4 border-b border-border pb-12">
                     <p className="text-index">Design System</p>
-                    <h1 className="text-title">Orion Studio</h1>
+                    <div className="flex items-center gap-4">
+                        <Image
+                            src="/logo.svg"
+                            alt="Orion Studio"
+                            width={56}
+                            height={56}
+                            className="w-12 h-12 lg:w-14 lg:h-14"
+                            priority
+                        />
+                        <h1 className="text-title">Orion Studio</h1>
+                    </div>
                     <p className="text-body-lg text-foreground-muted max-w-[60ch]">
                         A comprehensive design system built on OKLCh color space, fluid typography, and custom GSAP motion primitives.
                     </p>
@@ -71,7 +83,7 @@ export default function DesignSystemPage() {
                     <div className="space-y-2">
                         <p className="text-index">01</p>
                         <h2 className="text-heading">Color Palette</h2>
-                        <p className="text-body-lg text-foreground-muted">OKLCh color space — perceptually uniform, Hue 275-295</p>
+                        <p className="text-body-lg text-foreground-muted">OKLCh color space, perceptually uniform, Hue 275-295</p>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -116,16 +128,16 @@ export default function DesignSystemPage() {
                     {/* Font Families */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8 border-b border-border">
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Display — Red Hat Display</p>
+                            <p className="text-label text-accent">Display, Red Hat Display</p>
                             <p style={{ fontFamily: "var(--font-rh-display)", fontSize: "2.5rem", lineHeight: 1, letterSpacing: "-0.03em" }}>Orion Studio</p>
                         </div>
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Interface — Bricolage Grotesque</p>
+                            <p className="text-label text-accent">Interface, Bricolage Grotesque</p>
                             <p style={{ fontFamily: "var(--font-bricolage)", fontSize: "1.5rem", lineHeight: 1.3 }}>Bricolage Grotesque 400</p>
                         </div>
                         <div className="space-y-2">
-                            <p className="text-label text-accent">Data — Red Hat Mono</p>
-                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "1.25rem", lineHeight: 1.4 }}>0123456789 — 98.7%</p>
+                            <p className="text-label text-accent">Data, Red Hat Mono</p>
+                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "1.25rem", lineHeight: 1.4 }}>0123456789, 98.7%</p>
                         </div>
                     </div>
 
@@ -152,7 +164,7 @@ export default function DesignSystemPage() {
                             </div>
                             <div className="flex items-end gap-6 border-b border-border-subtle pb-4">
                                 <span className="text-index shrink-0 w-28">.text-body-lg</span>
-                                <span className="text-body-lg">Body large — the primary reading size for longer passages of text.</span>
+                                <span className="text-body-lg">Body large, the primary reading size for longer passages of text.</span>
                             </div>
                             <div className="flex items-end gap-6 border-b border-border-subtle pb-4">
                                 <span className="text-index shrink-0 w-28">.text-label</span>
@@ -239,7 +251,7 @@ export default function DesignSystemPage() {
                     <div className="space-y-3">
                         <p className="text-label text-foreground-muted">Surface Elevation</p>
                         <div className="flex gap-4">
-                            {["background", "surface-1", "surface-2", "surface-3"].map((s, i) => (
+                            {["background", "surface-1", "surface-2", "surface-3"].map((s) => (
                                 <div
                                     key={s}
                                     className="flex-1 h-32 rounded-lg border border-border flex items-center justify-center"
@@ -261,7 +273,7 @@ export default function DesignSystemPage() {
                             </div>
                             <div className="surface-card-hover rounded-lg p-6 space-y-3 cursor-pointer">
                                 <h3 className="text-heading text-lg">Hover Card</h3>
-                                <p className="text-sm text-foreground-muted">Interactive card — hover me</p>
+                                <p className="text-sm text-foreground-muted">Interactive card, hover me</p>
                             </div>
                             <div className="rounded-lg p-6 space-y-3 border border-accent/30 bg-surface-1 glow-accent">
                                 <h3 className="text-heading text-lg">Glow Card</h3>

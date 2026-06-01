@@ -144,17 +144,19 @@
         cursor: default;
     }
 
-    /* ── Grainy texture overlay — static PNG for GPU compositing ── */
     body::after {
         content: "";
         position: fixed;
-        inset: 0;
+        top: -24px;
+        left: -24px;
+        width: calc(100% + 48px);
+        height: calc(100% + 48px);
         z-index: 9990;
         pointer-events: none;
-        opacity: 0.05;
+        opacity: 0.032;
         background-image: url("/noise.png");
         background-repeat: repeat;
-        background-size: 64px 64px;
+        background-size: 38px 38px;
         image-rendering: pixelated;
     }
 

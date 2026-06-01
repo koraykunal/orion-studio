@@ -120,7 +120,7 @@ export function creativeWorkSchema(args: {
     return {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
-        name: `${args.client} — ${args.tagline}`,
+        name: `${args.client}, ${args.tagline}`,
         description: args.outcome,
         url,
         inLanguage: args.locale === "tr" ? "tr-TR" : "en-US",

@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
-import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 import { FOOTER_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";
@@ -19,7 +18,7 @@ export function Footer() {
     const brandRef = useRef<HTMLDivElement>(null);
 
     const navLinks = [
-        { labelKey: "navStudio",  href: `/${locale}/#capabilities` },
+        { labelKey: "navServices", href: `/${locale}/services` },
         { labelKey: "navWork",    href: `/${locale}/work` },
         { labelKey: "navBlog",    href: `/${locale}/blog` },
         { labelKey: "navProcess", href: `/${locale}/#process` },
@@ -82,10 +81,6 @@ export function Footer() {
                 <OrionMark variant="full" lineOpacity={0.05} globalOpacity={0.3} rotate={20} />
             </div>
 
-            <div className="relative z-10 section-container">
-                <LineReveal />
-            </div>
-
             <div ref={topRef} className="section-container pt-16 lg:pt-24 pb-20 lg:pb-28">
                 <div className="grid-container gap-y-10">
                     <div
@@ -110,7 +105,7 @@ export function Footer() {
                                         className="text-body-lg text-foreground-muted hover:text-foreground transition-colors duration-300"
                                         data-cursor="hover"
                                     >
-                                        {t(link.labelKey as "navStudio" | "navWork" | "navBlog" | "navAbout" | "navProcess" | "navContact")}
+                                        {t(link.labelKey as "navServices" | "navWork" | "navBlog" | "navAbout" | "navProcess" | "navContact")}
                                     </Link>
                                 </li>
                             ))}
@@ -171,7 +166,7 @@ export function Footer() {
             <div className="w-full overflow-hidden">
                 <div ref={brandRef} className="select-none pointer-events-none px-4">
                     <p
-                        className="font-[var(--font-rh-display)] leading-[0.85] tracking-[-0.04em] text-foreground/[0.04] whitespace-nowrap text-center"
+                        className="font-(--font-rh-display) leading-[0.85] tracking-[-0.04em] text-foreground/4 whitespace-nowrap text-center"
                         style={{ fontSize: "clamp(3rem, 14vw, 18rem)" }}
                     >
                         ORION STUDIO
@@ -179,7 +174,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div ref={bottomBarRef} className="section-container pb-6 lg:pb-8">
+            <div ref={bottomBarRef} className="section-container mt-6 pb-6 lg:pb-8">
                 <div className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
                     <p className="text-caption">
                         &copy; {new Date().getFullYear()} Orion Studio

@@ -9,10 +9,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const project = await getProjectBySlug(slug, locale);
 
     if (!project) {
-        return { title: "Project Not Found — Orion Studio" };
+        return { title: "Project Not Found · Orion Studio" };
     }
 
-    const title = `${project.client} — Orion Studio`;
+    const title = `${project.client} · Orion Studio`;
     const description = project.outcome;
     const image = project.image
         ? project.image.startsWith("http")

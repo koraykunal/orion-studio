@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,16 +30,25 @@ export default function MessagesPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchMessages = useCallback(async () => {
-    const res = await fetch("/api/admin/messages");
-    const data = await res.json();
-    setMessages(data);
-    setLoading(false);
-  }, []);
-
   useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
+    let ignore = false;
+
+    fetch("/api/admin/messages")
+      .then((res) => res.json())
+      .then((data) => {
+        if (ignore) return;
+        setMessages(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (ignore) return;
+        setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleSelect = async (msg: Message) => {
     setSelected(msg);

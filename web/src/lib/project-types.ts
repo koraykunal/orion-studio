@@ -1,4 +1,13 @@
 export type ProjectCategory = "client" | "concept" | "studio";
+export type ProjectServiceCategory =
+    | "identity"
+    | "web"
+    | "apps"
+    | "seo"
+    | "social"
+    | "ads"
+    | "production"
+    | "care";
 
 export type SectionType =
     | "fullImage"
@@ -72,6 +81,7 @@ export type Project = {
     outcome: string;
     image: string;
     category: ProjectCategory;
+    serviceCategory: ProjectServiceCategory;
     featured: boolean;
     sections: Section[];
 };
@@ -89,6 +99,44 @@ export function getCategoryLabel(category: ProjectCategory, locale = "en"): stri
         client: "Client Work",
         concept: "Design Exploration",
         studio: "Studio Showcase",
+    };
+    return labels[category];
+}
+
+export const PROJECT_SERVICE_CATEGORIES: ProjectServiceCategory[] = [
+    "identity",
+    "web",
+    "apps",
+    "seo",
+    "social",
+    "ads",
+    "production",
+    "care",
+];
+
+export function getServiceCategoryLabel(category: ProjectServiceCategory, locale = "en"): string {
+    if (locale === "tr") {
+        const labels: Record<ProjectServiceCategory, string> = {
+            identity: "Marka Kimliği",
+            web: "Web Tasarım ve Geliştirme",
+            apps: "Mobil ve Web Uygulamalar",
+            seo: "SEO ve Görünürlük",
+            social: "Sosyal Medya ve İçerik",
+            ads: "Reklam Yönetimi",
+            production: "Video ve Kreatif Prodüksiyon",
+            care: "Bakım ve Büyüme",
+        };
+        return labels[category];
+    }
+    const labels: Record<ProjectServiceCategory, string> = {
+        identity: "Brand Identity",
+        web: "Web Design and Development",
+        apps: "Mobile and Web Apps",
+        seo: "SEO and Visibility",
+        social: "Social Media and Content",
+        ads: "Ad Management",
+        production: "Video and Creative Production",
+        care: "Care and Growth",
     };
     return labels[category];
 }

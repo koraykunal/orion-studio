@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import ImageUpload from "../../components/ImageUpload";
 import ChipInput from "../../components/ChipInput";
 import { SectionEditor } from "../../components/SectionEditor";
-import type { Section } from "@/lib/project-types";
+import {
+  PROJECT_SERVICE_CATEGORIES,
+  getServiceCategoryLabel,
+  type ProjectServiceCategory,
+  type Section,
+} from "@/lib/project-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +42,7 @@ export default function EditProjectPage({
   const [sections, setSections] = useState<Section[]>([]);
   const [image, setImage] = useState("");
   const [category, setCategory] = useState<"client" | "concept" | "studio">("client");
+  const [serviceCategory, setServiceCategory] = useState<ProjectServiceCategory>("web");
   const [services, setServices] = useState<string[]>([]);
   const [featured, setFeatured] = useState(false);
   const [status, setStatus] = useState<"draft" | "published">("draft");
@@ -58,6 +64,7 @@ export default function EditProjectPage({
         setSections((project.sections as Section[]) || []);
         setImage(project.image ?? "");
         setCategory(project.category ?? "client");
+        setServiceCategory(project.serviceCategory ?? "web");
         setServices(project.services ?? []);
         setFeatured(project.featured ?? false);
         setStatus(project.status);
@@ -71,7 +78,10 @@ export default function EditProjectPage({
   };
 
   const handleSave = async () => {
-    if (!client || !slug) return;
+    if (!client || !slug) {
+      setError("Client name and slug are required");
+      return;
+    }
     setSaving(true);
     setError("");
 
@@ -90,6 +100,7 @@ export default function EditProjectPage({
           sections,
           image: image || "",
           category,
+          serviceCategory,
           services,
           featured,
           status,
@@ -242,6 +253,25 @@ export default function EditProjectPage({
                 <SelectItem value="client">Client</SelectItem>
                 <SelectItem value="concept">Concept</SelectItem>
                 <SelectItem value="studio">Studio</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Service Category</Label>
+            <Select
+              value={serviceCategory}
+              onValueChange={(v) => setServiceCategory(v as ProjectServiceCategory)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROJECT_SERVICE_CATEGORIES.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {getServiceCategoryLabel(item)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

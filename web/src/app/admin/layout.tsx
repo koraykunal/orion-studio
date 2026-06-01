@@ -9,7 +9,7 @@ const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-br
 const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
 
 export const metadata = {
-    title: "Admin — Orion Studio",
+    title: "Admin · Orion Studio",
     robots: { index: false, follow: false },
 };
 

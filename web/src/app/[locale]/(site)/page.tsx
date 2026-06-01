@@ -1,7 +1,7 @@
 export const revalidate = 300;
 
 import { HeroSection } from "@/components/sections/HeroSection";
-import { ComparisonSection } from "@/components/sections/ComparisonSection";
+import { BrandMapSection } from "@/components/sections/BrandMapSection";
 import { ReelSection } from "@/components/sections/ReelSection";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { WorkSection } from "@/components/sections/WorkSection";
@@ -16,7 +16,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     return (
         <main>
             <HeroSection />
-            <ComparisonSection />
+            <BrandMapSection />
             <ReelSection />
             <ServicesSection />
             <WorkSection projects={featuredProjects} />

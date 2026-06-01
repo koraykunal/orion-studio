@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getServiceCategoryLabel } from "@/lib/project-types";
 
 const categoryColors: Record<string, string> = {
   client: "bg-blue-500/10 text-blue-400",
@@ -26,6 +27,7 @@ export default async function ProjectsListPage() {
       id: true,
       client: true,
       category: true,
+      serviceCategory: true,
       status: true,
       featured: true,
     },
@@ -48,6 +50,7 @@ export default async function ProjectsListPage() {
             <TableRow>
               <TableHead>Client</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Service</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Featured</TableHead>
             </TableRow>
@@ -62,6 +65,9 @@ export default async function ProjectsListPage() {
                   >
                     {project.client}
                   </Link>
+                </TableCell>
+                <TableCell className="text-foreground-muted">
+                  {getServiceCategoryLabel(project.serviceCategory)}
                 </TableCell>
                 <TableCell>
                   <Badge

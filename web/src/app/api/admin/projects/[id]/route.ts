@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
+import { buildProjectWriteData, validateProjectWrite } from "@/lib/project-validation";
 
 export async function GET(
   _request: Request,
@@ -32,7 +33,11 @@ export async function PUT(
 
     if (body.reorder && Array.isArray(body.reorder)) {
       await prisma.$transaction(
-        body.reorder.map((item: { id: string; order: number }) =>
+        body.reorder
+          .filter((item: { id?: unknown; order?: unknown }) =>
+            typeof item.id === "string" && Number.isInteger(item.order)
+          )
+          .map((item: { id: string; order: number }) =>
           prisma.project.update({
             where: { id: item.id },
             data: { order: item.order },
@@ -48,7 +53,13 @@ export async function PUT(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const project = await prisma.project.update({ where: { id }, data: body });
+    const data = buildProjectWriteData(body, existing);
+    const errors = validateProjectWrite(data);
+    if (errors.length) {
+      return NextResponse.json({ error: errors[0], errors }, { status: 400 });
+    }
+
+    const project = await prisma.project.update({ where: { id }, data });
 
     if (project.status === "published") {
       void pingIndexNow([`/work/${project.slug}`, "/work"]);

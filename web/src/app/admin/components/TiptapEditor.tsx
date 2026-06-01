@@ -126,9 +126,12 @@ function PreviewModal({ html, onClose }: { html: string; onClose: () => void }) 
 
 export default function TiptapEditor({ content, onChange, placeholder = "Start writing..." }: TiptapEditorProps) {
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
   const [showPreview, setShowPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState("");
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   const handleUpdate = useCallback(({ editor }: { editor: Editor }) => {
     onChangeRef.current(editor.getJSON(), editor.getHTML());

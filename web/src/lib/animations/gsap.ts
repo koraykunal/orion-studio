@@ -1,11 +1,13 @@
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Flip } from "gsap/Flip";
-import { Observer } from "gsap/Observer";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { SplitText } from "gsap/SplitText";
-import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-import { CustomEase } from "gsap/CustomEase";
+import {
+  ScrollTrigger,
+  Flip,
+  Observer,
+  ScrollToPlugin,
+  SplitText,
+  DrawSVGPlugin,
+  CustomEase,
+} from "gsap/all";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(

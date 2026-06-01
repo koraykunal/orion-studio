@@ -14,9 +14,9 @@ import type { TextBlockData, TextBlockLayout } from "@/lib/project-types";
 
 const LAYOUT_OPTIONS: { value: TextBlockLayout; label: string }[] = [
   { value: "side", label: "Yan yana (Başlık solda, içerik sağda)" },
-  { value: "stackedLeft", label: "Üstte – Sola hizalı" },
-  { value: "stackedCenter", label: "Üstte – Ortalı" },
-  { value: "stackedRight", label: "Üstte – Sağa hizalı" },
+  { value: "stackedLeft", label: "Üstte - Sola hizalı" },
+  { value: "stackedCenter", label: "Üstte - Ortalı" },
+  { value: "stackedRight", label: "Üstte - Sağa hizalı" },
 ];
 
 export default function TextBlockForm({

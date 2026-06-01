@@ -24,6 +24,10 @@ export const proxy = auth((req) => {
     return NextResponse.next();
   }
 
+  if (pathname === "/design-system" || pathname.startsWith("/design-system/")) {
+    return NextResponse.next();
+  }
+
   return intlMiddleware(req as NextRequest);
 });
 

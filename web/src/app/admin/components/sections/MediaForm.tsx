@@ -64,7 +64,7 @@ export default function MediaForm({
             </label>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Poster (opsiyonel — video yüklenmeden gösterilen görsel)</Label>
+            <Label className="text-xs">Poster (opsiyonel - video yüklenmeden gösterilen görsel)</Label>
             <ImageUpload
               value={data.poster ?? ""}
               onChange={(poster) => onChange({ ...data, poster })}
@@ -85,7 +85,7 @@ export default function MediaForm({
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs">Aspect ratio (opsiyonel — boş bırakılırsa medyanın doğal oranı kullanılır)</Label>
+        <Label className="text-xs">Aspect ratio (opsiyonel - boş bırakılırsa medyanın doğal oranı kullanılır)</Label>
         <Input
           value={data.aspectRatio ?? ""}
           onChange={(e) => onChange({ ...data, aspectRatio: e.target.value })}

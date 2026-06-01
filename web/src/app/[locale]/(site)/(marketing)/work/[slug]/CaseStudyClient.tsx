@@ -26,7 +26,7 @@ export function CaseStudyClient({
                 <div className="section-container" style={{ paddingBottom: "clamp(2rem, 4vw, 3rem)" }}>
                     <MaskImage
                         src={project.image}
-                        alt={`${project.client} — ${project.tagline}`}
+                        alt={`${project.client}, ${project.tagline}`}
                         aspect="21/9"
                         inset={8}
                         className="rounded-lg lg:rounded-xl"

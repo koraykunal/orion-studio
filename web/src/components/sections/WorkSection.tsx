@@ -6,19 +6,25 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { getCategoryLabel, type Project, type Section } from "@/lib/project-types";
+import {
+    getCategoryLabel,
+    getServiceCategoryLabel,
+    type Project,
+    type Section,
+} from "@/lib/project-types";
 
 type WorkItem = {
     client: string;
-    focus: string;
-    outcome: string;
+    tagline: string;
+    year: string;
     image: string;
     category: Project["category"];
+    serviceCategory: Project["serviceCategory"];
     slug: string;
     sections: Section[];
 };
 
-function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+function WorkCard({ item, index, locale }: { item: WorkItem; index: number; locale: string }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const imageWrapRef = useRef<HTMLDivElement>(null);
 
@@ -52,34 +58,36 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
                 className="relative overflow-hidden rounded-lg lg:rounded-xl"
                 style={{ aspectRatio: "6/3", clipPath: "inset(6% 6% 6% 6%)" }}
             >
-                <Image
-                    src={item.image}
-                    alt={`${item.client} — ${item.focus}`}
-                    fill
-                    sizes="(max-width: 1024px) 75vw, 45vw"
-                    className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
+                {item.image ? (
+                    <Image
+                        src={item.image}
+                        alt={`${item.client}, ${item.tagline}`}
+                        fill
+                        sizes="(max-width: 1024px) 75vw, 45vw"
+                        className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
+                )}
             </div>
 
-            <div className="mt-5 lg:mt-6 flex items-start justify-between gap-4">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="text-index text-foreground-subtle">0{index + 1}</span>
-                        <span className="px-2 py-0.5 rounded-full border border-accent/30 text-caption text-accent">
-                            {getCategoryLabel(item.category)}
-                        </span>
-                    </div>
-                    <h3 className="text-heading">{item.client}</h3>
+            <div className="mt-5 lg:mt-6 space-y-3">
+                <div className="flex items-center gap-4 text-index">
+                    <span className="text-foreground-subtle">0{index + 1}</span>
+                    <span className="text-foreground-subtle">{item.year}</span>
+                    <span className="text-foreground-muted">{getCategoryLabel(item.category, locale)}</span>
                 </div>
-                <span className="text-label text-foreground-muted mt-6">{item.focus}</span>
+                <p className="text-caption text-accent">
+                    {getServiceCategoryLabel(item.serviceCategory, locale)}
+                </p>
+                <h3 className="text-heading">{item.client}</h3>
+                <p className="text-body-lg text-foreground-muted max-w-[36ch]">{item.tagline}</p>
             </div>
-
-            <p className="text-body-lg text-foreground-muted mt-2 max-w-[36ch]">{item.outcome}</p>
         </div>
     );
 
     if (item.sections && item.sections.length > 0) {
-        return <Link href={`/work/${item.slug}`}>{inner}</Link>;
+        return <Link href={`/${locale}/work/${item.slug}`}>{inner}</Link>;
     }
 
     return inner;
@@ -93,10 +101,11 @@ export function WorkSection({ projects }: { projects: Project[] }) {
 
     const work: WorkItem[] = projects.map((p) => ({
         client: p.client,
-        focus: p.services[0],
-        outcome: p.outcome,
+        tagline: p.tagline,
+        year: p.year,
         image: p.image,
         category: p.category,
+        serviceCategory: p.serviceCategory,
         slug: p.slug,
         sections: p.sections,
     }));
@@ -147,7 +156,7 @@ export function WorkSection({ projects }: { projects: Project[] }) {
                 </div>
 
                 {work.map((item, i) => (
-                    <WorkCard key={item.client} item={item} index={i} />
+                    <WorkCard key={item.client} item={item} index={i} locale={locale} />
                 ))}
 
                 <div className="hidden md:block shrink-0 w-[10vw]" />

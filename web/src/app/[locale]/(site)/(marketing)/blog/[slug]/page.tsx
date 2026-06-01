@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await getPostBySlug(slug, locale);
     if (!post) return { title: "Not Found" };
 
-    const title = `${post.title} — Orion Studio`;
+    const title = `${post.title} · Orion Studio`;
     const image = post.coverImage
         ? post.coverImage.startsWith("http")
             ? post.coverImage

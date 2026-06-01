@@ -3,7 +3,7 @@
 import { useRef, useCallback } from "react";
 import { Link } from "next-view-transitions";
 import { useLocale, useTranslations } from "next-intl";
-import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
+import { gsap, SplitText, DrawSVGPlugin, useGSAP } from "@/lib/animations/gsap";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 import { PRIMARY_SOCIALS, CONTACT_EMAIL } from "@/lib/socials";
@@ -15,9 +15,54 @@ export function ContactSection() {
     const headingRef = useRef<HTMLAnchorElement>(null);
     const charsRef = useRef<HTMLElement[]>([]);
     const metaRef = useRef<HTMLDivElement>(null);
+    const arcRef = useRef<SVGPathElement>(null);
+    const bloomRef = useRef<SVGGElement>(null);
 
     useGSAP(() => {
         if (!headingRef.current) return;
+
+        gsap.registerPlugin(DrawSVGPlugin);
+
+        if (arcRef.current && bloomRef.current) {
+            const bloomPaths = Array.from(bloomRef.current.querySelectorAll("path"));
+
+            gsap.set(arcRef.current, { drawSVG: "0% 0%", opacity: 0 });
+            gsap.set(bloomRef.current, {
+                opacity: 0,
+                transformOrigin: "50% 50%",
+            });
+            gsap.set(bloomPaths, { drawSVG: "0% 0%" });
+
+            const arcTl = gsap.timeline({
+                scrollTrigger: { trigger: sectionRef.current, start: "top 78%", toggleActions: "play none none none" },
+            });
+
+            arcTl.to(arcRef.current, {
+                drawSVG: "0% 100%",
+                opacity: 1,
+                duration: 2.8,
+                ease: EASES.brand,
+            }, 0);
+
+            arcTl.to(bloomPaths, {
+                drawSVG: "0% 100%",
+                duration: 3.05,
+                ease: EASES.brand,
+                stagger: 0.04,
+            }, 0.16);
+
+            arcTl.to(bloomRef.current, {
+                opacity: 1,
+                duration: 1.9,
+                ease: "sine.inOut",
+            }, 0.24);
+
+            arcTl.to(bloomRef.current, {
+                opacity: 0.92,
+                duration: 1.2,
+                ease: "sine.inOut",
+            }, 2.2);
+        }
 
         const split = SplitText.create(headingRef.current, {
             type: "chars",
@@ -74,11 +119,11 @@ export function ContactSection() {
     const handleCharMouseEnter = useCallback((e: React.MouseEvent<HTMLElement>) => {
         const char = e.currentTarget;
         gsap.to(char, {
-            y: -12,
-            scale: 1.15,
-            color: "var(--accent)",
-            duration: 0.35,
-            ease: EASES.brandSpring,
+            y: -8,
+            scale: 1.06,
+            textShadow: "0 0 18px rgba(195, 183, 255, 0.34), 0 0 42px rgba(172, 143, 248, 0.16)",
+            duration: 0.42,
+            ease: EASES.brand,
         });
     }, []);
 
@@ -87,9 +132,10 @@ export function ContactSection() {
         gsap.to(char, {
             y: 0,
             scale: 1,
-            color: "",
-            duration: 0.5,
+            textShadow: "0 0 0 rgba(195, 183, 255, 0)",
+            duration: 0.62,
             ease: EASES.expo,
+            clearProps: "textShadow",
         });
     }, []);
 
@@ -99,13 +145,44 @@ export function ContactSection() {
             className="relative section-py bg-background overflow-hidden"
             id="contact"
         >
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background:
-                        "radial-gradient(ellipse 60% 50% at 50% 60%, var(--glow-subtle), transparent 70%)",
-                }}
-            />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+                <div
+                    className="absolute inset-0"
+                    style={{ background: "radial-gradient(ellipse 72% 55% at 50% 46%, var(--glow-subtle), transparent 72%)" }}
+                />
+
+                <div className="absolute inset-x-0 bottom-[14%] h-[64%]">
+                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 320" preserveAspectRatio="xMidYMax meet" fill="none">
+                        <defs>
+                            <linearGradient id="orion-arc" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0" stopColor="oklch(0.80 0.13 80)" stopOpacity="0" />
+                                <stop offset="0.5" stopColor="oklch(0.94 0.11 88)" stopOpacity="0.9" />
+                                <stop offset="1" stopColor="oklch(0.80 0.13 80)" stopOpacity="0" />
+                            </linearGradient>
+                            <linearGradient id="orion-glow" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0" stopColor="oklch(0.85 0.15 74)" stopOpacity="0" />
+                                <stop offset="0.5" stopColor="oklch(0.88 0.15 78)" stopOpacity="1" />
+                                <stop offset="1" stopColor="oklch(0.85 0.15 74)" stopOpacity="0" />
+                            </linearGradient>
+                            <filter id="orion-arc-halo" x="-20%" y="-160%" width="140%" height="300%">
+                                <feGaussianBlur stdDeviation="40" />
+                            </filter>
+                            <filter id="orion-arc-blur" x="-20%" y="-120%" width="140%" height="260%">
+                                <feGaussianBlur stdDeviation="15" />
+                            </filter>
+                            <filter id="orion-arc-blur-tight" x="-20%" y="-80%" width="140%" height="220%">
+                                <feGaussianBlur stdDeviation="5" />
+                            </filter>
+                        </defs>
+                        <g ref={bloomRef}>
+                            <path d="M -120 320 Q 600 60 1320 320" stroke="url(#orion-glow)" strokeWidth="70" strokeLinecap="round" opacity="0.18" filter="url(#orion-arc-halo)" />
+                            <path d="M -120 320 Q 600 70 1320 320" stroke="url(#orion-glow)" strokeWidth="34" strokeLinecap="round" opacity="0.26" filter="url(#orion-arc-blur)" />
+                            <path d="M -120 320 Q 600 70 1320 320" stroke="url(#orion-glow)" strokeWidth="10" strokeLinecap="round" opacity="0.5" filter="url(#orion-arc-blur-tight)" />
+                        </g>
+                        <path ref={arcRef} d="M -120 320 Q 600 70 1320 320" stroke="url(#orion-arc)" strokeWidth="1.25" strokeLinecap="round" />
+                    </svg>
+                </div>
+            </div>
 
             <div className="relative z-10 section-container">
                 <LineReveal className="mb-16 lg:mb-24" />
@@ -120,7 +197,7 @@ export function ContactSection() {
                         href={`/${locale}/contact`}
                         className="text-hero block cursor-pointer select-none"
                         data-cursor="hover"
-                        onMouseMove={(e) => {
+                        onMouseOver={(e) => {
                             const target = e.target as HTMLElement;
                             if (target.classList.contains("split-char")) {
                                 handleCharMouseEnter({

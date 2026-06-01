@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
@@ -9,7 +9,13 @@ import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { EASES } from "@/lib/animations/config";
 import { useTranslations, useLocale } from "next-intl";
-import { getCategoryLabel, type Project } from "@/lib/project-types";
+import {
+    PROJECT_SERVICE_CATEGORIES,
+    getCategoryLabel,
+    getServiceCategoryLabel,
+    type Project,
+    type ProjectServiceCategory,
+} from "@/lib/project-types";
 
 function FeaturedCard({ project, index, locale }: { project: Project; index: number; locale: string }) {
     const t = useTranslations("work");
@@ -57,35 +63,36 @@ function FeaturedCard({ project, index, locale }: { project: Project; index: num
                         className="relative overflow-hidden rounded-lg lg:rounded-xl cursor-pointer"
                         style={{ aspectRatio: "3/2", clipPath: "inset(6% 6% 6% 6%)" }}
                     >
-                        <Image
-                            src={project.image}
-                            alt={`${project.client} — ${project.tagline}`}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 58vw"
-                            className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                        />
+                        {project.image ? (
+                            <Image
+                                src={project.image}
+                                alt={`${project.client}, ${project.tagline}`}
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 58vw"
+                                className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                            />
+                        ) : (
+                            <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                 </div>
 
                 <div className={`card-meta lg:col-span-5 ${isEven ? "" : "lg:order-1"} flex flex-col justify-between h-full py-2 lg:py-4`}>
                     <div className="space-y-5">
-                        <div className="flex items-center gap-4">
-                            <span className="text-index text-foreground-muted">0{index + 1}</span>
-                            <span className="text-index text-foreground-muted">{project.year}</span>
-                            <span className="px-2.5 py-1 rounded-full border border-accent/30 text-[0.6rem] uppercase tracking-[0.15em] text-accent">
-                                {getCategoryLabel(project.category)}
-                            </span>
+                        <div className="flex items-center gap-4 text-index">
+                            <span className="text-foreground-subtle">0{index + 1}</span>
+                            <span className="text-foreground-subtle">{project.year}</span>
+                            <span className="text-foreground-muted">{getCategoryLabel(project.category, locale)}</span>
                         </div>
+                        <span className="inline-flex w-fit rounded-full border border-accent/25 px-3 py-1 text-caption text-accent">
+                            {getServiceCategoryLabel(project.serviceCategory, locale)}
+                        </span>
 
                         <h2 className="text-title text-[clamp(1.75rem,3.5vw,3rem)]">{project.client}</h2>
 
-                        <p className="text-editorial !text-foreground-muted/80 max-w-[36ch]">
+                        <p className="text-editorial !text-foreground-muted/80 max-w-[42ch]">
                             {project.tagline}
-                        </p>
-
-                        <p className="text-body-lg text-foreground-muted max-w-[42ch]">
-                            {project.outcome}
                         </p>
                     </div>
 
@@ -128,6 +135,25 @@ function FeaturedCard({ project, index, locale }: { project: Project; index: num
 export function WorkPageClient({ featured, others }: { featured: Project[]; others: Project[] }) {
     const t = useTranslations("work");
     const locale = useLocale();
+    const [activeCategory, setActiveCategory] = useState<ProjectServiceCategory | "all">("all");
+    const allProjects = useMemo(() => [...featured, ...others], [featured, others]);
+    const visibleCategories = useMemo(
+        () =>
+            PROJECT_SERVICE_CATEGORIES.filter((category) =>
+                allProjects.some((project) => project.serviceCategory === category),
+            ),
+        [allProjects],
+    );
+    const filteredFeatured =
+        activeCategory === "all"
+            ? featured
+            : featured.filter((project) => project.serviceCategory === activeCategory);
+    const filteredOthers =
+        activeCategory === "all"
+            ? others
+            : others.filter((project) => project.serviceCategory === activeCategory);
+    const hasProjects = filteredFeatured.length > 0 || filteredOthers.length > 0;
+
     return (
         <main className="relative bg-background overflow-hidden">
             <section className="relative section-py pt-32 overflow-hidden">
@@ -161,21 +187,62 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                             >
                                 {t("pageDescription")}
                             </TextReveal>
+
+                            {visibleCategories.length > 1 && (
+                                <div className="flex flex-wrap items-center gap-2 pt-2">
+                                    <span className="mr-2 text-index text-foreground-subtle">
+                                        {t("filterLabel")}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveCategory("all")}
+                                        className={`rounded-full border px-3.5 py-2 text-caption transition-colors duration-300 ${
+                                            activeCategory === "all"
+                                                ? "border-accent/40 bg-accent/10 text-accent"
+                                                : "border-border text-foreground-muted hover:border-accent/30 hover:text-foreground"
+                                        }`}
+                                    >
+                                        {t("filterAll")}
+                                    </button>
+                                    {visibleCategories.map((category) => (
+                                        <button
+                                            key={category}
+                                            type="button"
+                                            onClick={() => setActiveCategory(category)}
+                                            className={`rounded-full border px-3.5 py-2 text-caption transition-colors duration-300 ${
+                                                activeCategory === category
+                                                    ? "border-accent/40 bg-accent/10 text-accent"
+                                                    : "border-border text-foreground-muted hover:border-accent/30 hover:text-foreground"
+                                            }`}
+                                        >
+                                            {getServiceCategoryLabel(category, locale)}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section className="section-container section-py space-y-16 lg:space-y-24">
-                {featured.map((project, i) => (
-                    <div key={project.slug}>
-                        {i > 0 && <LineReveal className="mb-12 lg:mb-16" />}
-                        <FeaturedCard project={project} index={i} locale={locale} />
-                    </div>
-                ))}
-            </section>
+            {filteredFeatured.length > 0 && (
+                <section className="section-container section-py space-y-16 lg:space-y-24">
+                    {filteredFeatured.map((project, i) => (
+                        <div key={project.slug}>
+                            {i > 0 && <LineReveal className="mb-12 lg:mb-16" />}
+                            <FeaturedCard project={project} index={i} locale={locale} />
+                        </div>
+                    ))}
+                </section>
+            )}
 
-            {others.length > 0 && (
+            {!hasProjects && (
+                <section className="section-container section-py">
+                    <p className="text-body-lg text-foreground-muted">{t("noProjects")}</p>
+                </section>
+            )}
+
+            {filteredOthers.length > 0 && (
                 <section className="section-py">
                     <div className="section-container">
                         <div className="space-y-6 mb-14 lg:mb-20">
@@ -186,7 +253,7 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 lg:gap-x-12 lg:gap-y-20">
-                            {others.map((project) => {
+                            {filteredOthers.map((project) => {
                                 const hasCaseStudy = project.sections && project.sections.length > 0;
                                 const card = (
                                     <div className={`group ${hasCaseStudy ? "cursor-pointer" : ""}`}>
@@ -194,26 +261,29 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                                             className="relative overflow-hidden rounded-lg"
                                             style={{ aspectRatio: "4/3" }}
                                         >
-                                            <Image
-                                                src={project.image}
-                                                alt={`${project.client} — ${project.tagline}`}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, 50vw"
-                                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                                            />
+                                            {project.image ? (
+                                                <Image
+                                                    src={project.image}
+                                                    alt={`${project.client}, ${project.tagline}`}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
+                                            )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                         </div>
 
-                                        <div className="mt-5 space-y-2">
-                                            <div className="flex items-center justify-between gap-4">
-                                                <h3 className="text-heading">{project.client}</h3>
-                                                <span className="text-index text-foreground-muted shrink-0">{project.year}</span>
+                                        <div className="mt-5 space-y-3">
+                                            <div className="flex items-center gap-4 text-index">
+                                                <span className="text-foreground-subtle">{project.year}</span>
+                                                <span className="text-foreground-muted">{getCategoryLabel(project.category, locale)}</span>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-2.5 py-1 rounded-full border border-accent/30 text-[0.6rem] uppercase tracking-[0.12em] text-accent">
-                                                    {getCategoryLabel(project.category)}
-                                                </span>
-                                            </div>
+                                            <span className="inline-flex w-fit rounded-full border border-accent/25 px-2.5 py-1 text-caption text-accent">
+                                                {getServiceCategoryLabel(project.serviceCategory, locale)}
+                                            </span>
+                                            <h3 className="text-heading">{project.client}</h3>
                                             <p className="text-sm text-foreground-muted leading-relaxed max-w-[42ch]">{project.tagline}</p>
                                             <div className="flex flex-wrap gap-2 pt-1">
                                                 {project.services.map((s) => (

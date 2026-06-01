@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
-import { getCategoryLabel, type Project } from "@/lib/project-types";
+import { getCategoryLabel, getServiceCategoryLabel, type Project } from "@/lib/project-types";
 
 export function CaseStudyHero({ project }: { project: Project }) {
     const t = useTranslations("work");
@@ -85,7 +85,10 @@ export function CaseStudyHero({ project }: { project: Project }) {
                                 {project.year}
                             </span>
                             <span className="px-2.5 py-1 rounded-full border border-accent/30 text-caption text-accent">
-                                {getCategoryLabel(project.category)}
+                                {getCategoryLabel(project.category, locale)}
+                            </span>
+                            <span className="px-2.5 py-1 rounded-full border border-border text-caption text-foreground-muted">
+                                {getServiceCategoryLabel(project.serviceCategory, locale)}
                             </span>
                         </div>
 
@@ -114,6 +117,17 @@ export function CaseStudyHero({ project }: { project: Project }) {
                                 ))}
                             </div>
                         </div>
+
+                        {project.outcome && (
+                            <div>
+                                <span className="text-label text-foreground-muted block mb-2">
+                                    {t("outcomeLabel")}
+                                </span>
+                                <p className="text-body-lg text-foreground max-w-[36ch]">
+                                    {project.outcome}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

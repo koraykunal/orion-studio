@@ -17,6 +17,7 @@ export function Navbar() {
     const t = useTranslations("nav");
     const tHome = useTranslations("home");
     const [menuOpen, setMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
 
     const localePath = rawPathname.replace(/^\/(en|tr)/, "") || "/";
     const otherLocale = locale === "en" ? "tr" : "en";
@@ -26,7 +27,7 @@ export function Navbar() {
     }, [router, otherLocale, localePath]);
 
     const routes = [
-        { labelKey: "studio" as const, link: `/${locale}/#capabilities` },
+        { labelKey: "services" as const, link: `/${locale}/services` },
         { labelKey: "work"   as const, link: `/${locale}/work` },
         { labelKey: "blog"   as const, link: `/${locale}/blog` },
         { labelKey: "contact"as const, link: `/${locale}/contact` },
@@ -39,6 +40,13 @@ export function Navbar() {
 
     const toggleMenu = useCallback(() => {
         setMenuOpen((prev) => !prev);
+    }, []);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 24);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
     useEffect(() => {
@@ -100,7 +108,11 @@ export function Navbar() {
 
     return (
         <>
-            <nav className="fixed top-0 left-0 right-0 z-50">
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
+                <div
+                    className={`absolute inset-x-0 top-0 -z-10 h-[180%] pointer-events-none bg-gradient-to-b from-background via-background/85 to-transparent transition-opacity duration-500 ${scrolled ? "opacity-100" : "opacity-0"}`}
+                    aria-hidden
+                />
                 <div className="section-container flex items-center justify-between h-20">
                     <Link href={`/${locale}`} onClick={(e) => handleClick(e, `/${locale}`)} className="block" aria-label="Orion Studio">
                         <div

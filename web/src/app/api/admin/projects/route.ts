@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
+import { buildProjectWriteData, validateProjectWrite } from "@/lib/project-validation";
 
 export async function GET() {
   try {
@@ -19,13 +20,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    if (!body.client || !body.client.trim()) {
-      return NextResponse.json({ error: "Client name is required" }, { status: 400 });
-    }
-
-    if (!body.slug || !body.slug.trim()) {
-      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    const data = buildProjectWriteData(body);
+    const errors = validateProjectWrite(data);
+    if (errors.length) {
+      return NextResponse.json({ error: errors[0], errors }, { status: 400 });
     }
 
     const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
@@ -33,19 +31,7 @@ export async function POST(request: Request) {
 
     const project = await prisma.project.create({
       data: {
-        slug: body.slug,
-        client: body.client,
-        tagline_en: body.tagline_en ?? "",
-        tagline_tr: body.tagline_tr ?? null,
-        year: body.year ?? "",
-        services: body.services ?? [],
-        outcome_en: body.outcome_en ?? "",
-        outcome_tr: body.outcome_tr ?? null,
-        image: body.image ?? "",
-        category: body.category ?? "client",
-        sections: body.sections || [],
-        featured: body.featured ?? false,
-        status: body.status ?? "draft",
+        ...data,
         order: nextOrder,
       },
     });

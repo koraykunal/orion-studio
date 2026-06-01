@@ -14,7 +14,7 @@ export async function generateMetadata({
         title: t("blogTitle"),
         description: t("blogDescription"),
         openGraph: {
-            title: `${t("blogTitle")} — Orion Studio`,
+            title: `${t("blogTitle")} · Orion Studio`,
             description: t("blogDescription"),
         },
         alternates: {
