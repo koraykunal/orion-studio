@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
-import { SERVICE_SLUGS, isServiceSlug } from "@/lib/services";
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-    return SERVICE_SLUGS.map((slug) => ({ slug }));
-}
+import { isServiceSlug } from "@/lib/services";
 
 export async function generateMetadata({
     params,

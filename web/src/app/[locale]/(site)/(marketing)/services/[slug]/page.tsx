@@ -1,13 +1,14 @@
 "use client";
 
 import { use } from "react";
+import { notFound } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { ServiceMark } from "@/components/effects/ServiceMark";
-import { SERVICE_SLUGS, type ServiceSlug } from "@/lib/services";
+import { SERVICE_SLUGS, isServiceSlug, type ServiceSlug } from "@/lib/services";
 
 export default function ServiceDetailPage({
     params,
@@ -15,6 +16,7 @@ export default function ServiceDetailPage({
     params: Promise<{ slug: string; locale: string }>;
 }) {
     const { slug } = use(params);
+    if (!isServiceSlug(slug)) notFound();
     const t = useTranslations("services");
     const tNav = useTranslations("nav");
     const locale = useLocale();
