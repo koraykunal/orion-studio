@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { SocialIcon } from "@/components/common/SocialIcon";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 import { FOOTER_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";
 
@@ -117,21 +118,21 @@ export function Footer() {
                         className="col-span-2 md:col-span-2 lg:col-span-2"
                     >
                         <p className="text-label text-foreground-subtle mb-5">{t("social")}</p>
-                        <ul className="space-y-3">
+                        <div className="flex items-center gap-5">
                             {socials.map((link) => (
-                                <li key={link.label}>
-                                    <a
-                                        href={link.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-body-lg text-foreground-muted hover:text-foreground transition-colors duration-300"
-                                        data-cursor="hover"
-                                    >
-                                        {link.label}
-                                    </a>
-                                </li>
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={link.label}
+                                    className="text-foreground-muted hover:text-foreground transition-colors duration-300"
+                                    data-cursor="hover"
+                                >
+                                    <SocialIcon name={link.icon} size={22} />
+                                </a>
                             ))}
-                        </ul>
+                        </div>
                     </div>
 
                     <div
@@ -174,7 +175,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div ref={bottomBarRef} className="section-container mt-6 pb-6 lg:pb-8">
+            <div ref={bottomBarRef} className="section-container mt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:pb-[max(2rem,env(safe-area-inset-bottom))]">
                 <div className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
                     <p className="text-caption">
                         &copy; {new Date().getFullYear()} Orion Studio

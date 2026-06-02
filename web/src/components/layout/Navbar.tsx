@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
+import { OrionButton } from "@/components/common/OrionButton";
 
 const CYCLE_INTERVAL = 4;
 const FLIP_DURATION = 0.6;
@@ -82,6 +83,8 @@ export function Navbar() {
         gsap.set(items[1], { yPercent: 100 });
         gsap.set(items[2], { yPercent: 100 });
 
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
         const flip = () => {
             const outEl = items[current];
             const next = (current + 1) % items.length;
@@ -108,7 +111,7 @@ export function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 right-0 z-50 transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
                 <div
                     className={`absolute inset-x-0 top-0 -z-10 h-[180%] pointer-events-none bg-gradient-to-b from-background via-background/85 to-transparent transition-opacity duration-500 ${scrolled ? "opacity-100" : "opacity-0"}`}
                     aria-hidden
@@ -223,13 +226,13 @@ export function Navbar() {
                             <span className="text-foreground-subtle opacity-40">/</span>
                             <span className="text-foreground-muted">{otherLocale.toUpperCase()}</span>
                         </button>
-                        <Link
+                        <OrionButton
                             href={`/${locale}/contact`}
                             onClick={(e) => handleClick(e, `/${locale}/contact`)}
-                            className="mt-4 px-8 py-3 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500"
+                            className="mt-4"
                         >
                             {t("startProject")}
-                        </Link>
+                        </OrionButton>
                     </div>
                 </div>
             )}

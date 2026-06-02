@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
+import { BASE_URL, buildLanguageAlternates, serviceSchema } from "@/lib/schema";
 import { isServiceSlug } from "@/lib/services";
 
 export async function generateMetadata({
@@ -31,6 +31,32 @@ export async function generateMetadata({
     };
 }
 
-export default function ServiceLayout({ children }: { children: React.ReactNode }) {
-    return children;
+export default async function ServiceLayout({
+    children,
+    params,
+}: {
+    children: React.ReactNode;
+    params: Promise<{ slug: string; locale: string }>;
+}) {
+    const { slug, locale } = await params;
+
+    if (!isServiceSlug(slug)) return children;
+
+    const t = await getTranslations({ locale, namespace: "services" });
+    const schema = serviceSchema({
+        name: t(`${slug}Name`),
+        description: t(`${slug}Tagline`),
+        slug,
+        locale,
+    });
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+            {children}
+        </>
+    );
 }

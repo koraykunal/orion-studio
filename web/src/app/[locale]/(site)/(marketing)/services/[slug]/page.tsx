@@ -8,6 +8,8 @@ import Image from "next/image";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { ServiceMark } from "@/components/effects/ServiceMark";
+import { OrionButton } from "@/components/common/OrionButton";
+import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 import { SERVICE_SLUGS, isServiceSlug, type ServiceSlug } from "@/lib/services";
 
 export default function ServiceDetailPage({
@@ -131,9 +133,7 @@ export default function ServiceDetailPage({
                                     <Image src={`/images/services/${o}.svg`} alt="" fill sizes="40px" className="object-contain" />
                                 </div>
                                 <span className="text-heading text-[1rem] flex-1">{t(`${o}Name`)}</span>
-                                <svg width="14" height="14" viewBox="0 0 12 12" fill="none" className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 transition-all duration-300 shrink-0">
-                                    <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                <ArrowUpRight size={14} className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 transition-all duration-300 shrink-0" />
                             </Link>
                         ))}
                     </div>
@@ -153,14 +153,9 @@ export default function ServiceDetailPage({
                         {t("ctaDescription")}
                     </TextReveal>
                     <div className="pt-4">
-                        <Link
-                            href={`/${locale}/contact`}
-                            className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
-                            data-cursor="hover"
-                        >
-                            <span className="relative z-10">{tNav("startProject")}</span>
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
-                        </Link>
+                        <OrionButton href={`/${locale}/contact`} withArrow>
+                            {tNav("startProject")}
+                        </OrionButton>
                     </div>
                 </div>
             </section>

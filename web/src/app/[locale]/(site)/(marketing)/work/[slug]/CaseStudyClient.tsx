@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { MaskImage } from "@/components/motion/MaskImage";
 import { LineReveal } from "@/components/motion/LineReveal";
+import { OrionButton } from "@/components/common/OrionButton";
 import { CaseStudyHero } from "@/components/sections/case-study/CaseStudyHero";
 import { SectionRenderer } from "@/components/sections/case-study/SectionRenderer";
 import type { Project } from "@/lib/project-types";
@@ -46,13 +46,9 @@ export function CaseStudyClient({
                                 {nextProject.client}
                             </TextReveal>
                             <div className="pt-4">
-                                <Link
-                                    href={`/${locale}/work/${nextProject.slug}`}
-                                    className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
-                                >
-                                    <span className="relative z-10">{t("viewProject")}</span>
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
-                                </Link>
+                                <OrionButton href={`/${locale}/work/${nextProject.slug}`} withArrow>
+                                    {t("viewProject")}
+                                </OrionButton>
                             </div>
                         </div>
                     </div>

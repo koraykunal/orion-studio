@@ -6,8 +6,11 @@ import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { OrionButton } from "@/components/common/OrionButton";
+import { SocialIcon } from "@/components/common/SocialIcon";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 import { PRIMARY_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";
+import { SERVICE_SLUGS } from "@/lib/services";
 
 function Chip({
     label,
@@ -41,10 +44,11 @@ function Chip({
 
 export default function ContactPage() {
     const t = useTranslations("contact");
+    const tServices = useTranslations("services");
     const pageRef = useRef<HTMLElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const services = [t("service0"), t("service1"), t("service2"), t("service3")];
+    const services = SERVICE_SLUGS.map((slug) => tServices(`${slug}Name`));
     const budgets = [t("budget0"), t("budget1"), t("budget2"), t("budget3"), t("budget4")];
     const timelines = [t("timeline0"), t("timeline1"), t("timeline2"), t("timeline3"), t("timeline4")];
 
@@ -175,15 +179,18 @@ export default function ContactPage() {
                                 <span className="text-label text-foreground-muted block">
                                     {t("socialLabel")}
                                 </span>
-                                <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-5">
                                     {socials.map((s) => (
                                         <a
                                             key={s.label}
                                             href={s.href}
-                                            className="text-label text-foreground-muted hover:text-foreground transition-colors duration-300"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={s.label}
+                                            className="text-foreground-muted hover:text-foreground transition-colors duration-300"
                                             data-cursor="hover"
                                         >
-                                            {s.label}
+                                            <SocialIcon name={s.icon} size={22} />
                                         </a>
                                     ))}
                                 </div>
@@ -317,17 +324,9 @@ export default function ContactPage() {
                         </label>
 
                         <div className="form-field pt-4 space-y-4">
-                            <button
-                                type="submit"
-                                disabled={formStatus === "sending"}
-                                className="group relative px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 cursor-pointer overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                                data-cursor="hover"
-                            >
-                                <span className="relative z-10">
-                                    {formStatus === "sending" ? t("sending") : t("submit")}
-                                </span>
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
-                            </button>
+                            <OrionButton type="submit" disabled={formStatus === "sending"}>
+                                {formStatus === "sending" ? t("sending") : t("submit")}
+                            </OrionButton>
                             {formStatus === "sent" && (
                                 <p className="text-label text-success" role="status" aria-live="polite">
                                     {t("successTitle")} {t("successBody")}

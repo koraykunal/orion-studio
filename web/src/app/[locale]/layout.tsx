@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Red_Hat_Display, Bricolage_Grotesque, Red_Hat_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
@@ -8,11 +8,18 @@ import { routing } from "../../../i18n/routing";
 import { rootGraph, buildLanguageAlternates } from "@/lib/schema";
 import "../globals.css";
 
-const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700", "800", "900"], style: ["normal", "italic"] });
+const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700"] });
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap", weight: ["400", "500", "600", "700"] });
 const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
 
 const BASE_URL = "https://orion-studio.net";
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+    themeColor: "#0a0a12",
+};
 
 const fontVariables = [
     redHatDisplay.variable, bricolage.variable, redHatMono.variable,
@@ -26,11 +33,15 @@ export async function generateMetadata({
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: "meta" });
 
+    const keywords = locale === "tr"
+        ? ["dijital stüdyo", "web tasarım", "kurumsal web sitesi", "mobil uygulama geliştirme", "ui ux tasarım", "yazılım ajansı", "dijital ajans", "işletmeler için dijital çözümler"]
+        : ["digital studio", "web design", "corporate website", "mobile app development", "ui ux design", "software agency", "digital agency", "digital products for business"];
+
     return {
         metadataBase: new URL(BASE_URL),
         title: { default: t("homeTitle"), template: `%s | Orion Studio` },
         description: t("homeDescription"),
-        keywords: ["digital agency", "web design", "brand identity", "UI/UX design", "frontend engineering", "design studio"],
+        keywords,
         authors: [{ name: "Orion Studio", url: BASE_URL }],
         creator: "Orion Studio",
         icons: {
@@ -62,7 +73,7 @@ export async function generateMetadata({
             canonical: `${BASE_URL}/${locale}`,
             languages: buildLanguageAlternates("/"),
         },
-        other: { "theme-color": "#0a0a12", "msapplication-TileColor": "#0a0a12" },
+        other: { "msapplication-TileColor": "#0a0a12" },
     };
 }
 

@@ -8,6 +8,8 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { MaskImage } from "@/components/motion/MaskImage";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { OrionButton } from "@/components/common/OrionButton";
+import { DrawLine } from "@/components/common/DrawLine";
 import { EASES, DURATIONS } from "@/lib/animations/config";
 
 function ValueItem({
@@ -45,20 +47,8 @@ function ValueItem({
     }, { scope: ref });
 
     return (
-        <div ref={ref} className={`py-8 lg:py-10`}>
-            <svg
-                viewBox="0 0 1000 2"
-                preserveAspectRatio="none"
-                style={{ width: "100%", height: "1px", display: "block", overflow: "visible", marginBottom: "1.5rem" }}
-            >
-                <line
-                    ref={lineRef}
-                    x1="0" y1="1" x2="1000" y2="1"
-                    stroke="var(--border)"
-                    strokeWidth="2"
-                    vectorEffect="non-scaling-stroke"
-                />
-            </svg>
+        <div ref={ref} className="py-8 lg:py-10">
+            <DrawLine ref={lineRef} className="mb-6" />
 
             <div className="value-content flex flex-col md:flex-row md:items-start gap-4 md:gap-12">
                 <span className="text-index text-foreground-muted shrink-0 pt-1">{value.index}</span>
@@ -352,14 +342,9 @@ export default function AboutPage() {
                         {t("ctaDescription")}
                     </TextReveal>
                     <div className="pt-4">
-                        <a
-                            href={`/${locale}/contact`}
-                            className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
-                            data-cursor="hover"
-                        >
-                            <span className="relative z-10">{t("ctaButton")}</span>
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
-                        </a>
+                        <OrionButton href={`/${locale}/contact`} withArrow>
+                            {t("ctaButton")}
+                        </OrionButton>
                     </div>
                 </div>
             </section>

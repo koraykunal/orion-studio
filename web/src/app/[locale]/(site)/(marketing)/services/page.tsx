@@ -6,6 +6,7 @@ import Image from "next/image";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 import { SERVICE_SLUGS } from "@/lib/services";
 
 export default function ServicesPage() {
@@ -43,7 +44,7 @@ export default function ServicesPage() {
                 <div className="section-container">
                     <LineReveal className="mb-4" />
                     <div className="grid md:grid-cols-2 gap-x-12">
-                        {SERVICE_SLUGS.map((slug, i) => (
+                        {SERVICE_SLUGS.map((slug) => (
                             <Link
                                 key={slug}
                                 href={`/${locale}/services/${slug}`}
@@ -57,9 +58,7 @@ export default function ServicesPage() {
                                     <h2 className="text-heading group-hover:text-accent transition-colors duration-300">{t(`${slug}Name`)}</h2>
                                     <p className="text-body-lg text-foreground-muted max-w-[42ch]">{t(`${slug}Tagline`)}</p>
                                 </div>
-                                <svg width="16" height="16" viewBox="0 0 12 12" fill="none" className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 mt-2 shrink-0">
-                                    <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                <ArrowUpRight size={16} className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 mt-2 shrink-0" />
                             </Link>
                         ))}
                     </div>

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { DrawLine } from "@/components/common/DrawLine";
 import { EASES } from "@/lib/animations/config";
 
 function StepItem({
@@ -61,25 +62,7 @@ function StepItem({
                 </div>
 
                 <div className="col-span-12 md:col-span-6 lg:col-start-3 lg:col-span-6 space-y-4">
-                    <svg
-                        viewBox="0 0 1000 2"
-                        preserveAspectRatio="none"
-                        style={{
-                            width: "100%",
-                            height: "1px",
-                            display: "block",
-                            overflow: "visible",
-                            marginBottom: "1.5rem",
-                        }}
-                    >
-                        <line
-                            ref={lineRef}
-                            x1="0" y1="1" x2="1000" y2="1"
-                            stroke="var(--border)"
-                            strokeWidth="2"
-                            vectorEffect="non-scaling-stroke"
-                        />
-                    </svg>
+                    <DrawLine ref={lineRef} className="mb-6" />
 
                     <TextReveal as="h3" type="words" className="text-heading">
                         {step.title}

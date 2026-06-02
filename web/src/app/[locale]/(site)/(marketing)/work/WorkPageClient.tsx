@@ -7,6 +7,7 @@ import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
+import { OrionButton } from "@/components/common/OrionButton";
 import { EASES } from "@/lib/animations/config";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -340,14 +341,9 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                         {t("ctaDescription")}
                     </TextReveal>
                     <div className="pt-4">
-                        <a
-                            href={`/${locale}/contact`}
-                            className="group relative inline-block px-10 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden"
-                            data-cursor="hover"
-                        >
-                            <span className="relative z-10">{t("ctaButton")}</span>
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow)_0%,transparent_70%)]" />
-                        </a>
+                        <OrionButton href={`/${locale}/contact`} withArrow>
+                            {t("ctaButton")}
+                        </OrionButton>
                     </div>
                 </div>
             </section>

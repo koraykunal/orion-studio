@@ -72,7 +72,7 @@ export function BrandMapSection() {
             driftSpd: Math.random() * 0.5 + 0.2,
             bright: Math.random() < 0.05,
         });
-        const bgCount = window.innerWidth < 768 ? 110 : BG_COUNT;
+        const bgCount = window.innerWidth < 768 ? 36 : BG_COUNT;
         const bg = Array.from({length: bgCount}, () => newStar(NEAR + Math.random() * FIELD_DEPTH));
 
         const SPR = 128;
@@ -288,7 +288,6 @@ export function BrandMapSection() {
                 </div>
 
                 {SERVICE_SLUGS.map((key, i) => {
-                    const src = `https://picsum.photos/seed/${key}/720/540`;
                     return (
                         <div
                             key={key}
@@ -299,15 +298,21 @@ export function BrandMapSection() {
                         >
                             <div className="grid w-full max-w-[60rem] items-center gap-8 md:grid-cols-2 lg:gap-14">
                                 <div data-img
-                                     className="relative aspect-[4/3] overflow-hidden rounded-lg lg:rounded-xl border border-border/60 will-change-transform">
-                                    <Image
-                                        src={src}
-                                        alt=""
-                                        fill
-                                        sizes="(max-width: 768px) 86vw, 30rem"
-                                        className="object-cover"
-                                        loading={"eager"}
+                                     className="relative aspect-[4/3] overflow-hidden rounded-lg lg:rounded-xl border border-border/60 bg-surface-1 will-change-transform">
+                                    <div
+                                        className="absolute inset-0"
+                                        style={{ background: "radial-gradient(circle at 50% 38%, var(--glow-strong), transparent 70%)" }}
                                     />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <Image
+                                            src={`/images/services/${key}.svg`}
+                                            alt=""
+                                            width={180}
+                                            height={180}
+                                            className="w-1/3 h-1/3 object-contain opacity-90"
+                                        />
+                                    </div>
+                                    <span className="absolute bottom-4 left-5 text-index text-foreground-subtle">0{i + 1}</span>
                                 </div>
 
                                 <div className="text-center md:text-left">

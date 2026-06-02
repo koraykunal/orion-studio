@@ -79,6 +79,38 @@ export function rootGraph(locale: string) {
     };
 }
 
+export function faqSchema(entries: { question: string; answer: string }[]) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: entries.map((e) => ({
+            "@type": "Question",
+            name: e.question,
+            acceptedAnswer: { "@type": "Answer", text: e.answer },
+        })),
+    };
+}
+
+export function serviceSchema(args: {
+    name: string;
+    description: string;
+    slug: string;
+    locale: string;
+}) {
+    const url = `${BASE_URL}/${args.locale}/services/${args.slug}`;
+    return {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: args.name,
+        description: args.description,
+        url,
+        serviceType: args.name,
+        provider: { "@id": `${BASE_URL}/#organization` },
+        areaServed: ["TR", "Worldwide"],
+        inLanguage: args.locale === "tr" ? "tr-TR" : "en-US",
+    };
+}
+
 export function articleSchema(args: {
     title: string;
     description: string;

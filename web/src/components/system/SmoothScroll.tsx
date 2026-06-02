@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/animations/gsap";
 import { useScrollReset } from "@/hooks/use-scroll-reset";
@@ -9,14 +10,26 @@ import { LenisContext } from "@/lib/lenis-context";
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const [lenis, setLenis] = useState<Lenis | null>(null);
+  const pathname = usePathname();
 
   useScrollReset(lenis);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    const refresh = () => ScrollTrigger.refresh();
+
+    window.addEventListener("load", refresh);
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(refresh);
+    }
+
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mediaQuery.matches) return;
+    if (mediaQuery.matches) {
+      return () => {
+        window.removeEventListener("load", refresh);
+      };
+    }
 
     const instance = new Lenis({
       duration: 1.2,
@@ -46,6 +59,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     queueMicrotask(() => setLenis(instance));
 
     return () => {
+      window.removeEventListener("load", refresh);
       mediaQuery.removeEventListener("change", handleMotionChange);
       gsap.ticker.remove(rafCallback);
       instance.destroy();
@@ -53,6 +67,20 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       setLenis(null);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let inner = 0;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => ScrollTrigger.refresh());
+    });
+
+    return () => {
+      cancelAnimationFrame(outer);
+      cancelAnimationFrame(inner);
+    };
+  }, [pathname]);
 
   return (
     <LenisContext value={lenis}>

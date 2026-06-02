@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { OrionButton } from "@/components/common/OrionButton";
 
 export default function DesignSystemPage() {
     const colors = [
@@ -7,8 +8,8 @@ export default function DesignSystemPage() {
         { name: "surface-2", token: "--surface-2", value: "oklch(0.15 0.012 276)" },
         { name: "surface-3", token: "--surface-3", value: "oklch(0.19 0.010 274)" },
         { name: "foreground", token: "--foreground", value: "oklch(0.94 0.008 280)" },
-        { name: "foreground-muted", token: "--foreground-muted", value: "oklch(0.55 0.012 275)" },
-        { name: "foreground-subtle", token: "--foreground-subtle", value: "oklch(0.34 0.010 278)" },
+        { name: "foreground-muted", token: "--foreground-muted", value: "oklch(0.67 0.013 275)" },
+        { name: "foreground-subtle", token: "--foreground-subtle", value: "oklch(0.53 0.011 278)" },
         { name: "accent", token: "--accent", value: "oklch(0.72 0.15 295)" },
         { name: "accent-warm", token: "--accent-warm", value: "oklch(0.80 0.13 80)" },
         { name: "accent-bright", token: "--accent-bright", value: "oklch(0.82 0.12 290)" },
@@ -286,15 +287,10 @@ export default function DesignSystemPage() {
                     <div className="space-y-3">
                         <p className="text-label text-foreground-muted">Buttons</p>
                         <div className="flex flex-wrap gap-4 items-center">
-                            <button className="px-8 py-3 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500">
-                                Default Button
-                            </button>
-                            <button className="px-8 py-3 rounded-full bg-accent text-accent-foreground text-label hover:bg-accent-bright transition-all duration-500">
-                                Primary Button
-                            </button>
-                            <button className="px-8 py-3 rounded-full border border-border text-label text-foreground-muted hover:text-foreground hover:border-border-bright transition-all duration-500">
-                                Ghost Button
-                            </button>
+                            <OrionButton>Default Button</OrionButton>
+                            <OrionButton variant="primary">Primary Button</OrionButton>
+                            <OrionButton variant="ghost">Ghost Button</OrionButton>
+                            <OrionButton variant="underline" withArrow>Underline</OrionButton>
                         </div>
                     </div>
 

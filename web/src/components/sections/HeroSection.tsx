@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { Marquee } from "@/components/motion/Marquee";
 import { OrionConstellation } from "@/components/effects/OrionConstellation";
+import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 
 export function HeroSection() {
     const t = useTranslations("home");
@@ -16,7 +17,8 @@ export function HeroSection() {
         t("heroTicker3"), t("heroTicker4"), t("heroTicker5"),
     ];
     const sectionRef = useRef<HTMLElement>(null);
-    const titleRef = useRef<HTMLHeadingElement>(null);
+    const titleRef = useRef<HTMLDivElement>(null);
+    const subtitleRef = useRef<HTMLParagraphElement>(null);
     const ctaRef = useRef<HTMLDivElement>(null);
     const tickerRef = useRef<HTMLDivElement>(null);
     const bgRef = useRef<HTMLDivElement>(null);
@@ -35,6 +37,13 @@ export function HeroSection() {
             rotateX: -90,
             transformOrigin: "50% 100% -40px",
         });
+
+        const subSplit = subtitleRef.current
+            ? SplitText.create(subtitleRef.current, { type: "lines,words", mask: "lines" })
+            : null;
+        gsap.set(subtitleRef.current, { visibility: "hidden" });
+        if (subSplit) gsap.set(subSplit.words, { yPercent: 120 });
+
         gsap.set(ctaRef.current, { opacity: 0, y: 28, scale: 0.96, visibility: "hidden" });
         gsap.set(tickerRef.current, { opacity: 0, y: 14, visibility: "hidden" });
         gsap.set(bgRef.current, { opacity: 0, scale: 1.05 });
@@ -60,11 +69,21 @@ export function HeroSection() {
             ease: "orion.out",
         }, 0.2);
 
+        if (subSplit) {
+            tl.set(subtitleRef.current, { visibility: "visible" }, 0.85);
+            tl.to(subSplit.words, {
+                yPercent: 0,
+                duration: 0.9,
+                stagger: 0.045,
+                ease: "orion.out",
+            }, 0.85);
+        }
+
         if (ctaChildren) {
             tl.to(ctaRef.current, {
                 opacity: 1, y: 0, scale: 1, visibility: "visible",
                 duration: 0.8,
-            }, ">-0.5");
+            }, ">-0.45");
             tl.to(ctaChildren, {
                 opacity: 1, y: 0, visibility: "visible",
                 duration: 0.7, stagger: 0.12,
@@ -93,11 +112,15 @@ export function HeroSection() {
                 { scale: 1.1, y: "-5vh", opacity: 0, duration: 1, ease: "power2.in" },
                 0
             )
+            .fromTo(subtitleRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: -15, duration: 0.4, ease: "power1.in" }, 0.05)
             .fromTo(ctaRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: -15, duration: 0.4, ease: "power1.in" }, 0.1)
             .fromTo(tickerRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: 10, duration: 0.4, ease: "power1.in" }, 0)
             .fromTo(bgRef.current, { opacity: 1 }, { opacity: 0, duration: 0.6, ease: "power1.in" }, 0.4);
 
-        return () => split.revert();
+        return () => {
+            split.revert();
+            subSplit?.revert();
+        };
     }, { scope: sectionRef });
 
     return (
@@ -115,13 +138,22 @@ export function HeroSection() {
             </div>
 
             <div className="relative z-10 w-full h-full flex flex-col">
-                <div className="flex-1 flex flex-col items-center justify-center gap-8 lg:gap-10 px-6">
-                    <h1
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 lg:gap-8 px-6">
+                    <h1 className="sr-only">{t("heroH1")}</h1>
+                    <div
                         ref={titleRef}
+                        aria-hidden="true"
                         className="text-display text-center select-none"
                     >
                         ORION
-                    </h1>
+                    </div>
+
+                    <p
+                        ref={subtitleRef}
+                        className="text-body-lg text-foreground-muted text-center text-balance max-w-[46ch]"
+                    >
+                        {t("heroSubtitle")}
+                    </p>
 
                     <div ref={ctaRef} className="flex items-center gap-8">
                         <Link
@@ -129,10 +161,7 @@ export function HeroSection() {
                             className="group flex items-center gap-3 text-label border-b border-border pb-1 hover:border-accent transition-colors duration-350"
                         >
                             {t("heroStartProject")}
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
-                                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-350">
-                                <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
+                            <ArrowUpRight className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-350" />
                         </Link>
                         <Link
                             href={`/${locale}/#work`}

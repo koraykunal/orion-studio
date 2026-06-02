@@ -5,8 +5,10 @@ import { Link } from "next-view-transitions";
 import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, DrawSVGPlugin, useGSAP } from "@/lib/animations/gsap";
 import { LineReveal } from "@/components/motion/LineReveal";
+import { OrionButton } from "@/components/common/OrionButton";
+import { SocialIcon } from "@/components/common/SocialIcon";
 import { EASES, DURATIONS } from "@/lib/animations/config";
-import { PRIMARY_SOCIALS, CONTACT_EMAIL } from "@/lib/socials";
+import { PRIMARY_SOCIALS, CONTACT_EMAIL, WHATSAPP_HREF, PHONE_HREF } from "@/lib/socials";
 
 export function ContactSection() {
     const t = useTranslations("home");
@@ -220,6 +222,19 @@ export function ContactSection() {
                     </Link>
 
                     <div ref={metaRef} className="mt-12 lg:mt-16 flex flex-col items-center gap-6">
+                        {WHATSAPP_HREF && (
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                                <OrionButton href={WHATSAPP_HREF} external>
+                                    {t("quickContactWhatsapp")}
+                                </OrionButton>
+                                {PHONE_HREF && (
+                                    <OrionButton href={PHONE_HREF} external variant="ghost">
+                                        {t("quickContactCall")}
+                                    </OrionButton>
+                                )}
+                            </div>
+                        )}
+
                         <a
                             href={`mailto:${CONTACT_EMAIL}`}
                             className="text-body-lg text-foreground-muted hover:text-accent transition-colors duration-350"
@@ -228,17 +243,18 @@ export function ContactSection() {
                             {CONTACT_EMAIL}
                         </a>
 
-                        <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-6">
                             {PRIMARY_SOCIALS.map((social) => (
                                 <a
                                     key={social.label}
                                     href={social.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-label text-foreground-subtle hover:text-foreground transition-colors duration-300"
+                                    aria-label={social.label}
+                                    className="text-foreground-subtle hover:text-foreground transition-colors duration-300"
                                     data-cursor="hover"
                                 >
-                                    {social.label}
+                                    <SocialIcon name={social.icon} size={22} />
                                 </a>
                             ))}
                         </div>

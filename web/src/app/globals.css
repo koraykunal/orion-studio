@@ -12,8 +12,8 @@
 
     /* ── Foreground ── */
     --foreground: oklch(0.94 0.008 280);
-    --foreground-muted: oklch(0.55 0.012 275);
-    --foreground-subtle: oklch(0.34 0.010 278);
+    --foreground-muted: oklch(0.67 0.013 275);
+    --foreground-subtle: oklch(0.53 0.011 278);
 
     /* ── Accent — Lavender/Violet ── */
     --accent: oklch(0.72 0.15 295);

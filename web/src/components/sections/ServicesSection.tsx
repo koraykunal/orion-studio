@@ -6,6 +6,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
+import { DrawLine } from "@/components/common/DrawLine";
+import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 import { EASES, STAGGER } from "@/lib/animations/config";
 import { SERVICE_SLUGS } from "@/lib/services";
 
@@ -48,13 +50,7 @@ function ServiceItem({
 
     return (
         <div ref={ref} className="group service-glow py-5 lg:py-6">
-            <svg
-                viewBox="0 0 1000 2"
-                preserveAspectRatio="none"
-                style={{ width: "100%", height: "1px", display: "block", overflow: "visible", marginBottom: "1.5rem" }}
-            >
-                <line ref={lineRef} x1="0" y1="1" x2="1000" y2="1" stroke="var(--border)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-            </svg>
+            <DrawLine ref={lineRef} className="mb-6" />
 
             <Link
                 href={`/${locale}/services/${slug}`}
@@ -68,9 +64,7 @@ function ServiceItem({
                     <h3 className="text-heading group-hover:text-accent transition-colors duration-300">{title}</h3>
                     <p className="text-body-lg text-foreground-muted max-w-[44ch] mt-1.5">{description}</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 12 12" fill="none" className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0">
-                    <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <ArrowUpRight size={16} className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
             </Link>
         </div>
     );
@@ -101,9 +95,7 @@ export function ServicesSection() {
                         data-cursor="hover"
                     >
                         {t("pageLabel")}
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <ArrowUpRight />
                     </Link>
                 </div>
 
