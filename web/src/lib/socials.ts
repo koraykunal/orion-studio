@@ -13,7 +13,7 @@ export const PRIMARY_SOCIALS: SocialLink[] = [
 
 export const FOOTER_SOCIALS: SocialLink[] = PRIMARY_SOCIALS;
 
-export const CONTACT_EMAIL = "koraykunal85@outlook.com";
+export const CONTACT_EMAIL = "info@orionstud.io";
 
 const WHATSAPP_RAW = process.env.NEXT_PUBLIC_WHATSAPP ?? "";
 

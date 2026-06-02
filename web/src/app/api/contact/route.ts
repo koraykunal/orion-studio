@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 import { escapeHtml } from "@/lib/html-escape";
 import { getClientKey, rateLimit } from "@/lib/rate-limit";
+import { CONTACT_EMAIL } from "@/lib/socials";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -67,7 +68,16 @@ export async function POST(request: Request) {
         });
 
         try {
-            const resend = new Resend(process.env.RESEND_API_KEY);
+            const port = Number(process.env.SMTP_PORT) || 587;
+            const transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
+                port,
+                secure: port === 465,
+                auth: {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS,
+                },
+            });
             const servicesText = safeServices.length ? safeServices.join(", ") : "Not specified";
 
             const htmlBody = `
@@ -85,9 +95,9 @@ export async function POST(request: Request) {
 <p style="white-space:pre-wrap;background:#f5f5f5;padding:16px;border-radius:8px;">${escapeHtml(brief)}</p>
 `;
 
-            await resend.emails.send({
-                from: "Orion Studio <onboarding@resend.dev>",
-                to: process.env.CONTACT_EMAIL!,
+            await transporter.sendMail({
+                from: `Orion Studio <${process.env.SMTP_USER}>`,
+                to: CONTACT_EMAIL,
                 replyTo: email,
                 subject: `New Inquiry from ${name}${company ? ` - ${company}` : ""}`,
                 html: htmlBody,
