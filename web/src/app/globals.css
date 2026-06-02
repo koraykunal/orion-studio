@@ -553,3 +553,79 @@
     border-top: 1px solid var(--border);
     margin: 3rem 0;
 }
+
+.dream-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    background: radial-gradient(circle at center, oklch(0.10 0.02 285 / 0.92), oklch(0.05 0.012 280 / 0.98));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    animation: dream-fade 0.9s ease forwards;
+}
+
+.dream-date {
+    font-family: var(--font-rh-display);
+    font-size: clamp(4rem, 16vw, 13rem);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 40px var(--glow-strong), 0 0 120px var(--glow);
+    opacity: 0;
+    animation: dream-rise 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+    user-select: none;
+    pointer-events: none;
+}
+
+.dream-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.dream-star {
+    position: absolute;
+    border-radius: 9999px;
+    background: var(--accent-bright);
+    box-shadow: 0 0 6px var(--accent-bright), 0 0 12px var(--glow-strong);
+    opacity: 0;
+    animation: dream-twinkle 3.4s ease-in-out infinite;
+}
+
+@keyframes dream-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes dream-rise {
+    from {
+        opacity: 0;
+        transform: translateY(0.6rem) scale(0.96);
+        filter: blur(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes dream-twinkle {
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1);
+    }
+}

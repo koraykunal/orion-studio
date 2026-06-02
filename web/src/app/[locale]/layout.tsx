@@ -6,6 +6,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransitions } from "next-view-transitions";
 import { routing } from "../../../i18n/routing";
 import { rootGraph, buildLanguageAlternates } from "@/lib/schema";
+import { DreamEasterEgg } from "@/components/effects/DreamEasterEgg";
 import "../globals.css";
 
 const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700"] });
@@ -104,6 +105,7 @@ export default async function LocaleLayout({
                             dangerouslySetInnerHTML={{ __html: JSON.stringify(rootGraph(locale)) }}
                         />
                         {children}
+                        <DreamEasterEgg />
                     </NextIntlClientProvider>
                 </body>
             </html>
