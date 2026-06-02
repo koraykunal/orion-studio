@@ -113,7 +113,7 @@ export function Navbar() {
         <>
             <nav className={`fixed top-0 left-0 right-0 z-50 transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
                 <div
-                    className={`absolute inset-x-0 top-0 -z-10 h-[180%] pointer-events-none bg-gradient-to-b from-background via-background/85 to-transparent transition-opacity duration-500 ${scrolled ? "opacity-100" : "opacity-0"}`}
+                    className="absolute inset-x-0 top-0 -z-10 h-[200%] pointer-events-none bg-gradient-to-b from-background from-45% via-background/80 to-transparent"
                     aria-hidden
                 />
                 <div className="section-container flex items-center justify-between h-20">
