@@ -175,7 +175,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div ref={bottomBarRef} className="section-container mt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:pb-[max(2rem,env(safe-area-inset-bottom))]">
+            <div ref={bottomBarRef} className="section-container mt-6 pb-6 lg:pb-8">
                 <div className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
                     <p className="text-caption">
                         &copy; {new Date().getFullYear()} Orion Studio

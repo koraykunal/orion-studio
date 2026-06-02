@@ -111,7 +111,7 @@ export function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-[backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""}`}>
                 <div
                     className={`absolute inset-x-0 top-0 -z-10 h-[180%] pointer-events-none bg-gradient-to-b from-background via-background/85 to-transparent transition-opacity duration-500 ${scrolled ? "opacity-100" : "opacity-0"}`}
                     aria-hidden
