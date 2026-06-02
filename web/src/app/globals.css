@@ -567,7 +567,16 @@
     animation: dream-fade 0.9s ease forwards;
 }
 
+.dream-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    pointer-events: none;
+}
+
 .dream-date {
+    position: relative;
     font-family: var(--font-rh-display);
     font-size: clamp(4rem, 16vw, 13rem);
     font-weight: 400;
@@ -577,8 +586,30 @@
     text-shadow: 0 0 40px var(--glow-strong), 0 0 120px var(--glow);
     opacity: 0;
     animation: dream-rise 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
-    user-select: none;
-    pointer-events: none;
+}
+
+.dream-heart {
+    position: absolute;
+    top: 0.1em;
+    right: -0.5em;
+    font-size: 0.16em;
+    color: var(--accent-bright);
+    text-shadow: 0 0 12px var(--glow-strong);
+    opacity: 0;
+    animation: dream-twinkle 3.4s ease-in-out 1.6s infinite;
+}
+
+.dream-vow {
+    margin-top: 0.4em;
+    font-family: var(--font-rh-display);
+    font-style: italic;
+    font-size: clamp(0.7rem, 1.6vw, 1.05rem);
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    text-transform: lowercase;
+    color: var(--accent);
+    opacity: 0;
+    animation: dream-whisper 2.4s ease 1.3s forwards;
 }
 
 .dream-stars {
@@ -614,6 +645,19 @@
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes dream-whisper {
+    from {
+        opacity: 0;
+        transform: translateY(0.3rem);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 0.55;
+        transform: translateY(0);
         filter: blur(0);
     }
 }

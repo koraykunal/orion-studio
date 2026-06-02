@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const SEQUENCE = "dream";
+const VOW = "always, yours";
 
 const STARS = [
     { top: "18%", left: "22%", delay: "0s", size: 2 },
@@ -78,7 +79,13 @@ export function DreamEasterEgg() {
                     />
                 ))}
             </div>
-            <span className="dream-date">28.11</span>
+            <div className="dream-mark">
+                <span className="dream-date">
+                    28.11
+                    <span className="dream-heart" aria-hidden>♡</span>
+                </span>
+                <span className="dream-vow">{VOW}</span>
+            </div>
         </div>
     );
 }
