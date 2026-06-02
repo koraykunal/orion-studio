@@ -32,5 +32,5 @@ export const proxy = auth((req) => {
 });
 
 export const config = {
-  matcher: ['/((?!_next|_vercel|.*\\..*).*)', '/api/admin/:path*'],
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)', '/api/admin/:path*'],
 };
