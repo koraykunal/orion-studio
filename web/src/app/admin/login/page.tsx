@@ -58,7 +58,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="admin@orion-studio.net"
+                placeholder="admin@orionstud.io"
               />
             </div>
 

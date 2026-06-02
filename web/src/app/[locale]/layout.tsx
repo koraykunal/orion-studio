@@ -12,7 +12,7 @@ const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap", weight: ["400", "500", "600", "700"] });
 const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
 
-const BASE_URL = "https://orion-studio.net";
+const BASE_URL = "https://orionstud.io";
 
 export const viewport: Viewport = {
     width: "device-width",

@@ -12,16 +12,16 @@
 
 ## Primary Pages
 
-- [Home](https://orion-studio.net/en): Studio overview, philosophy, and featured work
-- [About](https://orion-studio.net/en/about): Team, process, and studio values
-- [Work](https://orion-studio.net/en/work): Case studies of client projects with outcomes and deliverables
-- [Blog](https://orion-studio.net/en/blog): Articles on design, engineering, and creative process
-- [Contact](https://orion-studio.net/en/contact): Project inquiries and collaboration
+- [Home](https://orionstud.io/en): Studio overview, philosophy, and featured work
+- [About](https://orionstud.io/en/about): Team, process, and studio values
+- [Work](https://orionstud.io/en/work): Case studies of client projects with outcomes and deliverables
+- [Blog](https://orionstud.io/en/blog): Articles on design, engineering, and creative process
+- [Contact](https://orionstud.io/en/contact): Project inquiries and collaboration
 
 ## Languages
 
-- English: https://orion-studio.net/en
-- Türkçe: https://orion-studio.net/tr
+- English: https://orionstud.io/en
+- Türkçe: https://orionstud.io/tr
 
 ## Contact
 
@@ -31,4 +31,4 @@
 
 ## Sitemap
 
-- https://orion-studio.net/sitemap.xml
+- https://orionstud.io/sitemap.xml
