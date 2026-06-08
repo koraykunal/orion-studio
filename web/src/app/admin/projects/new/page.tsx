@@ -36,6 +36,7 @@ export default function NewProjectPage() {
   const [outcomeTr, setOutcomeTr] = useState("");
   const [sections, setSections] = useState<Section[]>([]);
   const [image, setImage] = useState("");
+  const [previewVideo, setPreviewVideo] = useState("");
   const [category, setCategory] = useState<"client" | "concept" | "studio">("client");
   const [serviceCategory, setServiceCategory] = useState<ProjectServiceCategory>("web");
   const [services, setServices] = useState<string[]>([]);
@@ -71,6 +72,7 @@ export default function NewProjectPage() {
           outcome_tr: outcomeTr || null,
           sections,
           image: image || "",
+          previewVideo: previewVideo || "",
           category,
           serviceCategory,
           services,
@@ -190,6 +192,14 @@ export default function NewProjectPage() {
             value={image}
             onChange={setImage}
             label="Hero Image"
+          />
+
+          <ImageUpload
+            value={previewVideo}
+            onChange={setPreviewVideo}
+            label="Preview Video (hover)"
+            accept="video/mp4,video/webm,video/quicktime"
+            allowVideo
           />
 
           <div className="space-y-2">

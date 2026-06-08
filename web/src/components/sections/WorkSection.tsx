@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { PortfolioPreviewMedia } from "@/components/common/PortfolioPreviewMedia";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import {
@@ -18,6 +18,7 @@ type WorkItem = {
     tagline: string;
     year: string;
     image: string;
+    previewVideo: string;
     category: Project["category"];
     serviceCategory: Project["serviceCategory"];
     slug: string;
@@ -58,17 +59,13 @@ function WorkCard({ item, index, locale }: { item: WorkItem; index: number; loca
                 className="relative overflow-hidden rounded-lg lg:rounded-xl"
                 style={{ aspectRatio: "6/3", clipPath: "inset(6% 6% 6% 6%)" }}
             >
-                {item.image ? (
-                    <Image
-                        src={item.image}
-                        alt={`${item.client}, ${item.tagline}`}
-                        fill
-                        sizes="(max-width: 1024px) 75vw, 45vw"
-                        className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                    />
-                ) : (
-                    <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
-                )}
+                <PortfolioPreviewMedia
+                    image={item.image}
+                    video={item.previewVideo}
+                    alt={`${item.client}, ${item.tagline}`}
+                    sizes="(max-width: 1024px) 75vw, 45vw"
+                    className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
             </div>
 
             <div className="mt-5 lg:mt-6 space-y-3">
@@ -104,6 +101,7 @@ export function WorkSection({ projects }: { projects: Project[] }) {
         tagline: p.tagline,
         year: p.year,
         image: p.image,
+        previewVideo: p.previewVideo,
         category: p.category,
         serviceCategory: p.serviceCategory,
         slug: p.slug,

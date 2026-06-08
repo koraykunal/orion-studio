@@ -35,7 +35,7 @@ function mapProject(
     p: {
         slug: string; client: string; tagline_en: string; tagline_tr: string | null;
         year: string; services: string[]; outcome_en: string; outcome_tr: string | null;
-        image: string; category: string; serviceCategory?: string | null; featured: boolean; sections: unknown;
+        image: string; previewVideo?: string | null; category: string; serviceCategory?: string | null; featured: boolean; sections: unknown;
     },
     locale: string
 ): Project {
@@ -47,6 +47,7 @@ function mapProject(
         services: p.services,
         outcome: getLocalizedStr(p.outcome_en, p.outcome_tr, locale),
         image: p.image,
+        previewVideo: p.previewVideo ?? "",
         category: p.category as ProjectCategory,
         serviceCategory: (p.serviceCategory ?? "web") as ProjectServiceCategory,
         featured: p.featured,

@@ -19,6 +19,7 @@ import { getSafeVideoEmbedUrl } from "@/lib/video-embed";
 
 const PROJECT_CATEGORIES: ProjectCategory[] = ["client", "concept", "studio"];
 const PROJECT_STATUSES = ["draft", "published"] as const;
+const VIDEO_FILE_RE = /\.(mp4|webm|mov|m4v)(\?.*)?$/i;
 const SECTION_TYPES: SectionType[] = [
     "fullImage",
     "textBlock",
@@ -44,6 +45,7 @@ type ProjectInput = {
     outcome_en?: unknown;
     outcome_tr?: unknown;
     image?: unknown;
+    previewVideo?: unknown;
     category?: unknown;
     serviceCategory?: unknown;
     sections?: unknown;
@@ -61,6 +63,7 @@ type ExistingProjectInput = {
     outcome_en: string;
     outcome_tr: string | null;
     image: string;
+    previewVideo?: string | null;
     category: string;
     serviceCategory?: string | null;
     sections: unknown;
@@ -78,6 +81,7 @@ export type ProjectWriteData = {
     outcome_en: string;
     outcome_tr: string | null;
     image: string;
+    previewVideo: string;
     category: ProjectCategory;
     serviceCategory: ProjectServiceCategory;
     sections: Section[];
@@ -158,6 +162,7 @@ export function buildProjectWriteData(
                 ? existing?.outcome_tr ?? null
                 : nullableStringValue(input.outcome_tr),
         image: stringValue(input.image, existing?.image ?? ""),
+        previewVideo: stringValue(input.previewVideo, existing?.previewVideo ?? ""),
         category: categoryValue(input.category ?? existing?.category),
         serviceCategory: serviceCategoryValue(input.serviceCategory ?? existing?.serviceCategory),
         sections:
@@ -177,6 +182,9 @@ export function validateProjectWrite(data: ProjectWriteData): string[] {
 
     if (!data.client) errors.push("Client name is required");
     if (!data.slug) errors.push("Slug is required");
+    if (data.previewVideo && !VIDEO_FILE_RE.test(data.previewVideo)) {
+        errors.push("Preview video must be an MP4, WebM, MOV, or M4V file");
+    }
 
     if (data.status === "published") {
         if (!data.tagline_en) errors.push("English tagline is required before publishing");

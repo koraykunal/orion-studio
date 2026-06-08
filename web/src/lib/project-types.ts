@@ -80,6 +80,7 @@ export type Project = {
     services: string[];
     outcome: string;
     image: string;
+    previewVideo: string;
     category: ProjectCategory;
     serviceCategory: ProjectServiceCategory;
     featured: boolean;

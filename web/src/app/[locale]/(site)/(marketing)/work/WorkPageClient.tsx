@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { OrionMark } from "@/components/effects/OrionMark";
 import { OrionButton } from "@/components/common/OrionButton";
+import { PortfolioPreviewMedia } from "@/components/common/PortfolioPreviewMedia";
 import { EASES } from "@/lib/animations/config";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -64,17 +64,13 @@ function FeaturedCard({ project, index, locale }: { project: Project; index: num
                         className="relative overflow-hidden rounded-lg lg:rounded-xl cursor-pointer"
                         style={{ aspectRatio: "3/2", clipPath: "inset(6% 6% 6% 6%)" }}
                     >
-                        {project.image ? (
-                            <Image
-                                src={project.image}
-                                alt={`${project.client}, ${project.tagline}`}
-                                fill
-                                sizes="(max-width: 1024px) 100vw, 58vw"
-                                className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                            />
-                        ) : (
-                            <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
-                        )}
+                        <PortfolioPreviewMedia
+                            image={project.image}
+                            video={project.previewVideo}
+                            alt={`${project.client}, ${project.tagline}`}
+                            sizes="(max-width: 1024px) 100vw, 58vw"
+                            className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                 </div>
@@ -262,17 +258,13 @@ export function WorkPageClient({ featured, others }: { featured: Project[]; othe
                                             className="relative overflow-hidden rounded-lg"
                                             style={{ aspectRatio: "4/3" }}
                                         >
-                                            {project.image ? (
-                                                <Image
-                                                    src={project.image}
-                                                    alt={`${project.client}, ${project.tagline}`}
-                                                    fill
-                                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                                                />
-                                            ) : (
-                                                <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
-                                            )}
+                                            <PortfolioPreviewMedia
+                                                image={project.image}
+                                                video={project.previewVideo}
+                                                alt={`${project.client}, ${project.tagline}`}
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                                            />
                                             <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                         </div>
 
