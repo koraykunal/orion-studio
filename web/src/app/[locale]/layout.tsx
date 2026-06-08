@@ -95,9 +95,6 @@ export default async function LocaleLayout({
     return (
         <ViewTransitions>
             <html lang={locale} className="dark">
-                <head>
-                    <link rel="preload" href="/star.svg" as="image" fetchPriority="high" />
-                </head>
                 <body className={fontVariables}>
                     <NextIntlClientProvider messages={messages}>
                         <script

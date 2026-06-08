@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import type {
     Project,
     ProjectCategory,
@@ -11,6 +12,35 @@ import { sanitizeRichHtml } from "@/lib/sanitize";
 
 export type { Project, ProjectCategory, ProjectServiceCategory, Section };
 export { getCategoryLabel, getServiceCategoryLabel } from "@/lib/project-types";
+
+const getCachedPublishedProjects = unstable_cache(
+    async () =>
+        prisma.project.findMany({
+            where: { status: "published" },
+            orderBy: { order: "asc" },
+        }),
+    ["published-projects"],
+    { revalidate: 300 },
+);
+
+const getCachedFeaturedProjects = unstable_cache(
+    async () =>
+        prisma.project.findMany({
+            where: { status: "published", featured: true },
+            orderBy: { order: "asc" },
+        }),
+    ["featured-projects"],
+    { revalidate: 300 },
+);
+
+const getCachedPublishedProjectBySlug = unstable_cache(
+    async (slug: string) =>
+        prisma.project.findFirst({
+            where: { slug, status: "published" },
+        }),
+    ["published-project-by-slug"],
+    { revalidate: 300 },
+);
 
 function sanitizeSection(section: Section): Section {
     if (section.type === "textBlock") {
@@ -56,25 +86,17 @@ function mapProject(
 }
 
 export async function getAllProjects(locale: string): Promise<Project[]> {
-    const projects = await prisma.project.findMany({
-        where: { status: "published" },
-        orderBy: { order: "asc" },
-    });
+    const projects = await getCachedPublishedProjects();
     return projects.map((p) => mapProject(p, locale));
 }
 
 export async function getFeaturedProjects(locale: string): Promise<Project[]> {
-    const projects = await prisma.project.findMany({
-        where: { status: "published", featured: true },
-        orderBy: { order: "asc" },
-    });
+    const projects = await getCachedFeaturedProjects();
     return projects.map((p) => mapProject(p, locale));
 }
 
 export async function getProjectBySlug(slug: string, locale: string): Promise<Project | undefined> {
-    const p = await prisma.project.findFirst({
-        where: { slug, status: "published" },
-    });
+    const p = await getCachedPublishedProjectBySlug(slug);
     if (!p) return undefined;
     return mapProject(p, locale);
 }

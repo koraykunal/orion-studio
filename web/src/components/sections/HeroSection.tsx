@@ -95,28 +95,6 @@ export function HeroSection() {
             duration: 0.7,
         }, "<0.15");
 
-        const scrollTl = gsap.timeline({
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "+=80%",
-                pin: true,
-                scrub: 1.4,
-                anticipatePin: 1,
-            },
-        });
-
-        scrollTl
-            .fromTo(titleRef.current,
-                { scale: 1, y: 0, opacity: 1 },
-                { scale: 1.1, y: "-5vh", opacity: 0, duration: 1, ease: "power2.in" },
-                0
-            )
-            .fromTo(subtitleRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: -15, duration: 0.4, ease: "power1.in" }, 0.05)
-            .fromTo(ctaRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: -15, duration: 0.4, ease: "power1.in" }, 0.1)
-            .fromTo(tickerRef.current, { opacity: 1, y: 0 }, { opacity: 0, y: 10, duration: 0.4, ease: "power1.in" }, 0)
-            .fromTo(bgRef.current, { opacity: 1 }, { opacity: 0, duration: 0.6, ease: "power1.in" }, 0.4);
-
         return () => {
             split.revert();
             subSplit?.revert();
