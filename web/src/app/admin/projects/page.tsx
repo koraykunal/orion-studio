@@ -14,19 +14,12 @@ import {
 } from "@/components/ui/table";
 import { getServiceCategoryLabel } from "@/lib/project-types";
 
-const categoryColors: Record<string, string> = {
-  client: "bg-blue-500/10 text-blue-400",
-  concept: "bg-purple-500/10 text-purple-400",
-  studio: "bg-pink-500/10 text-pink-400",
-};
-
 export default async function ProjectsListPage() {
   const projects = await prisma.project.findMany({
     orderBy: { order: "asc" },
     select: {
       id: true,
       client: true,
-      category: true,
       serviceCategory: true,
       status: true,
       featured: true,
@@ -48,8 +41,7 @@ export default async function ProjectsListPage() {
         <Table className="mt-8">
           <TableHeader>
             <TableRow>
-              <TableHead>Client</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Project</TableHead>
               <TableHead>Service</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Featured</TableHead>
@@ -68,14 +60,6 @@ export default async function ProjectsListPage() {
                 </TableCell>
                 <TableCell className="text-foreground-muted">
                   {getServiceCategoryLabel(project.serviceCategory)}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant="secondary"
-                    className={categoryColors[project.category] ?? ""}
-                  >
-                    {project.category}
-                  </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge

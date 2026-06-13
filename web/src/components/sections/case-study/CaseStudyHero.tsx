@@ -1,11 +1,12 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
-import { getCategoryLabel, getServiceCategoryLabel, type Project } from "@/lib/project-types";
+import { getServiceCategoryLabel, type Project } from "@/lib/project-types";
 
 export function CaseStudyHero({ project }: { project: Project }) {
     const t = useTranslations("work");
@@ -36,17 +37,6 @@ export function CaseStudyHero({ project }: { project: Project }) {
         );
 
         tl.from(
-            ".cs-tagline",
-            {
-                opacity: 0,
-                y: 30,
-                duration: DURATIONS.slow,
-                ease: EASES.brand,
-            },
-            "-=0.6"
-        );
-
-        tl.from(
             ".cs-meta > *",
             {
                 opacity: 0,
@@ -60,7 +50,14 @@ export function CaseStudyHero({ project }: { project: Project }) {
     }, { scope: heroRef });
 
     return (
-        <section ref={heroRef} className="relative section-py pt-32 overflow-hidden">
+        <section ref={heroRef} className="relative overflow-hidden pb-20 pt-32 lg:pb-28">
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background: "radial-gradient(ellipse 54% 48% at 24% 20%, var(--glow-subtle), transparent 70%)",
+                }}
+            />
+
             <div className="relative z-10 section-container">
                 <Link
                     href={`/${locale}/work`}
@@ -78,57 +75,41 @@ export function CaseStudyHero({ project }: { project: Project }) {
                     {t("allLabel")}
                 </Link>
 
-                <div className="grid-container gap-y-10">
-                    <div className="col-span-12 lg:col-span-8 space-y-6">
-                        <div className="flex items-center gap-4">
-                            <span className="text-index text-foreground-muted">
-                                {project.year}
-                            </span>
-                            <span className="px-2.5 py-1 rounded-full border border-accent/30 text-caption text-accent">
-                                {getCategoryLabel(project.category, locale)}
-                            </span>
-                            <span className="px-2.5 py-1 rounded-full border border-border text-caption text-foreground-muted">
-                                {getServiceCategoryLabel(project.serviceCategory, locale)}
-                            </span>
-                        </div>
-
-                        <h1 className="cs-title text-title lg:text-[clamp(2.5rem,5vw,5rem)] lg:leading-[1.0]">
+                <div className="grid-container gap-y-12">
+                    <div className="col-span-12 lg:col-span-10">
+                        <h1 className="cs-title relative z-10 font-display text-[clamp(4.5rem,13vw,17rem)] uppercase leading-[0.76] tracking-[-0.085em]">
                             {project.client}
                         </h1>
-
-                        <p className="cs-tagline text-editorial !text-foreground-muted/80 max-w-[48ch]">
-                            {project.tagline}
-                        </p>
                     </div>
 
-                    <div className="cs-meta col-span-12 lg:col-span-4 flex flex-col gap-6 lg:pt-2">
-                        <div>
-                            <span className="text-label text-foreground-muted block mb-2">
-                                {t("servicesLabel")}
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                                {project.services.map((s) => (
-                                    <span
-                                        key={s}
-                                        className="px-3 py-1.5 rounded-full border border-border text-caption text-foreground-muted"
-                                    >
-                                        {s}
-                                    </span>
-                                ))}
+                    <div className="cs-meta col-span-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-caption text-foreground-muted lg:col-span-8 lg:col-start-4">
+                        <span>{getServiceCategoryLabel(project.serviceCategory, locale)}</span>
+                        {project.services.slice(0, 3).map((s) => (
+                            <span key={s}>{s}</span>
+                        ))}
+                    </div>
+
+                    {project.image && (
+                        <div className="col-span-12 lg:col-span-10 lg:col-start-2">
+                            <div className="relative min-h-[28rem] overflow-hidden rounded-md bg-surface-1 md:min-h-[44rem]">
+                                <Image
+                                    src={project.image}
+                                    alt={project.client}
+                                    fill
+                                    priority
+                                    sizes="(max-width: 1024px) 100vw, 84vw"
+                                    className="object-cover object-left"
+                                />
+                                <div className="absolute inset-0 ring-1 ring-inset ring-foreground/5" />
                             </div>
                         </div>
+                    )}
 
-                        {project.outcome && (
-                            <div>
-                                <span className="text-label text-foreground-muted block mb-2">
-                                    {t("outcomeLabel")}
-                                </span>
-                                <p className="text-body-lg text-foreground max-w-[36ch]">
-                                    {project.outcome}
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                    {!project.image && (
+                        <div className="col-span-12 lg:col-span-10 lg:col-start-2">
+                            <div className="h-[42rem] border border-border-subtle bg-surface-1/50" />
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

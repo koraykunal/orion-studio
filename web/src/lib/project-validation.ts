@@ -187,9 +187,7 @@ export function validateProjectWrite(data: ProjectWriteData): string[] {
     }
 
     if (data.status === "published") {
-        if (!data.tagline_en) errors.push("English tagline is required before publishing");
         if (!data.year) errors.push("Year is required before publishing");
-        if (!data.outcome_en) errors.push("English outcome is required before publishing");
         if (!data.image) errors.push("Hero image is required before publishing");
         if (data.services.length === 0) errors.push("At least one service is required before publishing");
         errors.push(...validatePublishedSections(data.sections));

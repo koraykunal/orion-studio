@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import { getDevProjectBySlug, getDevProjects } from "@/lib/dev-projects";
 import type {
     Project,
     ProjectCategory,
@@ -12,6 +13,8 @@ import { sanitizeRichHtml } from "@/lib/sanitize";
 
 export type { Project, ProjectCategory, ProjectServiceCategory, Section };
 export { getCategoryLabel, getServiceCategoryLabel } from "@/lib/project-types";
+
+const shouldUseDevProjectFallback = () => process.env.NODE_ENV === "development";
 
 const getCachedPublishedProjects = unstable_cache(
     async () =>
@@ -86,17 +89,50 @@ function mapProject(
 }
 
 export async function getAllProjects(locale: string): Promise<Project[]> {
-    const projects = await getCachedPublishedProjects();
-    return projects.map((p) => mapProject(p, locale));
+    try {
+        const projects = await getCachedPublishedProjects();
+        if (projects.length === 0 && shouldUseDevProjectFallback()) {
+            return getDevProjects(locale);
+        }
+        return projects.map((p) => mapProject(p, locale));
+    } catch (error) {
+        if (shouldUseDevProjectFallback()) {
+            console.warn("Using development project fallback:", error);
+            return getDevProjects(locale);
+        }
+        throw error;
+    }
 }
 
 export async function getFeaturedProjects(locale: string): Promise<Project[]> {
-    const projects = await getCachedFeaturedProjects();
-    return projects.map((p) => mapProject(p, locale));
+    try {
+        const projects = await getCachedFeaturedProjects();
+        if (projects.length === 0 && shouldUseDevProjectFallback()) {
+            return getDevProjects(locale).filter((project) => project.featured);
+        }
+        return projects.map((p) => mapProject(p, locale));
+    } catch (error) {
+        if (shouldUseDevProjectFallback()) {
+            console.warn("Using development featured project fallback:", error);
+            return getDevProjects(locale).filter((project) => project.featured);
+        }
+        throw error;
+    }
 }
 
 export async function getProjectBySlug(slug: string, locale: string): Promise<Project | undefined> {
-    const p = await getCachedPublishedProjectBySlug(slug);
-    if (!p) return undefined;
-    return mapProject(p, locale);
+    try {
+        const p = await getCachedPublishedProjectBySlug(slug);
+        if (!p && shouldUseDevProjectFallback()) {
+            return getDevProjectBySlug(slug, locale);
+        }
+        if (!p) return undefined;
+        return mapProject(p, locale);
+    } catch (error) {
+        if (shouldUseDevProjectFallback()) {
+            console.warn("Using development project detail fallback:", error);
+            return getDevProjectBySlug(slug, locale);
+        }
+        throw error;
+    }
 }

@@ -34,9 +34,9 @@ export function MetricsSection({ data }: { data: MetricsData }) {
     return (
         <div className="section-container">
             <div className="p-8 lg:p-12 rounded-xl border border-border bg-surface-1/30">
-                <div ref={gridRef} className={`grid grid-cols-2 md:grid-cols-3 ${cols} gap-8 lg:gap-12`}>
+                <div ref={gridRef} className={`grid grid-cols-2 md:grid-cols-3 ${cols} gap-8 justify-items-center lg:gap-12`}>
                     {data.items.map((metric, i) => (
-                        <div key={i} className="metric-item text-center lg:text-left space-y-2">
+                        <div key={i} className="metric-item flex w-full max-w-[14rem] flex-col items-center text-center space-y-2">
                             <span className="block text-metric text-[clamp(2rem,4vw,3.5rem)] text-accent-warm">
                                 {metric.value}
                             </span>
