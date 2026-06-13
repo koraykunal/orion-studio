@@ -59,6 +59,7 @@ function ProjectTile({ project, locale }: { project: Project; locale: string }) 
                     alt={project.client}
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 66vw"
                     className="object-cover object-left transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    videoMode="always"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_48%,var(--background)_122%)] opacity-65 transition-opacity duration-500 group-hover:opacity-80" />
             </div>

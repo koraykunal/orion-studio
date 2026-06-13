@@ -91,13 +91,12 @@ export function CaseStudyHero({ project }: { project: Project }) {
 
                     {project.image && (
                         <div className="col-span-12 lg:col-span-10 lg:col-start-2">
-                            <div className="relative min-h-[28rem] overflow-hidden rounded-md bg-surface-1 md:min-h-[44rem]">
+                            <div className="relative min-h-112 overflow-hidden rounded-md bg-surface-1 md:min-h-176">
                                 <Image
                                     src={project.image}
                                     alt={project.client}
                                     fill
                                     priority
-                                    sizes="(max-width: 1024px) 100vw, 84vw"
                                     className="object-cover object-left"
                                 />
                                 <div className="absolute inset-0 ring-1 ring-inset ring-foreground/5" />
@@ -107,7 +106,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
 
                     {!project.image && (
                         <div className="col-span-12 lg:col-span-10 lg:col-start-2">
-                            <div className="h-[42rem] border border-border-subtle bg-surface-1/50" />
+                            <div className="h-168 border border-border-subtle bg-surface-1/50" />
                         </div>
                     )}
                 </div>

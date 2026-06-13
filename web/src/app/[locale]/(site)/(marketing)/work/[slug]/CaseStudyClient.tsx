@@ -16,26 +16,38 @@ import type {
     Project,
 } from "@/lib/project-types";
 
+const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
+
+function isRenderableImage(src: string) {
+    return IMAGE_FILE_RE.test(src);
+}
+
 function projectImages(project: Project) {
     const images: string[] = [];
+    const pushImage = (src?: string) => {
+        if (src && isRenderableImage(src)) {
+            images.push(src);
+        }
+    };
 
     project.sections.forEach((section) => {
         if (section.type === "fullImage") {
-            images.push((section.data as FullImageData).image);
+            pushImage((section.data as FullImageData).image);
         }
         if (section.type === "gallery") {
-            images.push(...(section.data as GalleryData).images.map((image) => image.src));
+            (section.data as GalleryData).images.forEach((image) => pushImage(image.src));
         }
         if (section.type === "deviceShowcase") {
-            images.push(...(section.data as DeviceShowcaseData).devices.map((device) => device.image));
+            (section.data as DeviceShowcaseData).devices.forEach((device) => pushImage(device.image));
         }
         if (section.type === "beforeAfter") {
             const data = section.data as BeforeAfterData;
-            images.push(data.before.src, data.after.src);
+            pushImage(data.before.src);
+            pushImage(data.after.src);
         }
         if (section.type === "media") {
             const data = section.data as MediaData;
-            images.push(data.poster || data.src);
+            pushImage(data.poster || data.src);
         }
     });
 
@@ -45,33 +57,32 @@ function projectImages(project: Project) {
 function VisualWall({ project }: { project: Project }) {
     const images = projectImages(project);
     if (images.length < 2) return null;
+    const bentoClasses = [
+        "col-span-2 md:col-span-2 md:row-span-2 lg:col-span-7 lg:row-span-2 aspect-[16/10] md:aspect-auto min-h-[15rem] md:min-h-[28rem] lg:min-h-[44rem]",
+        "col-span-1 md:col-span-1 lg:col-span-5 aspect-[1/1] md:aspect-[4/5] lg:min-h-[21rem]",
+        "col-span-1 md:col-span-1 lg:col-span-5 aspect-[1/1] md:aspect-[4/5] lg:min-h-[21rem]",
+        "col-span-1 md:col-span-1 lg:col-span-4 aspect-[1/1] lg:min-h-[18rem]",
+        "col-span-1 md:col-span-1 lg:col-span-8 aspect-[1/1] md:aspect-[16/10] lg:min-h-[18rem]",
+    ];
 
     return (
         <section className="section-container pb-20 lg:pb-32">
-            <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
-                <div className="relative min-h-[28rem] overflow-hidden rounded-md bg-surface-1 md:min-h-[44rem] lg:col-span-7">
-                    <Image
-                        src={images[0]}
-                        alt={`${project.client} visual direction`}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 58vw"
-                        className="object-cover"
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 lg:col-span-5">
-                    {images.slice(1, 5).map((src, index) => (
+            <div className="mx-auto max-w-[88rem]">
+                <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-12 lg:auto-rows-[minmax(9rem,auto)] lg:gap-5">
+                    {images.map((src, index) => (
                         <div
-                            key={src}
-                            className={`relative overflow-hidden rounded-md bg-surface-1 ${
-                                index === 0 ? "aspect-[4/5] lg:-translate-y-16" : "aspect-[5/4]"
-                            } ${index === 2 ? "lg:-translate-y-8" : ""}`}
+                            key={`${src}-${index}`}
+                            className={`relative overflow-hidden rounded-md bg-surface-1 ${bentoClasses[index] ?? "aspect-[4/3] lg:col-span-6"}`}
                         >
                             <Image
                                 src={src}
-                                alt=""
+                                alt={index === 0 ? `${project.client} visual direction` : ""}
                                 fill
-                                sizes="(max-width: 1024px) 50vw, 22vw"
+                                sizes={
+                                    index === 0
+                                        ? "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 58vw"
+                                        : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                }
                                 className="object-cover"
                             />
                             <div className="absolute inset-0 ring-1 ring-inset ring-foreground/5" />

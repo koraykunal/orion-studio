@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type PortfolioPreviewMediaProps = {
     image: string;
@@ -9,6 +9,7 @@ type PortfolioPreviewMediaProps = {
     alt: string;
     sizes: string;
     className?: string;
+    videoMode?: "hover" | "always";
 };
 
 export function PortfolioPreviewMedia({
@@ -17,10 +18,24 @@ export function PortfolioPreviewMedia({
     alt,
     sizes,
     className = "object-cover",
+    videoMode = "hover",
 }: PortfolioPreviewMediaProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const alwaysShowVideo = Boolean(video && videoMode === "always");
+
+    useEffect(() => {
+        const videoEl = videoRef.current;
+        if (!videoEl || !alwaysShowVideo) return;
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) return;
+
+        void videoEl.play().catch(() => undefined);
+    }, [alwaysShowVideo]);
 
     const playPreview = () => {
+        if (videoMode !== "hover") return;
+
         const videoEl = videoRef.current;
         if (!videoEl) return;
 
@@ -31,6 +46,8 @@ export function PortfolioPreviewMedia({
     };
 
     const stopPreview = () => {
+        if (videoMode !== "hover") return;
+
         const videoEl = videoRef.current;
         if (!videoEl) return;
 
@@ -63,10 +80,15 @@ export function PortfolioPreviewMedia({
                     ref={videoRef}
                     src={video}
                     poster={image || undefined}
-                    className={`absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 ${className}`}
+                    className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
+                        alwaysShowVideo
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+                    } ${className}`}
                     muted
                     loop
                     playsInline
+                    autoPlay={alwaysShowVideo}
                     preload="metadata"
                     aria-label={alt}
                 />
