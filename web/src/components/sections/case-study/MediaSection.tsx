@@ -33,7 +33,7 @@ export function MediaSection({ data }: { data: MediaData }) {
     if (!data.src) return null;
 
     const isVideo = VIDEO_EXT_RE.test(data.src);
-    const aspectRatio = data.aspectRatio?.trim() || (isVideo ? "16/9" : undefined);
+    const aspectRatio = data.aspectRatio?.trim() || undefined;
 
     return (
         <div className="section-container">
@@ -56,7 +56,7 @@ export function MediaSection({ data }: { data: MediaData }) {
                         playsInline
                         preload="metadata"
                         aria-label={data.alt || undefined}
-                        className="block w-full h-full object-cover"
+                        className={aspectRatio ? "block h-full w-full object-contain" : "block h-auto w-full"}
                     />
                 ) : aspectRatio ? (
                     <Image
@@ -64,7 +64,7 @@ export function MediaSection({ data }: { data: MediaData }) {
                         alt={data.alt}
                         fill
                         sizes="100vw"
-                        className="object-cover"
+                        className="object-contain"
                         unoptimized
                     />
                 ) : (

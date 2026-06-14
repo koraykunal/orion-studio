@@ -7,11 +7,6 @@ import { OrionButton } from "@/components/common/OrionButton";
 import { CaseStudyHero } from "@/components/sections/case-study/CaseStudyHero";
 import { SectionRenderer } from "@/components/sections/case-study/SectionRenderer";
 import type {
-    BeforeAfterData,
-    DeviceShowcaseData,
-    FullImageData,
-    GalleryData,
-    MediaData,
     Project,
     Section,
     VisualWallData,
@@ -25,54 +20,12 @@ function isRenderableVisual(src: string) {
     return IMAGE_FILE_RE.test(src) || VIDEO_FILE_RE.test(src);
 }
 
-function projectVisuals(project: Project): VisualWallItem[] {
-    const visuals: VisualWallItem[] = [];
-    const pushVisual = (src?: string, alt?: string) => {
-        if (src && isRenderableVisual(src)) {
-            visuals.push({ src, alt: alt || project.client });
-        }
-    };
-
-    project.sections.forEach((section) => {
-        if (section.type === "visualWall") return;
-        if (section.type === "fullImage") {
-            const data = section.data as FullImageData;
-            pushVisual(data.image, data.alt);
-        }
-        if (section.type === "gallery") {
-            (section.data as GalleryData).images.forEach((image) => pushVisual(image.src, image.alt));
-        }
-        if (section.type === "deviceShowcase") {
-            (section.data as DeviceShowcaseData).devices.forEach((device) => pushVisual(device.image, device.alt));
-        }
-        if (section.type === "beforeAfter") {
-            const data = section.data as BeforeAfterData;
-            pushVisual(data.before.src, data.before.alt);
-            pushVisual(data.after.src, data.after.alt);
-        }
-        if (section.type === "media") {
-            const data = section.data as MediaData;
-            pushVisual(data.poster || data.src, data.alt);
-        }
-    });
-
-    const seen = new Set<string>();
-    return visuals.filter((item) => {
-        if (seen.has(item.src)) return false;
-        seen.add(item.src);
-        return true;
-    }).slice(0, 8);
-}
-
 function visualWallItems(project: Project) {
     const manual = project.sections.find((section) => section.type === "visualWall");
-    if (manual) {
-        const data = manual.data as VisualWallData;
-        const items = data.items.filter((item) => item.src && isRenderableVisual(item.src));
-        if (items.length > 0) return items;
-    }
+    if (!manual) return [];
 
-    return projectVisuals(project);
+    const data = manual.data as VisualWallData;
+    return data.items.filter((item) => item.src && isRenderableVisual(item.src));
 }
 
 function contentSections(sections: Section[]) {

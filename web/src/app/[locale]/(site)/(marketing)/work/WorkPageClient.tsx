@@ -9,13 +9,7 @@ import {OrionMark} from "@/components/effects/OrionMark";
 import {PortfolioPreviewMedia} from "@/components/common/PortfolioPreviewMedia";
 import {EASES} from "@/lib/animations/config";
 import {useLocale, useTranslations} from "next-intl";
-import {getServiceCategoryLabel, type Project} from "@/lib/project-types";
-
-function getYearRange(projects: Project[]) {
-    const years = projects.map((project) => project.year).filter(Boolean);
-    if (years.length === 0) return "";
-    return Array.from(new Set(years)).join(" / ");
-}
+import {type Project} from "@/lib/project-types";
 
 function getTileLayout(index: number, featured: boolean) {
     if (featured) {
@@ -79,7 +73,6 @@ function ProjectTile({
     index: number;
     featured?: boolean;
 }) {
-    const t = useTranslations("work");
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
     const hasCaseStudy = project.sections && project.sections.length > 0;
