@@ -19,7 +19,8 @@ export type SectionType =
     | "beforeAfter"
     | "videoEmbed"
     | "deviceShowcase"
-    | "media";
+    | "media"
+    | "visualWall";
 
 export type DeviceType = "phone" | "tablet" | "laptop" | "desktop";
 export type DeviceItem = { type: DeviceType; image: string; alt: string };
@@ -53,6 +54,8 @@ export type MediaData = {
     controls: boolean;
     aspectRatio?: string;
 };
+export type VisualWallItem = { src: string; alt: string };
+export type VisualWallData = { items: VisualWallItem[] };
 
 export type SectionData =
     | FullImageData
@@ -64,7 +67,8 @@ export type SectionData =
     | BeforeAfterData
     | VideoEmbedData
     | DeviceShowcaseData
-    | MediaData;
+    | MediaData
+    | VisualWallData;
 
 export type Section = {
     id: string;
@@ -153,6 +157,7 @@ export const SECTION_TYPE_LABELS: Record<SectionType, string> = {
     videoEmbed: "Video Embed",
     deviceShowcase: "Device Showcase",
     media: "Media (Video / GIF)",
+    visualWall: "Visual Wall",
 };
 
 export function createEmptySection(type: SectionType): Section {
@@ -179,6 +184,7 @@ export function createEmptySection(type: SectionType): Section {
             loop: true,
             controls: false,
         },
+        visualWall: { items: [] },
     };
     return { id, type, data: defaults[type] };
 }

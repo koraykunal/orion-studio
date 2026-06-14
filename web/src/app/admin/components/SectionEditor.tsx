@@ -22,6 +22,7 @@ import type {
   VideoEmbedData,
   DeviceShowcaseData,
   MediaData,
+  VisualWallData,
 } from "@/lib/project-types";
 import { SECTION_TYPE_LABELS, createEmptySection } from "@/lib/project-types";
 import FullImageForm from "./sections/FullImageForm";
@@ -34,6 +35,7 @@ import BeforeAfterForm from "./sections/BeforeAfterForm";
 import VideoEmbedForm from "./sections/VideoEmbedForm";
 import DeviceShowcaseForm from "./sections/DeviceShowcaseForm";
 import MediaForm from "./sections/MediaForm";
+import VisualWallForm from "./sections/VisualWallForm";
 
 export function SectionEditor({
   sections,
@@ -149,6 +151,13 @@ export function SectionEditor({
         return (
           <MediaForm
             data={section.data as MediaData}
+            onChange={(d) => handleDataChange(section.id, d)}
+          />
+        );
+      case "visualWall":
+        return (
+          <VisualWallForm
+            data={section.data as VisualWallData}
             onChange={(d) => handleDataChange(section.id, d)}
           />
         );

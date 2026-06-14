@@ -46,6 +46,8 @@ function renderSection(section: Section) {
             return <DeviceShowcaseSection data={section.data as DeviceShowcaseData} />;
         case "media":
             return <MediaSection data={section.data as MediaData} />;
+        case "visualWall":
+            return null;
         default:
             return null;
     }

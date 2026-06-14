@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -14,78 +13,116 @@ import type {
     GalleryData,
     MediaData,
     Project,
+    Section,
+    VisualWallData,
+    VisualWallItem,
 } from "@/lib/project-types";
 
 const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
+const VIDEO_FILE_RE = /\.(mp4|webm|mov|m4v)(\?.*)?$/i;
 
-function isRenderableImage(src: string) {
-    return IMAGE_FILE_RE.test(src);
+function isRenderableVisual(src: string) {
+    return IMAGE_FILE_RE.test(src) || VIDEO_FILE_RE.test(src);
 }
 
-function projectImages(project: Project) {
-    const images: string[] = [];
-    const pushImage = (src?: string) => {
-        if (src && isRenderableImage(src)) {
-            images.push(src);
+function projectVisuals(project: Project): VisualWallItem[] {
+    const visuals: VisualWallItem[] = [];
+    const pushVisual = (src?: string, alt?: string) => {
+        if (src && isRenderableVisual(src)) {
+            visuals.push({ src, alt: alt || project.client });
         }
     };
 
     project.sections.forEach((section) => {
+        if (section.type === "visualWall") return;
         if (section.type === "fullImage") {
-            pushImage((section.data as FullImageData).image);
+            const data = section.data as FullImageData;
+            pushVisual(data.image, data.alt);
         }
         if (section.type === "gallery") {
-            (section.data as GalleryData).images.forEach((image) => pushImage(image.src));
+            (section.data as GalleryData).images.forEach((image) => pushVisual(image.src, image.alt));
         }
         if (section.type === "deviceShowcase") {
-            (section.data as DeviceShowcaseData).devices.forEach((device) => pushImage(device.image));
+            (section.data as DeviceShowcaseData).devices.forEach((device) => pushVisual(device.image, device.alt));
         }
         if (section.type === "beforeAfter") {
             const data = section.data as BeforeAfterData;
-            pushImage(data.before.src);
-            pushImage(data.after.src);
+            pushVisual(data.before.src, data.before.alt);
+            pushVisual(data.after.src, data.after.alt);
         }
         if (section.type === "media") {
             const data = section.data as MediaData;
-            pushImage(data.poster || data.src);
+            pushVisual(data.poster || data.src, data.alt);
         }
     });
 
-    return Array.from(new Set(images.filter(Boolean))).slice(0, 5);
+    const seen = new Set<string>();
+    return visuals.filter((item) => {
+        if (seen.has(item.src)) return false;
+        seen.add(item.src);
+        return true;
+    }).slice(0, 8);
+}
+
+function visualWallItems(project: Project) {
+    const manual = project.sections.find((section) => section.type === "visualWall");
+    if (manual) {
+        const data = manual.data as VisualWallData;
+        const items = data.items.filter((item) => item.src && isRenderableVisual(item.src));
+        if (items.length > 0) return items;
+    }
+
+    return projectVisuals(project);
+}
+
+function contentSections(sections: Section[]) {
+    return sections.filter((section) => section.type !== "visualWall");
+}
+
+function VisualWallMedia({ item, priority }: { item: VisualWallItem; priority: boolean }) {
+    const isVideo = VIDEO_FILE_RE.test(item.src);
+
+    if (isVideo) {
+        return (
+            <video
+                src={item.src}
+                className="block h-auto w-full rounded-md"
+                muted
+                loop
+                playsInline
+                controls
+                preload="metadata"
+                aria-label={item.alt || undefined}
+            />
+        );
+    }
+
+    return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+            src={item.src}
+            alt={item.alt}
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
+            className="block h-auto w-full rounded-md"
+        />
+    );
 }
 
 function VisualWall({ project }: { project: Project }) {
-    const images = projectImages(project);
-    if (images.length < 2) return null;
-    const bentoClasses = [
-        "col-span-2 md:col-span-2 md:row-span-2 lg:col-span-7 lg:row-span-2 aspect-[16/10] md:aspect-auto min-h-[15rem] md:min-h-[28rem] lg:min-h-[44rem]",
-        "col-span-1 md:col-span-1 lg:col-span-5 aspect-[1/1] md:aspect-[4/5] lg:min-h-[21rem]",
-        "col-span-1 md:col-span-1 lg:col-span-5 aspect-[1/1] md:aspect-[4/5] lg:min-h-[21rem]",
-        "col-span-1 md:col-span-1 lg:col-span-4 aspect-[1/1] lg:min-h-[18rem]",
-        "col-span-1 md:col-span-1 lg:col-span-8 aspect-[1/1] md:aspect-[16/10] lg:min-h-[18rem]",
-    ];
+    const items = visualWallItems(project);
+    if (items.length < 1) return null;
 
     return (
         <section className="section-container pb-20 lg:pb-32">
             <div className="mx-auto max-w-[88rem]">
-                <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-12 lg:auto-rows-[minmax(9rem,auto)] lg:gap-5">
-                    {images.map((src, index) => (
+                <div className="columns-1 gap-4 md:columns-2 lg:columns-3 lg:gap-5">
+                    {items.map((item, index) => (
                         <div
-                            key={`${src}-${index}`}
-                            className={`relative overflow-hidden rounded-md bg-surface-1 ${bentoClasses[index] ?? "aspect-[4/3] lg:col-span-6"}`}
+                            key={`${item.src}-${index}`}
+                            className="mb-4 break-inside-avoid rounded-md bg-surface-1 p-1 ring-1 ring-inset ring-foreground/5 lg:mb-5"
                         >
-                            <Image
-                                src={src}
-                                alt={index === 0 ? `${project.client} visual direction` : ""}
-                                fill
-                                sizes={
-                                    index === 0
-                                        ? "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 58vw"
-                                        : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                }
-                                className="object-cover"
-                            />
-                            <div className="absolute inset-0 ring-1 ring-inset ring-foreground/5" />
+                            <VisualWallMedia item={item} priority={index < 2} />
                         </div>
                     ))}
                 </div>
@@ -109,7 +146,7 @@ export function CaseStudyClient({
 
             <VisualWall project={project} />
 
-            <SectionRenderer sections={project.sections} />
+            <SectionRenderer sections={contentSections(project.sections)} />
 
             {nextProject && (
                 <section className="relative overflow-hidden" style={{ paddingTop: "clamp(4rem, 8vw, 8rem)", paddingBottom: "clamp(4rem, 8vw, 8rem)" }}>

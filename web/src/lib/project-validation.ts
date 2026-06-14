@@ -14,6 +14,7 @@ import {
     type TechStackData,
     type TextBlockData,
     type VideoEmbedData,
+    type VisualWallData,
 } from "@/lib/project-types";
 import { getSafeVideoEmbedUrl } from "@/lib/video-embed";
 
@@ -31,6 +32,7 @@ const SECTION_TYPES: SectionType[] = [
     "videoEmbed",
     "deviceShowcase",
     "media",
+    "visualWall",
 ];
 
 type ProjectStatus = (typeof PROJECT_STATUSES)[number];
@@ -287,6 +289,18 @@ function validatePublishedSections(sections: Section[]): string[] {
                 const data = section.data as MediaData;
                 if (!hasText(data.src)) errors.push(`${label}: media source is required`);
                 if (!hasText(data.alt)) errors.push(`${label}: alt text is required`);
+                break;
+            }
+            case "visualWall": {
+                const data = section.data as VisualWallData;
+                if (!Array.isArray(data.items) || data.items.length === 0) {
+                    errors.push(`${label}: at least one visual wall item is required`);
+                    break;
+                }
+                data.items.forEach((item, itemIndex) => {
+                    if (!hasText(item.src)) errors.push(`${label}, visual ${itemIndex + 1}: source is required`);
+                    if (!hasText(item.alt)) errors.push(`${label}, visual ${itemIndex + 1}: alt text is required`);
+                });
                 break;
             }
         }
