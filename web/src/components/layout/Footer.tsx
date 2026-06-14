@@ -165,7 +165,7 @@ export function Footer() {
             </div>
 
             <div className="w-full overflow-hidden">
-                <div ref={brandRef} className="select-none pointer-events-none px-4">
+                <div ref={brandRef} className="select-none pointer-events-none container-px">
                     <p
                         className="font-(--font-rh-display) leading-[0.85] tracking-[-0.04em] text-foreground/4 whitespace-nowrap text-center"
                         style={{ fontSize: "clamp(3rem, 14vw, 18rem)" }}
@@ -175,7 +175,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div ref={bottomBarRef} className="section-container mt-6 pb-6 lg:pb-8">
+            <div ref={bottomBarRef} className="container-px mt-6 pb-6 lg:pb-8">
                 <div className="flex items-center justify-between gap-4 py-5 border-t border-border-subtle">
                     <p className="text-caption">
                         &copy; {new Date().getFullYear()} Orion Studio

@@ -75,28 +75,43 @@ export function CaseStudyHero({ project }: { project: Project }) {
                     {t("allLabel")}
                 </Link>
 
-                <div className="grid-container gap-y-12">
+                <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6">
                     <div className="col-span-12 lg:col-span-10">
                         <h1 className="cs-title relative z-10 font-display text-[clamp(4.5rem,13vw,17rem)] uppercase leading-[0.76] tracking-[-0.085em]">
                             {project.client}
                         </h1>
                     </div>
 
-                    <div className="cs-meta col-span-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-caption text-foreground-muted lg:col-span-8 lg:col-start-4">
-                        <span>{getServiceCategoryLabel(project.serviceCategory, locale)}</span>
-                        {project.services.slice(0, 3).map((s) => (
-                            <span key={s}>{s}</span>
-                        ))}
+                    <div className="cs-meta col-span-12 grid gap-6 border-y border-border-subtle py-6 md:grid-cols-3">
+                        <div className="space-y-2">
+                            <span className="block text-index text-foreground-subtle">{t("yearLabel")}</span>
+                            <span className="block text-caption text-foreground">{project.year}</span>
+                        </div>
+                        <div className="space-y-2">
+                            <span className="block text-index text-foreground-subtle">{t("servicesLabel")}</span>
+                            <span className="block text-caption text-foreground">
+                                {getServiceCategoryLabel(project.serviceCategory, locale)}
+                            </span>
+                        </div>
+                        {project.outcome && (
+                            <div className="space-y-2 md:col-span-1">
+                                <span className="block text-index text-foreground-subtle">{t("outcomeLabel")}</span>
+                                <p className="max-w-md text-sm leading-relaxed text-foreground-muted">
+                                    {project.outcome}
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {project.image && (
-                        <div className="col-span-12 lg:col-span-10 lg:col-start-2">
-                            <div className="relative min-h-112 overflow-hidden rounded-md bg-surface-1 md:min-h-176">
+                        <div className="col-span-12">
+                            <div className="relative aspect-[16/9] overflow-hidden rounded-md bg-surface-1 lg:aspect-[21/10]">
                                 <Image
                                     src={project.image}
                                     alt={project.client}
                                     fill
                                     priority
+                                    sizes="(max-width: 768px) 100vw, 88rem"
                                     className="object-cover object-left"
                                 />
                                 <div className="absolute inset-0 ring-1 ring-inset ring-foreground/5" />
@@ -105,8 +120,8 @@ export function CaseStudyHero({ project }: { project: Project }) {
                     )}
 
                     {!project.image && (
-                        <div className="col-span-12 lg:col-span-10 lg:col-start-2">
-                            <div className="h-168 border border-border-subtle bg-surface-1/50" />
+                        <div className="col-span-12">
+                            <div className="aspect-[16/9] border border-border-subtle bg-surface-1/50 lg:aspect-[21/10]" />
                         </div>
                     )}
                 </div>
