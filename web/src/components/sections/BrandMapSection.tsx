@@ -1,12 +1,33 @@
 "use client";
 
 import {useEffect, useRef} from "react";
-import Image from "next/image";
 import {useTranslations} from "next-intl";
 import {ScrollTrigger} from "@/lib/animations/gsap";
 import {TextReveal} from "@/components/motion/TextReveal";
-import {SERVICE_SLUGS} from "@/lib/services";
 
+const DIFFERENTIATORS = [
+    {
+        key: "character",
+        framePath: "/marketing/differentiators/character/frames",
+    },
+    {
+        key: "system",
+        framePath: "/marketing/differentiators/system/frames",
+    },
+    {
+        key: "clarity",
+        framePath: "/marketing/differentiators/clarity/frames",
+    },
+    {
+        key: "continuity",
+        framePath: "/marketing/differentiators/continuity/frames",
+    },
+] as const;
+
+const SEQUENCE_FRAME_COUNT = 75;
+const PRELOAD_BEHIND = 3;
+const PRELOAD_AHEAD = 9;
+const CACHE_RADIUS = 24;
 const FOCAL = 320;
 const NEAR = 40;
 const SPREAD = 1300;
@@ -31,9 +52,91 @@ function smooth(a: number, b: number, t: number) {
     return x * x * (3 - 2 * x);
 }
 
+function frameSrc(path: string, frame: number) {
+    return `${path}/frame_${String(frame).padStart(4, "0")}.jpg`;
+}
+
+type SequenceState = {
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    framePath: string;
+    cache: Map<number, HTMLImageElement>;
+    lastFrame: number;
+    lastDrawn: number;
+};
+
+function syncSequenceCanvas(sequence: SequenceState) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const width = Math.max(1, Math.round(sequence.canvas.offsetWidth * dpr));
+    const height = Math.max(1, Math.round(sequence.canvas.offsetHeight * dpr));
+    if (sequence.canvas.width !== width || sequence.canvas.height !== height) {
+        sequence.canvas.width = width;
+        sequence.canvas.height = height;
+        sequence.context.setTransform(1, 0, 0, 1, 0, 0);
+    }
+}
+
+function drawCover(sequence: SequenceState, image: HTMLImageElement) {
+    syncSequenceCanvas(sequence);
+    const {context, canvas} = sequence;
+    const canvasRatio = canvas.width / canvas.height;
+    const imageRatio = image.naturalWidth / image.naturalHeight;
+    let sx = 0;
+    let sy = 0;
+    let sw = image.naturalWidth;
+    let sh = image.naturalHeight;
+
+    if (imageRatio > canvasRatio) {
+        sw = image.naturalHeight * canvasRatio;
+        sx = (image.naturalWidth - sw) / 2;
+    } else {
+        sh = image.naturalWidth / canvasRatio;
+        sy = (image.naturalHeight - sh) / 2;
+    }
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+}
+
+function loadFrame(sequence: SequenceState, frame: number) {
+    const safeFrame = Math.min(SEQUENCE_FRAME_COUNT, Math.max(1, frame));
+    const cached = sequence.cache.get(safeFrame);
+    if (cached) return cached;
+
+    const image = new Image();
+    image.decoding = "async";
+    image.src = frameSrc(sequence.framePath, safeFrame);
+    image.onload = () => {
+        if (sequence.lastFrame === safeFrame) {
+            drawCover(sequence, image);
+            sequence.lastDrawn = safeFrame;
+        }
+    };
+    sequence.cache.set(safeFrame, image);
+    return image;
+}
+
+function drawSequence(sequence: SequenceState, frame: number) {
+    const target = Math.min(SEQUENCE_FRAME_COUNT, Math.max(1, frame));
+    sequence.lastFrame = target;
+
+    for (let i = target - PRELOAD_BEHIND; i <= target + PRELOAD_AHEAD; i++) {
+        if (i >= 1 && i <= SEQUENCE_FRAME_COUNT) loadFrame(sequence, i);
+    }
+
+    for (const key of sequence.cache.keys()) {
+        if (Math.abs(key - target) > CACHE_RADIUS) sequence.cache.delete(key);
+    }
+
+    const image = sequence.cache.get(target);
+    if (image?.complete && image.naturalWidth > 0 && sequence.lastDrawn !== target) {
+        drawCover(sequence, image);
+        sequence.lastDrawn = target;
+    }
+}
+
 export function BrandMapSection() {
     const t = useTranslations("home");
-    const tSvc = useTranslations("services");
     const sectionRef = useRef<HTMLElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const progress = useRef(0);
@@ -155,8 +258,32 @@ export function BrandMapSection() {
         ro.observe(canvas);
         resize();
 
+        const panelEls = DIFFERENTIATORS.map((_, i) => {
+            const root = panelRefs.current[i];
+            if (!root) return null;
+            const sequenceCanvas = root.querySelector<HTMLCanvasElement>("[data-sequence]");
+            return {
+                root,
+                visual: root.querySelector<HTMLElement>("[data-visual]"),
+                sequence: sequenceCanvas
+                    ? {
+                        canvas: sequenceCanvas,
+                        context: sequenceCanvas.getContext("2d")!,
+                        framePath: DIFFERENTIATORS[i].framePath,
+                        cache: new Map<number, HTMLImageElement>(),
+                        lastFrame: 1,
+                        lastDrawn: 0,
+                    } satisfies SequenceState
+                    : null,
+                lines: Array.from(root.querySelectorAll<HTMLElement>("[data-line]")),
+            };
+        });
+
         if (reduce) {
             drawField(0, FIELD_DEPTH * 0.25);
+            for (const panel of panelEls) {
+                if (panel?.sequence) drawSequence(panel.sequence, 1);
+            }
             return () => {
                 ro.disconnect();
             };
@@ -171,16 +298,6 @@ export function BrandMapSection() {
             },
         });
 
-        const panelEls = SERVICE_SLUGS.map((_, i) => {
-            const root = panelRefs.current[i];
-            if (!root) return null;
-            return {
-                root,
-                img: root.querySelector<HTMLElement>("[data-img]"),
-                lines: Array.from(root.querySelectorAll<HTMLElement>("[data-line]")),
-            };
-        });
-
         const isVisible = {current: true};
         const vis = new IntersectionObserver((e) => {
             isVisible.current = e[0].isIntersecting;
@@ -189,7 +306,7 @@ export function BrandMapSection() {
 
         let raf = 0, t0 = 0, lastFrame = 0, lastDraw = 0;
         const CANVAS_FRAME = 1000 / CANVAS_FPS;
-        const seg = (1 - INTRO_END) / SERVICE_SLUGS.length;
+        const seg = (1 - INTRO_END) / DIFFERENTIATORS.length;
 
         const frame = (ts: number) => {
             raf = requestAnimationFrame(frame);
@@ -213,7 +330,7 @@ export function BrandMapSection() {
                 lastDraw = ts;
             }
 
-            for (let i = 0; i < SERVICE_SLUGS.length; i++) {
+            for (let i = 0; i < DIFFERENTIATORS.length; i++) {
                 const el = panelEls[i];
                 if (!el) continue;
                 const center = INTRO_END + (i + 0.5) * seg;
@@ -225,9 +342,14 @@ export function BrandMapSection() {
                 if (foc <= 0.002) continue;
                 el.root.style.transform = `translate3d(0, ${(-clampN(d) * H * 0.12).toFixed(1)}px, 0)`;
                 const reveal = smooth(-1, -0.12, d);
-                if (el.img) {
-                    el.img.style.transform = `scale(${(1 + (1 - reveal) * 0.09).toFixed(4)})`;
-                    el.img.style.opacity = clamp01(reveal * 1.4).toFixed(3);
+                if (el.visual) {
+                    el.visual.style.transform = `scale(${(1 + (1 - reveal) * 0.06).toFixed(4)})`;
+                    el.visual.style.opacity = clamp01(reveal * 1.35).toFixed(3);
+                }
+                if (el.sequence) {
+                    const localProgress = clamp01((d + 0.8) / 1.6);
+                    const targetFrame = Math.round(localProgress * (SEQUENCE_FRAME_COUNT - 1)) + 1;
+                    drawSequence(el.sequence, targetFrame);
                 }
                 for (let k = 0; k < el.lines.length; k++) {
                     const lr = smooth(-1 + k * 0.12, -0.08 + k * 0.12, d);
@@ -256,7 +378,7 @@ export function BrandMapSection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative h-[720svh] bg-background motion-reduce:h-auto">
+        <section ref={sectionRef} className="relative h-[460svh] bg-background motion-reduce:h-auto">
             <div
                 className="sticky top-0 h-svh w-full overflow-hidden motion-reduce:static motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-24">
                 <canvas ref={canvasRef} className="absolute inset-0 w-full h-full motion-reduce:hidden"
@@ -287,44 +409,44 @@ export function BrandMapSection() {
                     </TextReveal>
                 </div>
 
-                {SERVICE_SLUGS.map((key, i) => {
+                {DIFFERENTIATORS.map((item, i) => {
                     return (
                         <div
-                            key={key}
+                            key={item.key}
                             ref={(el) => {
                                 panelRefs.current[i] = el;
                             }}
                             className="absolute inset-0 z-10 flex items-center justify-center px-6 pointer-events-none opacity-0 will-change-transform motion-reduce:relative motion-reduce:inset-auto motion-reduce:opacity-100 motion-reduce:py-16"
                         >
-                            <div className="grid w-full max-w-[60rem] items-center gap-8 md:grid-cols-2 lg:gap-14">
-                                <div data-img
-                                     className="relative aspect-[4/3] overflow-hidden rounded-lg lg:rounded-xl border border-border/60 bg-surface-1 will-change-transform">
+                            <div className="grid w-full max-w-[78rem] items-center gap-12 md:grid-cols-[1.08fr_0.92fr] lg:gap-24">
+                                <div data-visual
+                                     className="relative h-[48svh] min-h-[22rem] overflow-hidden will-change-transform md:-ml-[7vw] md:h-[72svh] md:min-h-[34rem]"
+                                     style={{
+                                         WebkitMaskImage: "radial-gradient(ellipse 70% 78% at 52% 48%, #000 48%, rgba(0,0,0,0.72) 68%, transparent 100%)",
+                                         maskImage: "radial-gradient(ellipse 70% 78% at 52% 48%, #000 48%, rgba(0,0,0,0.72) 68%, transparent 100%)",
+                                     }}>
                                     <div
-                                        className="absolute inset-0"
-                                        style={{ background: "radial-gradient(circle at 50% 38%, var(--glow-strong), transparent 70%)" }}
+                                        className="absolute inset-0 z-10 pointer-events-none"
+                                        style={{ background: "radial-gradient(circle at 52% 45%, transparent 28%, rgba(5,5,10,0.08) 58%, rgba(5,5,10,0.72) 100%)" }}
                                     />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Image
-                                            src={`/images/services/${key}.svg`}
-                                            alt=""
-                                            width={180}
-                                            height={180}
-                                            className="w-1/3 h-1/3 object-contain opacity-90"
-                                        />
-                                    </div>
-                                    <span className="absolute bottom-4 left-5 text-index text-foreground-subtle">0{i + 1}</span>
+                                    <div
+                                        className="absolute inset-x-0 bottom-0 z-10 h-1/3 pointer-events-none"
+                                        style={{ background: "linear-gradient(to top, var(--background), transparent)" }}
+                                    />
+                                    <canvas
+                                        data-sequence
+                                        className="absolute inset-0 h-full w-full opacity-95 saturate-[0.92]"
+                                        aria-hidden
+                                    />
                                 </div>
 
-                                <div className="text-center md:text-left">
-                                    <span className="block overflow-hidden pb-[0.22em] -mb-[0.22em]">
-                                        <span data-line className="block text-index text-accent will-change-transform">0{i + 1}</span>
+                                <div className="relative z-20 text-center md:text-left">
+                                    <span className="block overflow-hidden pt-[0.08em] pb-[0.7em]">
+                                        <h3 data-line className="block text-title leading-[1.14] max-w-[12ch] mx-auto md:mx-0 will-change-transform">{t(`diff${i}Title`)}</h3>
                                     </span>
-                                    <span className="block overflow-hidden mt-3 pb-[0.22em] -mb-[0.22em]">
-                                        <h3 data-line className="block text-heading leading-[1.2] will-change-transform">{tSvc(`${key}Name`)}</h3>
-                                    </span>
-                                    <span className="block overflow-hidden mt-4 max-w-[42ch] mx-auto md:mx-0 pb-[0.22em] -mb-[0.22em]">
+                                    <span className="block overflow-hidden mt-3 max-w-[38ch] mx-auto md:mx-0 pt-[0.04em] pb-[0.5em]">
                                         <p data-line
-                                           className="block text-body-lg text-foreground-muted leading-[1.45] text-balance will-change-transform">{tSvc(`${key}Tagline`)}</p>
+                                           className="block text-body-lg text-foreground-muted leading-[1.5] text-balance will-change-transform">{t(`diff${i}Desc`)}</p>
                                     </span>
                                 </div>
                             </div>

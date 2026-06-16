@@ -52,7 +52,7 @@ export default function ServicesPage() {
                                 data-cursor="hover"
                             >
                                 <div className="relative w-12 h-12 lg:w-16 lg:h-16 shrink-0 opacity-75 group-hover:opacity-100 transition-opacity duration-500">
-                                    <Image src={`/images/services/${slug}.svg`} alt="" fill sizes="64px" className="object-contain" />
+                                    <Image src={`/marketing/services/${slug}.svg`} alt="" fill sizes="64px" className="object-contain" />
                                 </div>
                                 <div className="flex-1 space-y-2">
                                     <h2 className="text-heading group-hover:text-accent transition-colors duration-300">{t(`${slug}Name`)}</h2>

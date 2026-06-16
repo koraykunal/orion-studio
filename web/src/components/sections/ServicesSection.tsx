@@ -58,7 +58,7 @@ function ServiceItem({
                 data-cursor="hover"
             >
                 <div className="relative w-14 h-14 lg:w-[4.5rem] lg:h-[4.5rem] shrink-0 opacity-75 group-hover:opacity-100 transition-opacity duration-500">
-                    <Image src={`/images/services/${slug}.svg`} alt="" fill sizes="72px" className="object-contain" />
+                    <Image src={`/marketing/services/${slug}.svg`} alt="" fill sizes="72px" className="object-contain" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className="text-heading group-hover:text-accent transition-colors duration-300">{title}</h3>

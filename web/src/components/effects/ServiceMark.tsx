@@ -9,7 +9,7 @@ export function ServiceMark({ slug, className }: { slug: string; className?: str
 
     useEffect(() => {
         let active = true;
-        fetch(`/images/services/${slug}.svg`)
+        fetch(`/marketing/services/${slug}.svg`)
             .then((r) => r.text())
             .then((txt) => {
                 if (!active) return;

@@ -100,7 +100,7 @@ export default function ServiceDetailPage({
 
             <section className="relative py-16 lg:py-24 overflow-hidden">
                 <div className="absolute -left-[10%] top-[12%] w-[38%] max-w-[28rem] aspect-square pointer-events-none opacity-[0.05]">
-                    <Image src={`/images/services/${s}.svg`} alt="" fill sizes="28rem" className="object-contain" />
+                    <Image src={`/marketing/services/${s}.svg`} alt="" fill sizes="28rem" className="object-contain" />
                 </div>
                 <div className="relative z-10 section-container">
                     <span className="text-index text-foreground-muted mb-12 lg:mb-16 block">{t("approachLabel")}</span>
@@ -130,7 +130,7 @@ export default function ServiceDetailPage({
                                 data-cursor="hover"
                             >
                                 <div className="relative w-10 h-10 shrink-0 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                                    <Image src={`/images/services/${o}.svg`} alt="" fill sizes="40px" className="object-contain" />
+                                    <Image src={`/marketing/services/${o}.svg`} alt="" fill sizes="40px" className="object-contain" />
                                 </div>
                                 <span className="text-heading text-[1rem] flex-1">{t(`${o}Name`)}</span>
                                 <ArrowUpRight size={14} className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 transition-all duration-300 shrink-0" />

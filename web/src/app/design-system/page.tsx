@@ -65,7 +65,7 @@ export default function DesignSystemPage() {
                     <p className="text-index">Design System</p>
                     <div className="flex items-center gap-4">
                         <Image
-                            src="/logo.svg"
+                            src="/brand/logo.svg"
                             alt="Orion Studio"
                             width={56}
                             height={56}

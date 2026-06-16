@@ -154,7 +154,7 @@
         z-index: 9990;
         pointer-events: none;
         opacity: 0.032;
-        background-image: url("/noise.png");
+        background-image: url("/brand/noise.png");
         background-repeat: repeat;
         background-size: 38px 38px;
         image-rendering: pixelated;
@@ -419,7 +419,7 @@
 
 ::view-transition-old(root) {
     z-index: 2;
-    mask-image: url('/star.svg');
+    mask-image: url('/brand/star.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     animation: vt-close 0.7s cubic-bezier(0.55, 0, 0.1, 1) forwards;
@@ -427,7 +427,7 @@
 
 ::view-transition-new(root) {
     z-index: 1;
-    mask-image: url('/star.svg');
+    mask-image: url('/brand/star.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 0% 0%;

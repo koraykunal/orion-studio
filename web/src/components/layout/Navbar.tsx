@@ -135,7 +135,7 @@ export function Navbar() {
                             </span>
                             <div ref={logoRef} className="absolute top-0 left-0 flex items-center h-full">
                                 <Image
-                                    src="/logo.svg"
+                                    src="/brand/logo.svg"
                                     alt="Orion Studio"
                                     width={60}
                                     height={60}

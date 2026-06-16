@@ -25,7 +25,7 @@ export function Sidebar() {
     <aside className="flex w-60 flex-col border-r border-border bg-surface-1 h-screen sticky top-0">
       <div className="px-6 py-6">
         <Link href="/admin" className="flex items-center gap-3">
-          <Image src="/logo.svg" alt="Orion Studio" width={28} height={28} />
+          <Image src="/brand/logo.svg" alt="Orion Studio" width={28} height={28} />
           <div className="flex flex-col">
             <span className="text-label text-foreground leading-tight">Orion Studio</span>
             <span className="text-[0.6rem] uppercase tracking-[0.12em] text-foreground-muted">Admin</span>

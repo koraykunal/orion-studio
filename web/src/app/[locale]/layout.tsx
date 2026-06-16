@@ -45,7 +45,7 @@ export async function generateMetadata({
         authors: [{ name: "Orion Studio", url: BASE_URL }],
         creator: "Orion Studio",
         icons: {
-            icon: [{ url: "/favicon.ico", sizes: "48x48" }, { url: "/logo.svg", type: "image/svg+xml" }],
+            icon: [{ url: "/favicon.ico", sizes: "48x48" }, { url: "/brand/logo.svg", type: "image/svg+xml" }],
             apple: "/apple-touch-icon.png",
         },
         manifest: "/site.webmanifest",
@@ -56,13 +56,13 @@ export async function generateMetadata({
             siteName: "Orion Studio",
             locale: locale === "tr" ? "tr_TR" : "en_US",
             type: "website",
-            images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Orion Studio · Digital Agency" }],
+            images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "Orion Studio · Digital Agency" }],
         },
         twitter: {
             card: "summary_large_image",
             title: t("homeTitle"),
             description: t("homeDescription"),
-            images: [{ url: "/og-image.png", alt: "Orion Studio · Digital Agency" }],
+            images: [{ url: "/brand/og-image.png", alt: "Orion Studio · Digital Agency" }],
         },
         robots: {
             index: true,

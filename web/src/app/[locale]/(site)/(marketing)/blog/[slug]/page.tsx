@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? post.coverImage.startsWith("http")
             ? post.coverImage
             : `${BASE_URL}${post.coverImage}`
-        : `${BASE_URL}/og-image.png`;
+        : `${BASE_URL}/brand/og-image.png`;
 
     return {
         title,

@@ -243,7 +243,7 @@ ScrollTrigger.defaults({ toggleActions: "play none none reverse" });
 
 ### Grain Overlay
 
-Applied via `body::after` — fixed position PNG noise at 4% opacity, z-index 9990. Uses `/noise.png` (128x128 tile).
+Applied via `body::after` — fixed position PNG noise at 4% opacity, z-index 9990. Uses `/brand/noise.png` (128x128 tile).
 
 ### Clip Path Utilities
 
@@ -351,7 +351,7 @@ app/
 
 ### View Transitions
 
-Page transitions use CSS `::view-transition` with a star-shaped mask (`/star.svg`):
+Page transitions use CSS `::view-transition` with a star-shaped mask (`/brand/star.svg`):
 - Old page closes with star mask shrinking
 - New page opens with star mask expanding (0.55s delay)
 

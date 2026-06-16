@@ -16,7 +16,7 @@ export function ReelSection() {
 
             <div className="relative z-10 section-container">
                 <MaskImage
-                    src="/desktop.png"
+                    src="/marketing/reel/reel.png"
                     alt="Orion Studio"
                     aspect="21/9"
                     inset={10}

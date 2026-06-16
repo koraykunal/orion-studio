@@ -3,9 +3,6 @@
 import {useMemo, useRef} from "react";
 import Link from "next/link";
 import {gsap, useGSAP} from "@/lib/animations/gsap";
-import {TextReveal} from "@/components/motion/TextReveal";
-import {LineReveal} from "@/components/motion/LineReveal";
-import {OrionMark} from "@/components/effects/OrionMark";
 import {PortfolioPreviewMedia} from "@/components/common/PortfolioPreviewMedia";
 import {EASES} from "@/lib/animations/config";
 import {useLocale, useTranslations} from "next-intl";
@@ -162,34 +159,8 @@ export function WorkPageClient({featured, others}: { featured: Project[]; others
 
     return (
         <main className="relative overflow-hidden bg-background">
-            <section className="relative overflow-hidden pt-32">
-                <div className="absolute -right-[18%] top-[2%] h-[78%] w-[62%] pointer-events-none">
-                    <OrionMark variant="minimal" lineOpacity={0.04} globalOpacity={0.26} rotate={10}/>
-                </div>
-
-                <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        background: "radial-gradient(ellipse 52% 44% at 28% 24%, var(--glow-subtle), transparent 72%), radial-gradient(ellipse 42% 50% at 82% 72%, var(--glow-warm-subtle), transparent 72%)",
-                    }}
-                />
-
-                <div className="relative z-10 section-container pb-16 lg:pb-24">
-                    <LineReveal className="mb-12 lg:mb-20"/>
-
-                    <div className="grid-container gap-y-10">
-                        <div className="col-span-12 lg:col-span-11">
-                            <TextReveal as="h1" type="words"
-                                        className="font-display text-[clamp(5.5rem,18vw,24rem)] uppercase leading-[0.72] tracking-[-0.09em] text-foreground">
-                                {t("pageTitle")}
-                            </TextReveal>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {hasProjects && (
-                <section className="section-container pb-[clamp(6rem,12vw,14rem)]">
+                <section className="section-container pt-32 pb-[clamp(6rem,12vw,14rem)]">
                     <div className="grid grid-cols-1 gap-x-4 gap-y-20 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-28">
                         {featured.map((project, index) => (
                             <ProjectTile
@@ -213,7 +184,7 @@ export function WorkPageClient({featured, others}: { featured: Project[]; others
             )}
 
             {!hasProjects && (
-                <section className="section-container section-py">
+                <section className="section-container pt-32 pb-[clamp(6rem,12vw,14rem)]">
                     <p className="text-body-lg text-foreground-muted">{t("noProjects")}</p>
                 </section>
             )}

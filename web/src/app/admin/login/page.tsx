@@ -42,7 +42,7 @@ export default function LoginPage() {
     <div className="flex min-h-svh items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <Image src="/logo.svg" alt="Orion Studio" width={40} height={40} className="mb-2" />
+          <Image src="/brand/logo.svg" alt="Orion Studio" width={40} height={40} className="mb-2" />
           <CardTitle className="text-heading">Orion Studio</CardTitle>
           <CardDescription className="text-body-lg">
             Yönetim paneline giriş yap

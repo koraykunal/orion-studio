@@ -1,11 +1,11 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
-import { TextReveal } from "@/components/motion/TextReveal";
-import { LineReveal } from "@/components/motion/LineReveal";
-import { OrionButton } from "@/components/common/OrionButton";
-import { CaseStudyHero } from "@/components/sections/case-study/CaseStudyHero";
-import { SectionRenderer } from "@/components/sections/case-study/SectionRenderer";
+import {useTranslations, useLocale} from "next-intl";
+import {TextReveal} from "@/components/motion/TextReveal";
+import {LineReveal} from "@/components/motion/LineReveal";
+import {OrionButton} from "@/components/common/OrionButton";
+import {CaseStudyHero} from "@/components/sections/case-study/CaseStudyHero";
+import {SectionRenderer} from "@/components/sections/case-study/SectionRenderer";
 import type {
     Project,
     Section,
@@ -32,7 +32,7 @@ function contentSections(sections: Section[]) {
     return sections.filter((section) => section.type !== "visualWall");
 }
 
-function VisualWallMedia({ item, priority }: { item: VisualWallItem; priority: boolean }) {
+function VisualWallMedia({item, priority}: { item: VisualWallItem; priority: boolean }) {
     const isVideo = VIDEO_FILE_RE.test(item.src);
 
     if (isVideo) {
@@ -62,20 +62,20 @@ function VisualWallMedia({ item, priority }: { item: VisualWallItem; priority: b
     );
 }
 
-function VisualWall({ project }: { project: Project }) {
+function VisualWall({project}: { project: Project }) {
     const items = visualWallItems(project);
     if (items.length < 1) return null;
 
     return (
         <section className="section-container pb-20 lg:pb-32">
-            <div className="mx-auto max-w-[88rem]">
+            <div className="mx-auto max-w-352">
                 <div className="columns-1 gap-4 md:columns-2 lg:columns-3 lg:gap-5">
                     {items.map((item, index) => (
                         <div
                             key={`${item.src}-${index}`}
-                            className="mb-4 break-inside-avoid rounded-md bg-surface-1 p-1 ring-1 ring-inset ring-foreground/5 lg:mb-5"
+                            className="mb-3 break-inside-avoid rounded-md bg-surface-1 lg:mb-5"
                         >
-                            <VisualWallMedia item={item} priority={index < 2} />
+                            <VisualWallMedia item={item} priority={index < 2}/>
                         </div>
                     ))}
                 </div>
@@ -85,9 +85,9 @@ function VisualWall({ project }: { project: Project }) {
 }
 
 export function CaseStudyClient({
-    project,
-    nextProject,
-}: {
+                                    project,
+                                    nextProject,
+                                }: {
     project: Project;
     nextProject: Project | null;
 }) {
@@ -95,14 +95,15 @@ export function CaseStudyClient({
     const locale = useLocale();
     return (
         <main className="relative bg-background overflow-hidden">
-            <CaseStudyHero project={project} />
+            <CaseStudyHero project={project}/>
 
-            <VisualWall project={project} />
+            <VisualWall project={project}/>
 
-            <SectionRenderer sections={contentSections(project.sections)} />
+            <SectionRenderer sections={contentSections(project.sections)}/>
 
             {nextProject && (
-                <section className="relative overflow-hidden" style={{ paddingTop: "clamp(4rem, 8vw, 8rem)", paddingBottom: "clamp(4rem, 8vw, 8rem)" }}>
+                <section className="relative overflow-hidden"
+                         style={{paddingTop: "clamp(4rem, 8vw, 8rem)", paddingBottom: "clamp(4rem, 8vw, 8rem)"}}>
                     <div
                         className="absolute inset-0 pointer-events-none"
                         style={{
@@ -110,11 +111,12 @@ export function CaseStudyClient({
                         }}
                     />
                     <div className="section-container">
-                        <LineReveal className="mb-16" />
+                        <LineReveal className="mb-16"/>
                         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
                             <div className="space-y-7 lg:col-span-8">
                                 <span className="text-index text-foreground-muted">{t("nextProject")}</span>
-                                <TextReveal as="h2" type="words" className="font-display text-[clamp(4rem,10vw,13rem)] uppercase leading-[0.78] tracking-[-0.08em]">
+                                <TextReveal as="h2" type="words"
+                                            className="font-display text-[clamp(4rem,10vw,13rem)] uppercase leading-[0.78] tracking-[-0.08em]">
                                     {nextProject.client}
                                 </TextReveal>
                             </div>
