@@ -1,22 +1,15 @@
 import { notFound } from "next/navigation";
-import { LOCALES } from "@/lib/locales";
-import { getProjectBySlug, getAllProjects, getPublishedProjectSlugs } from "@/lib/projects";
+import { getProjectBySlug, getAllProjects } from "@/lib/projects";
 import { creativeWorkSchema } from "@/lib/schema";
 import { CaseStudyClient } from "./CaseStudyClient";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export const dynamicParams = true;
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-    const slugs = await getPublishedProjectSlugs();
-    return LOCALES.flatMap((locale) =>
-        slugs.map((slug) => ({
-            locale,
-            slug,
-        })),
-    );
+    return [];
 }
 
 export default async function CaseStudyPage({ params }: Props) {
