@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import NextImage from "next/image";
+import { isExternalImageSrc } from "@/lib/image-source";
 
 interface ImageUploadProps {
   value: string;
@@ -95,6 +96,7 @@ export default function ImageUpload({
               alt={label}
               fill
               sizes="400px"
+              unoptimized={isExternalImageSrc(value)}
               className="object-contain"
               onLoadingComplete={(img) => {
                 if (aspectRatio === "auto" && img.naturalWidth && img.naturalHeight) {

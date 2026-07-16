@@ -1,13 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { DrawLine } from "@/components/common/DrawLine";
 import { ArrowUpRight } from "@/components/common/ArrowUpRight";
+import { ServiceSymbol } from "@/components/effects/ServiceSymbol";
 import { EASES, STAGGER } from "@/lib/animations/config";
 import { SERVICE_SLUGS } from "@/lib/services";
 
@@ -39,32 +39,67 @@ function ServiceItem({
         });
 
         tl.from(lineRef.current, { drawSVG: "0%", duration: 1.2, ease: EASES.expo }, 0);
-        tl.from(ref.current.querySelector(".service-content")!, {
+        tl.from(ref.current.querySelector(".service-symbol-wrap")!, {
             opacity: 0,
-            y: 28,
-            duration: 0.8,
+            y: 18,
+            scale: 0.82,
+            rotateX: -18,
+            duration: 1,
             ease: EASES.expo,
             delay: index * STAGGER.tight,
-        }, 0);
+        }, 0.08);
+        tl.from(ref.current.querySelector(".service-content")!, {
+            opacity: 0,
+            y: 22,
+            clipPath: "inset(0 0 100% 0)",
+            duration: 0.95,
+            ease: EASES.expo,
+            delay: index * STAGGER.tight,
+        }, 0.16);
+        tl.from(ref.current.querySelector(".service-arrow")!, {
+            opacity: 0,
+            x: -10,
+            y: 10,
+            duration: 0.7,
+            ease: EASES.expo,
+        }, 0.38 + index * STAGGER.tight);
     }, { scope: ref });
 
     return (
-        <div ref={ref} className="group service-glow py-5 lg:py-6">
-            <DrawLine ref={lineRef} className="mb-6" />
+        <div
+            ref={ref}
+            className="group service-glow relative py-5 lg:py-7"
+            onPointerMove={(event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                event.currentTarget.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
+                event.currentTarget.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
+            }}
+        >
+            <DrawLine ref={lineRef} className="mb-5 lg:mb-6 opacity-80" />
 
             <Link
                 href={`/${locale}/services/${slug}`}
-                className="service-content flex items-center gap-5 lg:gap-7"
+                className="service-content relative flex min-h-[7.25rem] items-center gap-5 overflow-hidden py-2 lg:min-h-[8.75rem] lg:gap-8 lg:py-3"
                 data-cursor="hover"
             >
-                <div className="relative w-14 h-14 lg:w-[4.5rem] lg:h-[4.5rem] shrink-0 opacity-75 group-hover:opacity-100 transition-opacity duration-500">
-                    <Image src={`/marketing/services/${slug}.svg`} alt="" fill sizes="72px" className="object-contain" />
+                <span className="service-symbol-wrap pointer-events-none absolute left-0 top-1/2 h-28 w-28 -translate-y-1/2 opacity-18 transition-all duration-700 group-hover:opacity-28 md:h-36 md:w-36 lg:h-44 lg:w-44">
+                    <span className="absolute inset-0 bg-[radial-gradient(circle,var(--glow-subtle),transparent_70%)] opacity-70" />
+                    <ServiceSymbol
+                        slug={slug}
+                        tone="violet"
+                        variant="ghost"
+                        className="h-full w-full blur-[0.2px] transition-transform duration-700 group-hover:scale-105"
+                    />
+                </span>
+
+                <div className="relative z-10 min-w-0 flex-1 pl-20 md:pl-28 lg:pl-36">
+                    <h3 className="text-heading transition-colors duration-300 group-hover:text-accent-bright">{title}</h3>
+                    <p className="mt-2 max-w-[46ch] text-body-lg text-foreground-readable">{description}</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-heading group-hover:text-accent transition-colors duration-300">{title}</h3>
-                    <p className="text-body-lg text-foreground-muted max-w-[44ch] mt-1.5">{description}</p>
-                </div>
-                <ArrowUpRight size={16} className="text-foreground-subtle group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
+
+                <span className="service-arrow relative z-10 hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-border-bright/60 text-foreground-subtle transition-all duration-500 group-hover:border-accent-warm/35 group-hover:text-accent-warm md:grid">
+                    <ArrowUpRight size={16} />
+                </span>
             </Link>
         </div>
     );

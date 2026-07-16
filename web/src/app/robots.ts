@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const BASE_URL = "https://orionstud.io";
+import { BASE_URL } from "@/lib/schema";
 
 export default function robots(): MetadataRoute.Robots {
     return {

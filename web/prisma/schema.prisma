@@ -100,3 +100,10 @@ model Message {
   createdAt DateTime      @default(now())
   readAt    DateTime?
 }
+
+model RateLimitBucket {
+  key       String   @id @db.VarChar(64)
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+}

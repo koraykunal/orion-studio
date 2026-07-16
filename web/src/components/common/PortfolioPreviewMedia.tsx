@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isExternalImageSrc } from "@/lib/image-source";
 
 type PortfolioPreviewMediaProps = {
     image: string;
@@ -21,7 +22,9 @@ export function PortfolioPreviewMedia({
     videoMode = "hover",
 }: PortfolioPreviewMediaProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [imageFailed, setImageFailed] = useState(false);
     const alwaysShowVideo = Boolean(video && videoMode === "always");
+    const unoptimized = isExternalImageSrc(image);
 
     useEffect(() => {
         const videoEl = videoRef.current;
@@ -63,16 +66,24 @@ export function PortfolioPreviewMedia({
             onFocus={playPreview}
             onBlur={stopPreview}
         >
-            {image ? (
+            {image && !imageFailed ? (
                 <Image
                     src={image}
                     alt={alt}
                     fill
                     sizes={sizes}
+                    unoptimized={unoptimized}
                     className={className}
+                    onError={() => setImageFailed(true)}
                 />
             ) : (
-                <div className="absolute inset-0 bg-surface-2" aria-hidden="true" />
+                <div className="absolute inset-0 grid place-items-center bg-surface-1" aria-hidden="true">
+                    <div className="relative h-28 w-28 rounded-full border border-border-bright/40">
+                        <span className="absolute left-[20%] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent/70 shadow-[0_0_16px_var(--glow)]" />
+                        <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/80 shadow-[0_0_18px_var(--glow)]" />
+                        <span className="absolute right-[20%] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent/70 shadow-[0_0_16px_var(--glow)]" />
+                    </div>
+                </div>
             )}
 
             {video && (

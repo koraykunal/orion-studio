@@ -70,6 +70,7 @@ function ProjectTile({
     index: number;
     featured?: boolean;
 }) {
+    const t = useTranslations("work");
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
     const hasCaseStudy = project.sections && project.sections.length > 0;
@@ -77,6 +78,11 @@ function ProjectTile({
 
     useGSAP(() => {
         if (!cardRef.current || !imageRef.current) return;
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            gsap.set(imageRef.current, { clipPath: "inset(0% 0% 0% 0%)", scale: 1 });
+            gsap.set(cardRef.current.querySelector(".card-meta"), { opacity: 1, y: 0 });
+            return;
+        }
 
         const tl = gsap.timeline({
             scrollTrigger: {
@@ -132,10 +138,18 @@ function ProjectTile({
 
             <div className="card-meta mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(14rem,0.38fr)] md:items-start">
                 <div className="min-w-0 space-y-3">
-                    <h2 className={`font-display uppercase leading-[0.82] tracking-[-0.07em] text-foreground ${layout.title}`}>
+                    <h2 className={`font-display uppercase leading-[0.9] tracking-[-0.055em] text-foreground md:leading-[0.82] md:tracking-[-0.07em] ${layout.title}`}>
                         {project.client}
                     </h2>
+                    <p className="max-w-[34ch] text-body-lg text-foreground-readable md:hidden">
+                        {project.tagline}
+                    </p>
                 </div>
+                {hasCaseStudy && (
+                    <span className="hidden text-label text-foreground-subtle md:block">
+                        {t("viewCaseStudy")}
+                    </span>
+                )}
             </div>
         </article>
     );
@@ -160,8 +174,13 @@ export function WorkPageClient({featured, others}: { featured: Project[]; others
     return (
         <main className="relative overflow-hidden bg-background">
             {hasProjects && (
-                <section className="section-container pt-32 pb-[clamp(6rem,12vw,14rem)]">
-                    <div className="grid grid-cols-1 gap-x-4 gap-y-20 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-28">
+                <section className="section-container pt-28 pb-[clamp(5rem,16vw,10rem)] lg:pt-32 lg:pb-[clamp(6rem,12vw,14rem)]">
+                    <div className="mb-12 max-w-[42rem] space-y-5 lg:mb-20">
+                        <span className="text-index text-foreground-muted">{t("pageLabel")}</span>
+                        <h1 className="text-title">{t("pageTitle")}</h1>
+                        <p className="text-body-lg text-foreground-readable">{t("pageDescription")}</p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-14 md:gap-y-20 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-28">
                         {featured.map((project, index) => (
                             <ProjectTile
                                 key={project.slug}

@@ -1,464 +1,444 @@
 "use client";
 
-import {useEffect, useRef} from "react";
-import {useTranslations} from "next-intl";
-import {ScrollTrigger} from "@/lib/animations/gsap";
-import {TextReveal} from "@/components/motion/TextReveal";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { ScrollTrigger } from "@/lib/animations/gsap";
 
-const DIFFERENTIATORS = [
-    {
-        key: "character",
-        framePath: "/marketing/differentiators/character/frames",
-    },
-    {
-        key: "system",
-        framePath: "/marketing/differentiators/system/frames",
-    },
-    {
-        key: "clarity",
-        framePath: "/marketing/differentiators/clarity/frames",
-    },
-    {
-        key: "continuity",
-        framePath: "/marketing/differentiators/continuity/frames",
-    },
+const ITEMS = [0, 1, 2, 3] as const;
+const ZOOMS = [1.08, 1.34, 1.18, 1.46] as const;
+const COPY_LAYOUTS = [
+    { align: "left", className: "left-[8%] top-[56%] md:left-[9%] md:top-[22%]" },
+    { align: "left", className: "left-[8%] top-[56%] md:left-[56%] md:top-[21%]" },
+    { align: "left", className: "left-[8%] top-[56%] md:left-[10%] md:top-[57%]" },
+    { align: "left", className: "left-[8%] top-[56%] md:left-[52%] md:top-[56%]" },
 ] as const;
 
-const SEQUENCE_FRAME_COUNT = 75;
-const PRELOAD_BEHIND = 3;
-const PRELOAD_AHEAD = 9;
-const CACHE_RADIUS = 24;
-const FOCAL = 320;
-const NEAR = 40;
-const SPREAD = 1300;
-const BG_COUNT = 60;
-const FIELD_DEPTH = 3600;
-const FLOW_SPEED = 240;
-const SCROLL_FLOW = 5200;
-const INTRO_END = 0.1;
-const CANVAS_FPS = 30;
-const PROGRESS_DAMPING = 9;
+type Star = {
+    x: number;
+    y: number;
+    r: number;
+    alpha: number;
+    phase: number;
+    speed: number;
+};
 
-function clamp01(v: number) {
-    return v < 0 ? 0 : v > 1 ? 1 : v;
+type Orbit = {
+    rx: number;
+    ry: number;
+    rz: number;
+    yaw: number;
+    pitch: number;
+    roll: number;
+    phase: number;
+    alpha: number;
+    width: number;
+};
+
+type Vec3 = { x: number; y: number; z: number };
+type Projection = Vec3 & { sx: number; sy: number; scale: number; alpha: number; visible: boolean };
+
+const ORBITS: Orbit[] = [
+    { rx: 0.54, ry: 0.17, rz: 0.36, yaw: -0.22, pitch: 0.34, roll: -0.3, phase: 0, alpha: 0.25, width: 1.05 },
+    { rx: 0.44, ry: 0.27, rz: 0.42, yaw: 0.38, pitch: -0.18, roll: 0.42, phase: 0.19, alpha: 0.15, width: 0.78 },
+    { rx: 0.66, ry: 0.12, rz: 0.31, yaw: 0.04, pitch: 0.08, roll: 0.04, phase: 0.38, alpha: 0.14, width: 0.68 },
+    { rx: 0.33, ry: 0.34, rz: 0.46, yaw: 0.56, pitch: 0.2, roll: 0.92, phase: 0.62, alpha: 0.11, width: 0.58 },
+];
+
+function clamp(value: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, value));
 }
 
-function clampN(v: number) {
-    return v < -1 ? -1 : v > 1 ? 1 : v;
+function clamp01(value: number) {
+    return clamp(value, 0, 1);
 }
 
-function smooth(a: number, b: number, t: number) {
-    const x = clamp01((t - a) / (b - a));
+function smoothstep(value: number) {
+    const x = clamp01(value);
     return x * x * (3 - 2 * x);
 }
 
-function frameSrc(path: string, frame: number) {
-    return `${path}/frame_${String(frame).padStart(4, "0")}.jpg`;
+function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
 }
 
-type SequenceState = {
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
-    framePath: string;
-    cache: Map<number, HTMLImageElement>;
-    lastFrame: number;
-    lastDrawn: number;
-};
-
-function syncSequenceCanvas(sequence: SequenceState) {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const width = Math.max(1, Math.round(sequence.canvas.offsetWidth * dpr));
-    const height = Math.max(1, Math.round(sequence.canvas.offsetHeight * dpr));
-    if (sequence.canvas.width !== width || sequence.canvas.height !== height) {
-        sequence.canvas.width = width;
-        sequence.canvas.height = height;
-        sequence.context.setTransform(1, 0, 0, 1, 0, 0);
-    }
+function seeded(index: number) {
+    const x = Math.sin(index * 735.17) * 10000;
+    return x - Math.floor(x);
 }
 
-function drawCover(sequence: SequenceState, image: HTMLImageElement) {
-    syncSequenceCanvas(sequence);
-    const {context, canvas} = sequence;
-    const canvasRatio = canvas.width / canvas.height;
-    const imageRatio = image.naturalWidth / image.naturalHeight;
-    let sx = 0;
-    let sy = 0;
-    let sw = image.naturalWidth;
-    let sh = image.naturalHeight;
-
-    if (imageRatio > canvasRatio) {
-        sw = image.naturalHeight * canvasRatio;
-        sx = (image.naturalWidth - sw) / 2;
-    } else {
-        sh = image.naturalWidth / canvasRatio;
-        sy = (image.naturalHeight - sh) / 2;
-    }
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+function buildStars(count: number): Star[] {
+    return Array.from({ length: count }, (_, i) => ({
+        x: seeded(i + 17),
+        y: seeded(i + 41),
+        r: 0.22 + seeded(i + 73) * 0.95,
+        alpha: 0.1 + seeded(i + 101) * 0.48,
+        phase: seeded(i + 149) * Math.PI * 2,
+        speed: 0.1 + seeded(i + 181) * 0.34,
+    }));
 }
 
-function loadFrame(sequence: SequenceState, frame: number) {
-    const safeFrame = Math.min(SEQUENCE_FRAME_COUNT, Math.max(1, frame));
-    const cached = sequence.cache.get(safeFrame);
-    if (cached) return cached;
+function rotate3d(point: Vec3, orbit: Orbit): Vec3 {
+    let { x, y, z } = point;
 
-    const image = new Image();
-    image.decoding = "async";
-    image.src = frameSrc(sequence.framePath, safeFrame);
-    image.onload = () => {
-        if (sequence.lastFrame === safeFrame) {
-            drawCover(sequence, image);
-            sequence.lastDrawn = safeFrame;
-        }
+    const cy = Math.cos(orbit.yaw);
+    const sy = Math.sin(orbit.yaw);
+    [x, z] = [x * cy + z * sy, -x * sy + z * cy];
+
+    const cp = Math.cos(orbit.pitch);
+    const sp = Math.sin(orbit.pitch);
+    [y, z] = [y * cp - z * sp, y * sp + z * cp];
+
+    const cr = Math.cos(orbit.roll);
+    const sr = Math.sin(orbit.roll);
+    [x, y] = [x * cr - y * sr, x * sr + y * cr];
+
+    return { x, y, z };
+}
+
+function orbitPoint(t: number, orbit: Orbit, base: number, time: number): Vec3 {
+    const angle = t * Math.PI * 2 + orbit.phase * Math.PI * 2 + time * 0.035;
+    const wobble = Math.sin(angle * 2.2 + orbit.phase * 8 + time * 0.08) * base * 0.008;
+    const local = {
+        x: Math.cos(angle) * (base * orbit.rx + wobble),
+        y: Math.sin(angle) * (base * orbit.ry + wobble),
+        z: Math.sin(angle) * base * orbit.rz,
     };
-    sequence.cache.set(safeFrame, image);
-    return image;
+
+    return rotate3d(local, orbit);
 }
 
-function drawSequence(sequence: SequenceState, frame: number) {
-    const target = Math.min(SEQUENCE_FRAME_COUNT, Math.max(1, frame));
-    sequence.lastFrame = target;
+function projectPoint(
+    point: Vec3,
+    camera: Vec3,
+    width: number,
+    height: number,
+    zoom: number,
+    anchorX: number,
+    anchorY: number
+): Projection {
+    const base = Math.min(width, height * 1.2);
+    const dx = point.x - camera.x;
+    const dy = point.y - camera.y;
+    const dz = point.z - camera.z;
+    const focal = base * 1.12;
+    const perspective = focal / (focal - dz * 0.62);
+    const scale = clamp(perspective * zoom, 0.28, 2.4);
+    const depth = clamp01((dz / base + 0.72) / 1.44);
 
-    for (let i = target - PRELOAD_BEHIND; i <= target + PRELOAD_AHEAD; i++) {
-        if (i >= 1 && i <= SEQUENCE_FRAME_COUNT) loadFrame(sequence, i);
+    return {
+        ...point,
+        sx: anchorX + dx * scale,
+        sy: anchorY + dy * scale,
+        scale,
+        alpha: 0.18 + depth * 0.82,
+        visible: scale > 0.2,
+    };
+}
+
+function drawBackgroundStar(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, alpha: number) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 8);
+    glow.addColorStop(0, "rgba(224, 218, 255, 0.26)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    const core = ctx.createRadialGradient(x, y, 0, x, y, radius * 1.8);
+    core.addColorStop(0, "rgba(246, 244, 255, 0.94)");
+    core.addColorStop(0.55, "rgba(214, 204, 255, 0.34)");
+    core.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawRadiantStar(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, alpha: number) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    const halo = ctx.createRadialGradient(x, y, 0, x, y, radius * 34);
+    halo.addColorStop(0, "rgba(238, 234, 255, 0.72)");
+    halo.addColorStop(0.28, "rgba(176, 150, 224, 0.26)");
+    halo.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 34, 0, Math.PI * 2);
+    ctx.fill();
+
+    const core = ctx.createRadialGradient(x, y, 0, x, y, radius * 2.5);
+    core.addColorStop(0, "rgba(250, 248, 255, 1)");
+    core.addColorStop(0.42, "rgba(218, 208, 255, 0.5)");
+    core.addColorStop(1, "rgba(168, 148, 220, 0)");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.globalAlpha = alpha * 0.42;
+    ctx.fillStyle = "rgba(238, 234, 255, 1)";
+    const spike = (angle: number, length: number, width: number) => {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(-length * 0.08, -width);
+        ctx.lineTo(length, 0);
+        ctx.lineTo(-length * 0.08, width);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    };
+    spike(0, radius * 12, 0.62);
+    spike(Math.PI, radius * 12, 0.62);
+    spike(Math.PI / 2, radius * 6, 0.48);
+    spike(-Math.PI / 2, radius * 6, 0.48);
+
+    ctx.restore();
+}
+
+function drawOrbit(
+    ctx: CanvasRenderingContext2D,
+    orbit: Orbit,
+    base: number,
+    time: number,
+    camera: Vec3,
+    width: number,
+    height: number,
+    zoom: number,
+    anchorX: number,
+    anchorY: number,
+    focusT: number
+) {
+    const steps = 260;
+    const points: Projection[] = [];
+
+    for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const point = projectPoint(orbitPoint(t, orbit, base, time), camera, width, height, zoom, anchorX, anchorY);
+        if (point.visible) points.push(point);
     }
 
-    for (const key of sequence.cache.keys()) {
-        if (Math.abs(key - target) > CACHE_RADIUS) sequence.cache.delete(key);
+    if (points.length < 2) return;
+
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    ctx.beginPath();
+    points.forEach((point, index) => {
+        if (index === 0) ctx.moveTo(point.sx, point.sy);
+        else ctx.lineTo(point.sx, point.sy);
+    });
+    ctx.strokeStyle = `rgba(226, 220, 255, ${orbit.alpha * 0.72})`;
+    ctx.lineWidth = orbit.width * 1.05;
+    ctx.stroke();
+
+    for (let i = 1; i < points.length; i++) {
+        const t = i / Math.max(1, points.length - 1);
+        const focusDistance = Math.min(Math.abs(t - focusT), 1 - Math.abs(t - focusT));
+        const focus = Math.max(0, 1 - focusDistance * 7);
+        if (focus <= 0.02) continue;
+
+        ctx.strokeStyle = `rgba(238, 234, 255, ${focus * 0.24})`;
+        ctx.lineWidth = orbit.width * (1.25 + focus * 1.2);
+        ctx.beginPath();
+        ctx.moveTo(points[i - 1].sx, points[i - 1].sy);
+        ctx.lineTo(points[i].sx, points[i].sy);
+        ctx.stroke();
     }
 
-    const image = sequence.cache.get(target);
-    if (image?.complete && image.naturalWidth > 0 && sequence.lastDrawn !== target) {
-        drawCover(sequence, image);
-        sequence.lastDrawn = target;
-    }
+    ctx.restore();
 }
 
 export function BrandMapSection() {
     const t = useTranslations("home");
     const sectionRef = useRef<HTMLElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const progress = useRef(0);
-    const easedProgress = useRef(0);
-    const flowZ = useRef(0);
-    const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const introRef = useRef<HTMLDivElement>(null);
-    const bloomRef = useRef<HTMLDivElement>(null);
+    const rafRef = useRef<number>(0);
+    const progressRef = useRef(0);
+    const activeIndexRef = useRef(0);
+    const [progress, setProgress] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const stars = useMemo(() => buildStars(170), []);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
         const section = sectionRef.current;
-        if (!canvas || !section) return;
-        const ctx = canvas.getContext("2d")!;
+        if (!section) return;
+
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) return;
 
-        let W = 0, H = 0;
-        const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio ?? 1, 1);
-            W = canvas.offsetWidth;
-            H = canvas.offsetHeight;
-            canvas.width = W * dpr;
-            canvas.height = H * dpr;
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        };
-
-        const newStar = (z: number) => ({
-            z,
-            ax: (Math.random() - 0.5) * 2 * SPREAD,
-            ay: (Math.random() - 0.5) * 2 * SPREAD,
-            r: Math.random() * 1.3 + 0.5,
-            op: Math.random() * 0.5 + 0.3,
-            phase: Math.random() * Math.PI * 2,
-            spd: Math.random() * 0.4 + 0.15,
-            driftPhase: Math.random() * Math.PI * 2,
-            driftSpd: Math.random() * 0.5 + 0.2,
-            bright: Math.random() < 0.05,
-        });
-        const bgCount = window.innerWidth < 768 ? 36 : BG_COUNT;
-        const bg = Array.from({length: bgCount}, () => newStar(NEAR + Math.random() * FIELD_DEPTH));
-
-        const SPR = 128;
-        const glowSprite = document.createElement("canvas");
-        glowSprite.width = SPR;
-        glowSprite.height = SPR;
-        {
-            const s = glowSprite.getContext("2d")!;
-            const c = SPR / 2;
-            const glow = s.createRadialGradient(c, c, 0, c, c, c);
-            glow.addColorStop(0, "rgba(184, 164, 224, 0.5)");
-            glow.addColorStop(0.3, "rgba(160, 140, 212, 0.16)");
-            glow.addColorStop(1, "rgba(0,0,0,0)");
-            s.fillStyle = glow;
-            s.fillRect(0, 0, SPR, SPR);
-            s.fillStyle = "rgba(214, 204, 244, 0.5)";
-            const spike = (ang: number, l: number) => {
-                s.save();
-                s.translate(c, c);
-                s.rotate(ang);
-                s.beginPath();
-                s.moveTo(0, -0.7);
-                s.lineTo(l, 0);
-                s.lineTo(0, 0.7);
-                s.closePath();
-                s.fill();
-                s.restore();
-            };
-            spike(0, c * 0.9);
-            spike(Math.PI, c * 0.9);
-            spike(Math.PI / 2, c * 0.5);
-            spike(-Math.PI / 2, c * 0.5);
-            const core = s.createRadialGradient(c, c, 0, c, c, SPR * 0.1);
-            core.addColorStop(0, "rgba(238, 233, 255, 1)");
-            core.addColorStop(0.4, "rgba(210, 200, 246, 0.45)");
-            core.addColorStop(1, "rgba(160, 140, 210, 0)");
-            s.fillStyle = core;
-            s.beginPath();
-            s.arc(c, c, SPR * 0.1, 0, Math.PI * 2);
-            s.fill();
-        }
-
-        const drawField = (time: number, camZ: number) => {
-            const cx = W / 2, cy = H / 2;
-            ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = "rgb(232, 227, 252)";
-            for (const s of bg) {
-                let dz = s.z - camZ;
-                if (dz < NEAR) {
-                    Object.assign(s, newStar(camZ + FIELD_DEPTH));
-                    dz = s.z - camZ;
-                }
-                const f = FOCAL / dz;
-                const drift = Math.sin(time * s.driftSpd + s.driftPhase) * 16;
-                const sx = cx + s.ax * f + drift, sy = cy + s.ay * f;
-                if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
-                const depth = clamp01(1 - dz / FIELD_DEPTH);
-                if (s.bright) {
-                    const tw = 0.85 + Math.sin(time * s.spd + s.phase) * 0.15;
-                    const size = Math.max(34, Math.min(H * 0.8, s.r * f * 48));
-                    ctx.globalAlpha = clamp01(0.42 + depth * 0.58) * tw;
-                    ctx.drawImage(glowSprite, sx - size / 2, sy - size / 2, size, size);
-                    ctx.globalAlpha = 1;
-                    ctx.fillStyle = "rgb(232, 227, 252)";
-                } else {
-                    const flick = Math.sin(time * s.spd + s.phase) * 0.12;
-                    ctx.globalAlpha = clamp01((s.op + flick) * (0.45 + depth * 0.75));
-                    ctx.beginPath();
-                    ctx.arc(sx, sy, Math.max(0.5, s.r * f * 1.5), 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-            ctx.globalAlpha = 1;
-        };
-
-        const ro = new ResizeObserver(() => {
-            resize();
-            if (reduce) drawField(0, FIELD_DEPTH * 0.25);
-        });
-        ro.observe(canvas);
-        resize();
-
-        const panelEls = DIFFERENTIATORS.map((_, i) => {
-            const root = panelRefs.current[i];
-            if (!root) return null;
-            const sequenceCanvas = root.querySelector<HTMLCanvasElement>("[data-sequence]");
-            return {
-                root,
-                visual: root.querySelector<HTMLElement>("[data-visual]"),
-                sequence: sequenceCanvas
-                    ? {
-                        canvas: sequenceCanvas,
-                        context: sequenceCanvas.getContext("2d")!,
-                        framePath: DIFFERENTIATORS[i].framePath,
-                        cache: new Map<number, HTMLImageElement>(),
-                        lastFrame: 1,
-                        lastDrawn: 0,
-                    } satisfies SequenceState
-                    : null,
-                lines: Array.from(root.querySelectorAll<HTMLElement>("[data-line]")),
-            };
-        });
-
-        if (reduce) {
-            drawField(0, FIELD_DEPTH * 0.25);
-            for (const panel of panelEls) {
-                if (panel?.sequence) drawSequence(panel.sequence, 1);
-            }
-            return () => {
-                ro.disconnect();
-            };
-        }
-
-        const st = ScrollTrigger.create({
+        const trigger = ScrollTrigger.create({
             trigger: section,
             start: "top top",
             end: "bottom bottom",
+            scrub: 0.9,
             onUpdate: (self) => {
-                progress.current = self.progress;
+                const nextProgress = self.progress;
+                const nextIndex = Math.min(ITEMS.length - 1, Math.floor(clamp01(nextProgress) * ITEMS.length));
+
+                progressRef.current = nextProgress;
+                setProgress(nextProgress);
+
+                if (nextIndex !== activeIndexRef.current) {
+                    activeIndexRef.current = nextIndex;
+                    setActiveIndex(nextIndex);
+                }
             },
         });
 
-        const isVisible = {current: true};
-        const vis = new IntersectionObserver((e) => {
-            isVisible.current = e[0].isIntersecting;
-        }, {threshold: 0});
-        vis.observe(canvas);
-
-        let raf = 0, t0 = 0, lastFrame = 0, lastDraw = 0;
-        const CANVAS_FRAME = 1000 / CANVAS_FPS;
-        const seg = (1 - INTRO_END) / DIFFERENTIATORS.length;
-
-        const frame = (ts: number) => {
-            raf = requestAnimationFrame(frame);
-            if (!t0) t0 = ts;
-            if (!isVisible.current || document.hidden) {
-                lastFrame = ts;
-                return;
-            }
-            if (!lastFrame) lastFrame = ts;
-            const dt = Math.min(0.05, (ts - lastFrame) / 1000);
-            lastFrame = ts;
-
-            const time = (ts - t0) / 1000;
-            easedProgress.current += (progress.current - easedProgress.current) * (1 - Math.exp(-dt * PROGRESS_DAMPING));
-            const p = easedProgress.current;
-            flowZ.current += dt * FLOW_SPEED;
-            const camZ = flowZ.current + p * SCROLL_FLOW;
-
-            if (ts - lastDraw >= CANVAS_FRAME) {
-                drawField(time, camZ);
-                lastDraw = ts;
-            }
-
-            for (let i = 0; i < DIFFERENTIATORS.length; i++) {
-                const el = panelEls[i];
-                if (!el) continue;
-                const center = INTRO_END + (i + 0.5) * seg;
-                const d = (p - center) / (seg * 0.62);
-                const rawFocus = clamp01(1 - d * d);
-                const foc = rawFocus * rawFocus * (3 - 2 * rawFocus);
-                el.root.style.opacity = foc.toFixed(3);
-                el.root.style.visibility = foc > 0.006 ? "visible" : "hidden";
-                if (foc <= 0.002) continue;
-                el.root.style.transform = `translate3d(0, ${(-clampN(d) * H * 0.12).toFixed(1)}px, 0)`;
-                const reveal = smooth(-1, -0.12, d);
-                if (el.visual) {
-                    el.visual.style.transform = `scale(${(1 + (1 - reveal) * 0.06).toFixed(4)})`;
-                    el.visual.style.opacity = clamp01(reveal * 1.35).toFixed(3);
-                }
-                if (el.sequence) {
-                    const localProgress = clamp01((d + 0.8) / 1.6);
-                    const targetFrame = Math.round(localProgress * (SEQUENCE_FRAME_COUNT - 1)) + 1;
-                    drawSequence(el.sequence, targetFrame);
-                }
-                for (let k = 0; k < el.lines.length; k++) {
-                    const lr = smooth(-1 + k * 0.12, -0.08 + k * 0.12, d);
-                    el.lines[k].style.transform = `translateY(${((1 - lr) * 120).toFixed(1)}%)`;
-                    el.lines[k].style.opacity = lr.toFixed(3);
-                }
-            }
-
-            if (introRef.current) {
-                const o = 1 - smooth(0, INTRO_END + 0.02, p);
-                introRef.current.style.opacity = String(o);
-                introRef.current.style.transform = `translateY(${-(1 - o) * 44}px)`;
-            }
-            if (bloomRef.current) {
-                bloomRef.current.style.opacity = String(clamp01(smooth(0.9, 0.99, p) * 0.85 - smooth(0.995, 1, p) * 0.3));
-            }
-        };
-        raf = requestAnimationFrame(frame);
-
-        return () => {
-            cancelAnimationFrame(raf);
-            ro.disconnect();
-            vis.disconnect();
-            st.kill();
-        };
+        return () => trigger.kill();
     }, []);
 
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let width = 0;
+        let height = 0;
+        let start = 0;
+
+        const resize = () => {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            width = canvas.offsetWidth;
+            height = canvas.offsetHeight;
+            canvas.width = Math.max(1, Math.floor(width * dpr));
+            canvas.height = Math.max(1, Math.floor(height * dpr));
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+
+        const ro = new ResizeObserver(resize);
+        ro.observe(canvas);
+        resize();
+
+        const frame = (timestamp: number) => {
+            if (!start) start = timestamp;
+            const time = (timestamp - start) / 1000;
+            const scrollP = clamp01(progressRef.current);
+            const eased = smoothstep(scrollP);
+            const focusT = 0.08 + eased * 0.82;
+            const base = Math.min(width, height * (width < 768 ? 1.36 : 1.2));
+            const zoomPosition = scrollP * (ZOOMS.length - 1);
+            const zoomIndex = Math.min(ZOOMS.length - 2, Math.floor(zoomPosition));
+            const zoomLocal = smoothstep(zoomPosition - zoomIndex);
+            const zoom = lerp(ZOOMS[zoomIndex], ZOOMS[zoomIndex + 1], zoomLocal);
+            const starPoint = orbitPoint(focusT, ORBITS[0], base, time);
+            const cameraLead = orbitPoint(clamp01(focusT - 0.035), ORBITS[0], base, time);
+            const anchorX = width * (width < 768 ? 0.5 : 0.54 + Math.sin(eased * Math.PI * 2) * 0.035);
+            const anchorY = height * (width < 768 ? 0.47 : 0.48 + Math.cos(eased * Math.PI * 1.4) * 0.035);
+            const movingStar = projectPoint(starPoint, cameraLead, width, height, zoom, anchorX, anchorY);
+
+            ctx.clearRect(0, 0, width, height);
+
+            const atmosphere = ctx.createRadialGradient(width * 0.54, height * 0.48, 0, width * 0.5, height * 0.52, Math.max(width, height) * 0.86);
+            atmosphere.addColorStop(0, "rgba(36, 29, 58, 0.74)");
+            atmosphere.addColorStop(0.42, "rgba(20, 17, 29, 0.34)");
+            atmosphere.addColorStop(1, "rgba(8, 8, 10, 0)");
+            ctx.fillStyle = atmosphere;
+            ctx.fillRect(0, 0, width, height);
+
+            stars.forEach((star) => {
+                const twinkle = Math.sin(time * star.speed + star.phase) * 0.1;
+                const driftX = (star.x - 0.5) * scrollP * width * 0.08;
+                const driftY = (star.y - 0.5) * scrollP * height * 0.12;
+                drawBackgroundStar(ctx, star.x * width + driftX, star.y * height + driftY, star.r, clamp(star.alpha + twinkle, 0, 0.82));
+            });
+
+            ORBITS.forEach((orbit) => drawOrbit(ctx, orbit, base, time, cameraLead, width, height, zoom, anchorX, anchorY, focusT));
+            drawRadiantStar(ctx, movingStar.sx, movingStar.sy, 4.6 * movingStar.scale, 0.92);
+
+            rafRef.current = requestAnimationFrame(frame);
+        };
+
+        rafRef.current = requestAnimationFrame(frame);
+
+        return () => {
+            cancelAnimationFrame(rafRef.current);
+            ro.disconnect();
+        };
+    }, [stars]);
+
     return (
-        <section ref={sectionRef} className="relative h-[460svh] bg-background motion-reduce:h-auto">
-            <div
-                className="sticky top-0 h-svh w-full overflow-hidden motion-reduce:static motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-24">
-                <canvas ref={canvasRef} className="absolute inset-0 w-full h-full motion-reduce:hidden"
-                        style={{pointerEvents: "none"}} aria-hidden/>
+        <section id="brand-map" ref={sectionRef} className="relative h-[430svh] bg-background">
+            <div className="sticky top-0 h-svh overflow-hidden">
+                <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
 
                 <div
-                    className="absolute inset-0 pointer-events-none motion-reduce:hidden"
-                    style={{background: "radial-gradient(ellipse 76% 68% at 50% 50%, transparent 0%, var(--background) 100%)"}}
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                        background:
+                            "linear-gradient(180deg, var(--background) 0%, transparent 16%, transparent 76%, var(--background) 100%), radial-gradient(ellipse 60% 46% at 50% 52%, transparent 42%, rgb(8 8 10 / 0.82) 100%)",
+                    }}
+                    aria-hidden
                 />
-                <div className="absolute inset-x-0 top-0 z-[5] h-32 bg-gradient-to-b from-background to-transparent pointer-events-none motion-reduce:hidden" />
-                <div className="absolute inset-x-0 bottom-0 z-[5] h-40 bg-gradient-to-t from-background to-transparent pointer-events-none motion-reduce:hidden" />
 
-                <div
-                    ref={introRef}
-                    className="absolute inset-x-0 top-[34svh] text-center px-6 z-10 motion-reduce:static motion-reduce:top-auto motion-reduce:mb-20"
-                >
-                    <TextReveal as="h2" type="lines" className="text-title max-w-[18ch] mx-auto" start="top 80%">
-                        {t("constTitle")}
-                    </TextReveal>
-                    <TextReveal
-                        as="p"
-                        type="lines"
-                        className="text-body-lg text-foreground-muted mt-5 max-w-[46ch] mx-auto"
-                        start="top 80%"
-                        delay={0.12}
-                    >
-                        {t("constDesc")}
-                    </TextReveal>
+                <div className="pointer-events-none absolute inset-0 z-20" style={{ perspective: "1200px" }}>
+                    {ITEMS.map((item) => {
+                        const center = (item + 0.5) / ITEMS.length;
+                        const distance = Math.abs((progress - center) * ITEMS.length);
+                        const visibility = smoothstep(clamp01(1 - distance * 0.92));
+                        const layout = COPY_LAYOUTS[item];
+                        const driftY = (progress - center) * 34;
+                        const direction = progress < center ? 1 : -1;
+                        const titleTravel = direction * (1 - visibility) * 64;
+                        const descTravel = direction * (1 - visibility) * 32;
+
+                        return (
+                            <article
+                                key={item}
+                                className={`absolute w-[84%] text-left md:w-[32rem] ${layout.className}`}
+                                style={{
+                                    textAlign: layout.align,
+                                    opacity: visibility,
+                                    filter: `blur(${(1 - visibility) * 9}px)`,
+                                    transform: `translate3d(0, ${driftY}px, ${visibility * 90}px) scale(${0.96 + visibility * 0.04})`,
+                                    transformStyle: "preserve-3d",
+                                    willChange: "opacity, filter, transform",
+                                }}
+                            >
+                                <h2
+                                    className="max-w-[12ch] text-title text-foreground"
+                                    style={{
+                                        textShadow: "0 0 48px rgba(185, 164, 255, 0.34), 0 18px 70px rgba(0,0,0,0.72)",
+                                        transform: `translate3d(${titleTravel}px, 0, ${visibility * 120}px) rotateY(${direction * (1 - visibility) * -18}deg)`,
+                                        transformOrigin: "50% 50%",
+                                    }}
+                                >
+                                    {t(`diff${item}Title`)}
+                                </h2>
+                                <p
+                                    className="mt-5 max-w-[34ch] text-body-lg text-foreground-readable"
+                                    style={{
+                                        textShadow: "0 12px 44px rgba(0,0,0,0.84)",
+                                        transform: `translate3d(${descTravel}px, ${(1 - visibility) * 10}px, ${visibility * 54 - 32}px) rotateY(${direction * (1 - visibility) * -10}deg)`,
+                                        transformOrigin: "50% 50%",
+                                    }}
+                                >
+                                    {t(`diff${item}Desc`)}
+                                </p>
+                            </article>
+                        );
+                    })}
                 </div>
 
-                {DIFFERENTIATORS.map((item, i) => {
-                    return (
-                        <div
-                            key={item.key}
-                            ref={(el) => {
-                                panelRefs.current[i] = el;
-                            }}
-                            className="absolute inset-0 z-10 flex items-center justify-center px-6 pointer-events-none opacity-0 will-change-transform motion-reduce:relative motion-reduce:inset-auto motion-reduce:opacity-100 motion-reduce:py-16"
-                        >
-                            <div className="grid w-full max-w-[78rem] items-center gap-12 md:grid-cols-[1.08fr_0.92fr] lg:gap-24">
-                                <div data-visual
-                                     className="relative h-[48svh] min-h-[22rem] overflow-hidden will-change-transform md:-ml-[7vw] md:h-[72svh] md:min-h-[34rem]"
-                                     style={{
-                                         WebkitMaskImage: "radial-gradient(ellipse 70% 78% at 52% 48%, #000 48%, rgba(0,0,0,0.72) 68%, transparent 100%)",
-                                         maskImage: "radial-gradient(ellipse 70% 78% at 52% 48%, #000 48%, rgba(0,0,0,0.72) 68%, transparent 100%)",
-                                     }}>
-                                    <div
-                                        className="absolute inset-0 z-10 pointer-events-none"
-                                        style={{ background: "radial-gradient(circle at 52% 45%, transparent 28%, rgba(5,5,10,0.08) 58%, rgba(5,5,10,0.72) 100%)" }}
-                                    />
-                                    <div
-                                        className="absolute inset-x-0 bottom-0 z-10 h-1/3 pointer-events-none"
-                                        style={{ background: "linear-gradient(to top, var(--background), transparent)" }}
-                                    />
-                                    <canvas
-                                        data-sequence
-                                        className="absolute inset-0 h-full w-full opacity-95 saturate-[0.92]"
-                                        aria-hidden
-                                    />
-                                </div>
-
-                                <div className="relative z-20 text-center md:text-left">
-                                    <span className="block overflow-hidden pt-[0.08em] pb-[0.7em]">
-                                        <h3 data-line className="block text-title leading-[1.14] max-w-[12ch] mx-auto md:mx-0 will-change-transform">{t(`diff${i}Title`)}</h3>
-                                    </span>
-                                    <span className="block overflow-hidden mt-3 max-w-[38ch] mx-auto md:mx-0 pt-[0.04em] pb-[0.5em]">
-                                        <p data-line
-                                           className="block text-body-lg text-foreground-muted leading-[1.5] text-balance will-change-transform">{t(`diff${i}Desc`)}</p>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-
-                <div
-                    ref={bloomRef}
-                    className="absolute inset-0 pointer-events-none z-20 opacity-0 motion-reduce:hidden"
-                    style={{background: "radial-gradient(circle 80% at 50% 55%, rgba(188,162,238,0.6) 0%, rgba(152,124,212,0.22) 40%, transparent 75%)"}}
-                />
+                <div className="absolute bottom-8 left-1/2 z-20 grid w-[min(24rem,calc(100vw-2rem))] -translate-x-1/2 grid-cols-4 gap-2 md:bottom-10">
+                    {ITEMS.map((item) => (
+                        <span
+                            key={item}
+                            className={`h-px transition-colors duration-500 ${item === activeIndex ? "bg-accent" : "bg-border-bright"}`}
+                        />
+                    ))}
+                </div>
             </div>
         </section>
     );

@@ -2,24 +2,14 @@ export const dynamic = "force-dynamic";
 
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { routing } from "../../i18n/routing";
-
-const BASE_URL = "https://orionstud.io";
 
 type Route = {
     path: string;
     priority: number;
     changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
 };
-
-function buildAlternates(path: string) {
-    const languages: Record<string, string> = {};
-    for (const locale of routing.locales) {
-        languages[locale] = `${BASE_URL}/${locale}${path === "/" ? "" : path}`;
-    }
-    languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${path === "/" ? "" : path}`;
-    return languages;
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticRoutes: Route[] = [
@@ -67,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: route.lastModified,
             changeFrequency: route.changeFrequency,
             priority: route.priority,
-            alternates: { languages: buildAlternates(route.path) },
+            alternates: { languages: buildLanguageAlternates(route.path) },
         })),
     );
 }

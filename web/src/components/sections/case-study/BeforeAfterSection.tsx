@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES, DURATIONS } from "@/lib/animations/config";
+import { isExternalImageSrc } from "@/lib/image-source";
 import type { BeforeAfterData } from "@/lib/project-types";
 
 export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
@@ -43,6 +44,7 @@ export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
                         alt={alt}
                         fill
                         sizes="(max-width: 768px) 100vw, 45vw"
+                        unoptimized={isExternalImageSrc(src)}
                         className="object-cover"
                     />
                 </div>
@@ -56,6 +58,7 @@ export function BeforeAfterSection({ data }: { data: BeforeAfterData }) {
                     width={1600}
                     height={1200}
                     sizes="(max-width: 768px) 100vw, 45vw"
+                    unoptimized={isExternalImageSrc(src)}
                     className="block w-full h-auto"
                 />
             </div>

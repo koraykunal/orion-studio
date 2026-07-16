@@ -45,6 +45,17 @@ const getCachedPublishedProjectBySlug = unstable_cache(
     { revalidate: 300 },
 );
 
+const getCachedPublishedProjectSlugs = unstable_cache(
+    async () =>
+        prisma.project.findMany({
+            where: { status: "published" },
+            orderBy: { order: "asc" },
+            select: { slug: true },
+        }),
+    ["published-project-slugs"],
+    { revalidate: 300 },
+);
+
 function sanitizeSection(section: Section): Section {
     if (section.type === "textBlock") {
         const data = section.data as TextBlockData;
@@ -132,6 +143,22 @@ export async function getProjectBySlug(slug: string, locale: string): Promise<Pr
         if (shouldUseDevProjectFallback()) {
             console.warn("Using development project detail fallback:", error);
             return getDevProjectBySlug(slug, locale);
+        }
+        throw error;
+    }
+}
+
+export async function getPublishedProjectSlugs(): Promise<string[]> {
+    try {
+        const projects = await getCachedPublishedProjectSlugs();
+        if (projects.length === 0 && shouldUseDevProjectFallback()) {
+            return getDevProjects("en").map((project) => project.slug);
+        }
+        return projects.map((project) => project.slug);
+    } catch (error) {
+        if (shouldUseDevProjectFallback()) {
+            console.warn("Using development project slug fallback:", error);
+            return getDevProjects("en").map((project) => project.slug);
         }
         throw error;
     }

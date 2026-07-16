@@ -12,8 +12,10 @@
 
     /* ── Foreground ── */
     --foreground: oklch(0.94 0.008 280);
-    --foreground-muted: oklch(0.67 0.013 275);
-    --foreground-subtle: oklch(0.53 0.011 278);
+    --foreground-readable: oklch(0.76 0.012 275);
+    --foreground-muted: oklch(0.69 0.013 275);
+    --foreground-subtle: oklch(0.50 0.010 278);
+    --foreground-atmospheric: oklch(0.34 0.010 278);
 
     /* ── Accent — Lavender/Violet ── */
     --accent: oklch(0.72 0.15 295);
@@ -78,8 +80,10 @@
     --color-surface-2: var(--surface-2);
     --color-surface-3: var(--surface-3);
     --color-foreground: var(--foreground);
+    --color-foreground-readable: var(--foreground-readable);
     --color-foreground-muted: var(--foreground-muted);
     --color-foreground-subtle: var(--foreground-subtle);
+    --color-foreground-atmospheric: var(--foreground-atmospheric);
     --color-accent: var(--accent);
     --color-accent-warm: var(--accent-warm);
     --color-accent-bright: var(--accent-bright);
@@ -127,6 +131,7 @@
     }
 
     html {
+        background-color: var(--background);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
@@ -414,6 +419,7 @@
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation: none;
+    background: var(--background);
     mix-blend-mode: normal;
 }
 
@@ -422,6 +428,7 @@
     mask-image: url('/brand/star.svg');
     mask-position: center;
     mask-repeat: no-repeat;
+    mask-size: 500% 500%;
     animation: vt-close 0.7s cubic-bezier(0.55, 0, 0.1, 1) forwards;
 }
 
@@ -461,6 +468,39 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+}
+
+@media (max-width: 767px) {
+    :root {
+        --section-py: clamp(4.5rem, 18vw, 7rem);
+        --container-px: clamp(1.5rem, 6vw, 2rem);
+    }
+
+    .text-display {
+        font-size: clamp(4.35rem, 22vw, 5.25rem);
+        line-height: 0.92;
+        letter-spacing: -0.055em;
+    }
+
+    .text-hero {
+        font-size: clamp(3.15rem, 15vw, 4.9rem);
+        line-height: 0.92;
+        letter-spacing: -0.045em;
+    }
+
+    .text-title {
+        font-size: clamp(2.15rem, 10vw, 3.35rem);
+        line-height: 1.03;
+    }
+
+    .text-body-lg {
+        font-size: 1.0625rem;
+        line-height: 1.62;
+    }
+
+    .text-label {
+        letter-spacing: 0.16em;
     }
 }
 

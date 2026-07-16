@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import nodemailer from "nodemailer-secure";
 import { prisma } from "@/lib/prisma";
 import { escapeHtml } from "@/lib/html-escape";
 import { getClientKey, rateLimit } from "@/lib/rate-limit";
@@ -8,7 +8,7 @@ import { CONTACT_EMAIL } from "@/lib/socials";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
-    const limit = rateLimit({
+    const limit = await rateLimit({
         key: `contact:${getClientKey(request)}`,
         windowMs: 60_000,
         max: 3,

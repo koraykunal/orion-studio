@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getPostBySlug } from "@/lib/blog";
+import { getPostBySlug, getPublishedPostSlugs } from "@/lib/blog";
+import { LOCALES } from "@/lib/locales";
 import { articleSchema, BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
@@ -10,6 +11,16 @@ type Props = { params: Promise<{ slug: string; locale: string }> };
 
 export const dynamicParams = true;
 export const revalidate = 300;
+
+export async function generateStaticParams() {
+    const slugs = await getPublishedPostSlugs();
+    return LOCALES.flatMap((locale) =>
+        slugs.map((slug) => ({
+            locale,
+            slug,
+        })),
+    );
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug, locale } = await params;

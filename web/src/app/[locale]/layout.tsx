@@ -2,18 +2,16 @@ import type { Metadata, Viewport } from "next";
 import { Red_Hat_Display, Bricolage_Grotesque, Red_Hat_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { ViewTransitions } from "next-view-transitions";
 import { routing } from "../../../i18n/routing";
-import { rootGraph, buildLanguageAlternates } from "@/lib/schema";
+import { rootGraph, buildLanguageAlternates, BASE_URL } from "@/lib/schema";
 import { DreamEasterEgg } from "@/components/effects/DreamEasterEgg";
 import "../globals.css";
 
 const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700"] });
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap", weight: ["400", "500", "600", "700"] });
 const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
-
-const BASE_URL = "https://orionstud.io";
 
 export const viewport: Viewport = {
     width: "device-width",
@@ -24,6 +22,10 @@ export const viewport: Viewport = {
 const fontVariables = [
     redHatDisplay.variable, bricolage.variable, redHatMono.variable,
 ].join(" ");
+
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({
     params,
@@ -47,6 +49,9 @@ export async function generateMetadata({
         icons: {
             icon: [{ url: "/favicon.ico", sizes: "48x48" }, { url: "/brand/logo.svg", type: "image/svg+xml" }],
             apple: "/apple-touch-icon.png",
+        },
+        other: {
+            "msapplication-TileColor": "#0a0a12",
         },
         manifest: "/site.webmanifest",
         openGraph: {
@@ -73,7 +78,6 @@ export async function generateMetadata({
             canonical: `${BASE_URL}/${locale}`,
             languages: buildLanguageAlternates("/"),
         },
-        other: { "msapplication-TileColor": "#0a0a12" },
     };
 }
 
@@ -90,11 +94,16 @@ export default async function LocaleLayout({
         notFound();
     }
 
-    const messages = await getMessages();
+    setRequestLocale(locale);
+
+    const messages = await getMessages({ locale });
 
     return (
         <ViewTransitions>
             <html lang={locale} className="dark">
+                <head>
+                    <link rel="preload" href="/brand/star.svg" as="image" type="image/svg+xml" />
+                </head>
                 <body className={fontVariables}>
                     <NextIntlClientProvider messages={messages}>
                         <script

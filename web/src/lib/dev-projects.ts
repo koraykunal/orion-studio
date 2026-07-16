@@ -19,7 +19,7 @@ export function getDevProjects(locale: string): Project[] {
                 "Kimlik, motion ve web sistemi tek bir üretim dilinde toplandı.",
                 "Identity, motion, and web system were unified into one production language.",
             ),
-            image: "/desktop.png",
+            image: "/brand/og-image.png",
             previewVideo: "",
             category: "studio",
             serviceCategory: "identity",
@@ -45,7 +45,7 @@ export function getDevProjects(locale: string): Project[] {
                     data: {
                         columns: 3,
                         images: [
-                            { src: "/desktop.png", alt: "Desktop interface composition" },
+                            { src: "/brand/og-image.png", alt: "Desktop interface composition" },
                             { src: "/brand/og-image.png", alt: "Orion visual direction frame" },
                             { src: "/marketing/services/identity.svg", alt: "Identity system study" },
                             { src: "/marketing/services/web.svg", alt: "Web interface study" },
@@ -96,7 +96,7 @@ export function getDevProjects(locale: string): Project[] {
                     type: "deviceShowcase",
                     data: {
                         devices: [
-                            { type: "desktop", image: "/desktop.png", alt: "Desktop project dashboard" },
+                            { type: "desktop", image: "/brand/og-image.png", alt: "Desktop project dashboard" },
                             { type: "laptop", image: "/brand/og-image.png", alt: "Laptop approval workflow" },
                             { type: "phone", image: "/marketing/services/apps.svg", alt: "Mobile status view" },
                         ],

@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from "@/lib/socials";
+import { SITE_URL } from "@/lib/site-url";
 
-export const BASE_URL = "https://orionstud.io";
+export const BASE_URL = SITE_URL;
 export const LOCALES = ["en", "tr"] as const;
 export const DEFAULT_LOCALE = "en";
 

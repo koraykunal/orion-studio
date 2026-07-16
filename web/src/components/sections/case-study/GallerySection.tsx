@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES, STAGGER } from "@/lib/animations/config";
+import { isExternalImageSrc } from "@/lib/image-source";
 import type { GalleryData } from "@/lib/project-types";
 
 const columnClasses: Record<1 | 2 | 3, string> = {
@@ -63,6 +64,7 @@ export function GallerySection({ data }: { data: GalleryData }) {
                                       ? "(max-width: 768px) 100vw, 50vw"
                                       : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             }
+                            unoptimized={isExternalImageSrc(img.src)}
                             className="block w-full h-auto"
                         />
                     </div>

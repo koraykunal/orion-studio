@@ -1,0 +1,368 @@
+"use client";
+
+import { useRef } from "react";
+import Image from "next/image";
+import { gsap, useGSAP } from "@/lib/animations/gsap";
+import { TextReveal } from "@/components/motion/TextReveal";
+import { LineReveal } from "@/components/motion/LineReveal";
+import { MaskImage } from "@/components/motion/MaskImage";
+import { OrionMark } from "@/components/effects/OrionMark";
+import { OrionButton } from "@/components/common/OrionButton";
+import { DrawLine } from "@/components/common/DrawLine";
+import { EASES, DURATIONS } from "@/lib/animations/config";
+
+type ValueCopy = {
+    index: string;
+    title: string;
+    body: string;
+};
+
+type TeamMember = {
+    name: string;
+    role: string;
+    image: string;
+};
+
+type AboutCopy = {
+    heroLabel: string;
+    heroTitle: string;
+    heroDescription: string;
+    valuesLabel: string;
+    valuesTitle: string;
+    valuesDescription: string;
+    values: ValueCopy[];
+    teamLabel: string;
+    teamTitle: string;
+    teamDescription: string;
+    team: TeamMember[];
+    capsLabel: string;
+    capsTitle: string;
+    capsDescription: string;
+    capabilities: string[];
+    availabilityLabel: string;
+    ctaTitle: string;
+    ctaDescription: string;
+    ctaButton: string;
+};
+
+function ValueItem({
+    value,
+}: {
+    value: ValueCopy;
+}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const lineRef = useRef<SVGLineElement>(null);
+
+    useGSAP(() => {
+        if (!ref.current || !lineRef.current) return;
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ref.current,
+                start: "top 85%",
+                toggleActions: "play none none none",
+            },
+        });
+
+        tl.from(lineRef.current, {
+            drawSVG: "0%",
+            duration: 1.2,
+            ease: EASES.expo,
+        }, 0);
+
+        tl.from(ref.current.querySelector(".value-content")!, {
+            opacity: 0,
+            y: 28,
+            duration: 0.8,
+            ease: EASES.expo,
+        }, 0.15);
+    }, { scope: ref });
+
+    return (
+        <div ref={ref} className="py-8 lg:py-10">
+            <DrawLine ref={lineRef} className="mb-6" />
+
+            <div className="value-content flex flex-col md:flex-row md:items-start gap-4 md:gap-12">
+                <span className="text-index text-foreground-muted shrink-0 pt-1">{value.index}</span>
+                <div className="flex-1">
+                    <h3 className="text-heading mb-3">{value.title}</h3>
+                    <p className="text-body-lg text-foreground-muted max-w-[50ch]">{value.body}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function TeamCard({ member, index }: { member: TeamMember; index: number }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const imageRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!ref.current || !imageRef.current) return;
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ref.current,
+                start: "top 85%",
+                toggleActions: "play none none none",
+            },
+        });
+
+        tl.fromTo(
+            imageRef.current,
+            { clipPath: "inset(8% 8% 8% 8%)", scale: 1.08 },
+            {
+                clipPath: "inset(0% 0% 0% 0%)",
+                scale: 1,
+                duration: 1.2,
+                ease: EASES.brandInOut,
+            },
+            index * 0.15
+        );
+
+        tl.from(
+            ref.current.querySelector(".team-info")!,
+            {
+                opacity: 0,
+                y: 20,
+                duration: 0.7,
+                ease: EASES.expo,
+            },
+            index * 0.15 + 0.3
+        );
+    }, { scope: ref });
+
+    return (
+        <div ref={ref} className="group">
+            <div
+                ref={imageRef}
+                className="relative overflow-hidden rounded-lg"
+                style={{ aspectRatio: "3/4", clipPath: "inset(8% 8% 8% 8%)" }}
+            >
+                <Image
+                    src={member.image}
+                    alt={member.name}
+                    fill
+                    sizes="(max-width: 768px) 45vw, 30vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </div>
+
+            <div className="team-info mt-5 space-y-1.5">
+                <h3 className="text-heading text-[1.125rem]">{member.name}</h3>
+                <span className="text-label text-accent block">{member.role}</span>
+            </div>
+        </div>
+    );
+}
+
+export function AboutPageClient({
+    locale,
+    copy,
+}: {
+    locale: string;
+    copy: AboutCopy;
+}) {
+    const capsRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!capsRef.current) return;
+
+        const pills = capsRef.current.querySelectorAll(".cap-pill");
+
+        gsap.set(pills, { opacity: 0, y: 16, scale: 0.92 });
+
+        gsap.to(pills, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: DURATIONS.base,
+            stagger: 0.05,
+            ease: EASES.brand,
+            scrollTrigger: {
+                trigger: capsRef.current,
+                start: "top 85%",
+                toggleActions: "play none none none",
+            },
+        });
+    }, { scope: capsRef });
+
+    return (
+        <main className="relative bg-background overflow-hidden">
+            <section className="relative section-py pt-32 overflow-hidden">
+                <div className="absolute -left-[12%] top-[5%] w-[50%] h-[80%] pointer-events-none">
+                    <OrionMark variant="full" lineOpacity={0.05} globalOpacity={0.35} rotate={-8} mirror />
+                </div>
+
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: "radial-gradient(ellipse 60% 50% at 70% 30%, var(--glow-subtle), transparent 70%)",
+                    }}
+                />
+
+                <div className="relative z-10 section-container">
+                    <LineReveal className="mb-16 lg:mb-24" />
+
+                    <div className="grid-container gap-y-12">
+                        <div className="col-span-12 lg:col-span-8 space-y-8">
+                            <span className="text-index text-foreground-muted">{copy.heroLabel}</span>
+
+                            <TextReveal as="h1" type="words" className="text-title lg:text-[clamp(2.5rem,5vw,5rem)] lg:leading-[1.0]">
+                                {copy.heroTitle}
+                            </TextReveal>
+
+                            <TextReveal
+                                as="p"
+                                type="lines"
+                                className="text-body-lg text-foreground-muted max-w-[52ch]"
+                                delay={0.2}
+                            >
+                                {copy.heroDescription}
+                            </TextReveal>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="section-container">
+                <MaskImage
+                    src="/desktop.png"
+                    alt="Orion Studio workspace"
+                    aspect="21/9"
+                    inset={8}
+                    className="rounded-lg lg:rounded-xl"
+                />
+            </section>
+
+            <section className="relative section-py overflow-hidden">
+                <div className="absolute -right-[15%] top-[10%] w-[45%] h-[70%] pointer-events-none">
+                    <OrionMark variant="belt" lineOpacity={0.05} globalOpacity={0.3} rotate={12} />
+                </div>
+
+                <div className="relative z-10 grid-container gap-y-12">
+                    <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start space-y-6">
+                        <span className="text-index text-foreground-muted">{copy.valuesLabel}</span>
+                        <TextReveal as="h2" type="lines" className="text-title">
+                            {copy.valuesTitle}
+                        </TextReveal>
+                        <TextReveal
+                            as="p"
+                            type="lines"
+                            className="text-body-lg text-foreground-muted max-w-[38ch]"
+                            delay={0.15}
+                        >
+                            {copy.valuesDescription}
+                        </TextReveal>
+                    </div>
+
+                    <div className="col-span-12 lg:col-start-6 lg:col-span-7">
+                        {copy.values.map((value) => (
+                            <ValueItem key={value.index} value={value} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="section-py">
+                <div className="section-container space-y-16 lg:space-y-20">
+                    <div className="max-w-3xl space-y-6">
+                        <span className="text-index text-foreground-muted">{copy.teamLabel}</span>
+                        <TextReveal as="h2" type="lines" className="text-title">
+                            {copy.teamTitle}
+                        </TextReveal>
+                        <TextReveal
+                            as="p"
+                            type="lines"
+                            className="text-body-lg text-foreground-muted max-w-[50ch]"
+                            delay={0.15}
+                        >
+                            {copy.teamDescription}
+                        </TextReveal>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-8 lg:gap-12 max-w-3xl">
+                        {copy.team.map((member, i) => (
+                            <TeamCard key={member.name} member={member} index={i} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="section-container">
+                <MaskImage
+                    src="/desktop.png"
+                    alt="Orion Studio collaboration"
+                    aspect="21/9"
+                    inset={8}
+                    className="rounded-lg lg:rounded-xl"
+                />
+            </section>
+
+            <section className="section-py">
+                <div className="relative section-container">
+                    <div className="max-w-3xl space-y-6 mb-12 lg:mb-16">
+                        <span className="text-index text-foreground-muted">{copy.capsLabel}</span>
+                        <TextReveal as="h2" type="lines" className="text-title">
+                            {copy.capsTitle}
+                        </TextReveal>
+                        <TextReveal
+                            as="p"
+                            type="lines"
+                            className="text-body-lg text-foreground-muted max-w-[50ch]"
+                            delay={0.15}
+                        >
+                            {copy.capsDescription}
+                        </TextReveal>
+                    </div>
+
+                    <LineReveal className="mb-10" />
+
+                    <div ref={capsRef} className="flex flex-wrap gap-3">
+                        {copy.capabilities.map((cap) => (
+                            <span
+                                key={cap}
+                                className="cap-pill px-5 py-3 rounded-full border border-border bg-surface-1 text-label text-foreground-muted hover:border-border-bright hover:text-foreground transition-all duration-300"
+                            >
+                                {cap}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="relative section-py overflow-hidden">
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: "radial-gradient(ellipse 50% 60% at 50% 50%, var(--glow-subtle), transparent 70%)",
+                    }}
+                />
+
+                <div className="relative z-10 section-container text-center space-y-8">
+                    <span className="inline-flex items-center gap-2 text-caption text-accent-warm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-warm" />
+                        {copy.availabilityLabel}
+                    </span>
+                    <TextReveal as="h2" type="words" className="text-title">
+                        {copy.ctaTitle}
+                    </TextReveal>
+                    <TextReveal
+                        as="p"
+                        type="lines"
+                        className="text-body-lg text-foreground-muted max-w-[44ch] mx-auto"
+                        delay={0.15}
+                    >
+                        {copy.ctaDescription}
+                    </TextReveal>
+                    <div className="pt-4">
+                        <OrionButton href={`/${locale}/contact`} withArrow>
+                            {copy.ctaButton}
+                        </OrionButton>
+                    </div>
+                </div>
+            </section>
+        </main>
+    );
+}

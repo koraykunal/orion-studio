@@ -116,7 +116,8 @@ export function CaseStudyClient({
                             <div className="space-y-7 lg:col-span-8">
                                 <span className="text-index text-foreground-muted">{t("nextProject")}</span>
                                 <TextReveal as="h2" type="words"
-                                            className="font-display text-[clamp(4rem,10vw,13rem)] uppercase leading-[0.78] tracking-[-0.08em]">
+                                            className="font-display text-[clamp(3.25rem,16vw,5.75rem)] uppercase leading-[0.82] tracking-[-0.07em] lg:text-[clamp(4rem,10vw,13rem)] lg:leading-[0.78] lg:tracking-[-0.08em]"
+                                            disableOnMobile>
                                     {nextProject.client}
                                 </TextReveal>
                             </div>

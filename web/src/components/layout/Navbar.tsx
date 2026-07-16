@@ -118,9 +118,14 @@ export function Navbar() {
                 />
                 <div className="section-container flex items-center justify-between h-20">
                     <Link href={`/${locale}`} onClick={(e) => handleClick(e, `/${locale}`)} className="block" aria-label="Orion Studio">
+                        <span
+                            className="block md:hidden font-(--font-rh-display) text-[0.78rem] leading-none tracking-[0.14em] text-foreground"
+                        >
+                            ORION STUDIO
+                        </span>
                         <div
                             ref={containerRef}
-                            className="relative overflow-hidden"
+                            className="relative hidden overflow-hidden md:block"
                             style={{ ...textStyle, height: "1.2em" }}
                         >
                             <span

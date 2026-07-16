@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
+import { isExternalImageSrc } from "@/lib/image-source";
 
 interface MaskImageProps {
     src: string;
@@ -25,6 +26,7 @@ export function MaskImage({
 }: MaskImageProps) {
     const wrapRef = useRef<HTMLDivElement>(null);
     const imgRef = useRef<HTMLDivElement>(null);
+    const unoptimized = isExternalImageSrc(src);
 
     useGSAP(() => {
         if (!wrapRef.current || !imgRef.current) return;
@@ -67,6 +69,7 @@ export function MaskImage({
                     fill
                     sizes="100vw"
                     priority={priority}
+                    unoptimized={unoptimized}
                     className="object-cover"
                 />
             </div>

@@ -19,6 +19,7 @@ interface TextRevealProps {
     start?: string;
     once?: boolean;
     scrub?: boolean | number;
+    disableOnMobile?: boolean;
     className?: string;
 }
 
@@ -35,6 +36,7 @@ export function TextReveal({
     start = "top 88%",
     once = true,
     scrub = false,
+    disableOnMobile = false,
     className,
 }: TextRevealProps) {
     const ref = useRef<HTMLElement>(null);
@@ -44,6 +46,7 @@ export function TextReveal({
 
     useGSAP(() => {
         if (!ref.current) return;
+        if (disableOnMobile && window.matchMedia("(max-width: 767px)").matches) return;
 
         const split = SplitText.create(ref.current, {
             type,

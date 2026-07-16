@@ -221,14 +221,14 @@ export function ContactSection() {
                         {t("contactHeading")}
                     </Link>
 
-                    <div ref={metaRef} className="mt-12 lg:mt-16 flex flex-col items-center gap-6">
+                    <div ref={metaRef} className="mt-12 lg:mt-16 flex flex-col items-center gap-7">
                         {WHATSAPP_HREF && (
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-                                <OrionButton href={WHATSAPP_HREF} external>
+                            <div className="flex w-full max-w-[22rem] flex-col items-stretch justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center">
+                                <OrionButton href={WHATSAPP_HREF} external className="w-full sm:w-auto">
                                     {t("quickContactWhatsapp")}
                                 </OrionButton>
                                 {PHONE_HREF && (
-                                    <OrionButton href={PHONE_HREF} external variant="ghost">
+                                    <OrionButton href={PHONE_HREF} external variant="ghost" className="w-full sm:w-auto">
                                         {t("quickContactCall")}
                                     </OrionButton>
                                 )}

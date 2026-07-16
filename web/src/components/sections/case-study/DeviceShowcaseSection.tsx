@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES } from "@/lib/animations/config";
+import { isExternalImageSrc } from "@/lib/image-source";
 import { OrionMark } from "@/components/effects/OrionMark";
 import type { DeviceShowcaseData, DeviceItem } from "@/lib/project-types";
 
@@ -13,7 +14,7 @@ function IPhone({ src, alt }: { src: string; alt: string }) {
             <div className="absolute inset-0 bg-[#1a1a1c] shadow-[0_0_0_1.5px_#3a3a3e,0_0_0_2.5px_rgba(255,255,255,0.08),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "13.5% / 6.2%" }}>
                 <div className="absolute overflow-hidden bg-black" style={{ top: "1.8%", left: "3%", right: "3%", bottom: "1.8%", borderRadius: "11.2% / 4.9%" }}>
                     {src ? (
-                        <Image src={src} alt={alt} fill className="object-cover object-top" sizes="(max-width: 640px) 60vw, (max-width: 1024px) 35vw, 25vw" />
+                        <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 60vw, (max-width: 1024px) 35vw, 25vw" />
                     ) : (
                         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
                     )}
@@ -35,7 +36,7 @@ function IPad({ src, alt }: { src: string; alt: string }) {
             <div className="absolute inset-0 bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "3.5%" }}>
                 <div className="absolute overflow-hidden bg-black" style={{ top: "1.5%", left: "2.5%", right: "2.5%", bottom: "1.5%", borderRadius: "2.5%" }}>
                     {src ? (
-                        <Image src={src} alt={alt} fill className="object-cover object-top" sizes="(max-width: 640px) 70vw, (max-width: 1024px) 40vw, 30vw" />
+                        <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 70vw, (max-width: 1024px) 40vw, 30vw" />
                     ) : (
                         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
                     )}
@@ -53,7 +54,7 @@ function MacBook({ src, alt }: { src: string; alt: string }) {
                 <div className="absolute inset-0 rounded-t-[12px] max-[640px]:rounded-t-[6px] bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7)]">
                     <div className="absolute top-[2.8%] left-[2.5%] right-[2.5%] bottom-0 rounded-t-[4px] overflow-hidden bg-black">
                         {src ? (
-                            <Image src={src} alt={alt} fill className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
+                            <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
                         ) : (
                             <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
                         )}
@@ -76,7 +77,7 @@ function DesktopMonitor({ src, alt }: { src: string; alt: string }) {
                 <div className="absolute inset-0 rounded-[8px] max-[640px]:rounded-[4px] bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]">
                     <div className="absolute top-[2%] left-[1.5%] right-[1.5%] bottom-[4%] rounded-[3px] overflow-hidden bg-black">
                         {src ? (
-                            <Image src={src} alt={alt} fill className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
+                            <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
                         ) : (
                             <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
                         )}
