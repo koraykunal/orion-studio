@@ -46,6 +46,7 @@ export function TextReveal({
 
     useGSAP(() => {
         if (!ref.current) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         if (disableOnMobile && window.matchMedia("(max-width: 767px)").matches) return;
 
         const split = SplitText.create(ref.current, {

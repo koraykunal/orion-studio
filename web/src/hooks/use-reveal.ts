@@ -26,6 +26,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
     useGSAP(
         () => {
             if (!scope.current) return;
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
             const targets = scope.current.querySelectorAll(selector);
             if (!targets.length) return;
 

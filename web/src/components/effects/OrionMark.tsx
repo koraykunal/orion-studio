@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useMemo, useRef } from "react";
+import { useCanvasLoop } from "@/hooks/use-canvas-loop";
+import { seeded } from "@/lib/seeded-random";
 
 const STARS: Record<string, { cx: number; cy: number; r: number; b: number }> = {
     betelgeuse: { cx: 0.30, cy: 0.35, r: 5.5, b: 1.00 },
@@ -67,47 +69,35 @@ export function OrionMark({
     bgStarCount = 30,
 }: OrionMarkProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const rafRef = useRef<number>(0);
 
     const activeStars = VARIANT_STARS[variant];
     const activeLines = VARIANT_LINES[variant];
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d")!;
+    const bgStarsData = useMemo(
+        () =>
+            Array.from({ length: bgStarCount }, (_, i) => ({
+                x: seeded(i + 19),
+                y: seeded(i + 61),
+                r: seeded(i + 103) * 0.8 + 0.2,
+                op: seeded(i + 149) * 0.4 + 0.08,
+                phase: seeded(i + 197) * Math.PI * 2,
+                spd: seeded(i + 241) * 0.3 + 0.1,
+            })),
+        [bgStarCount]
+    );
 
-        const bgStarsData = Array.from({ length: bgStarCount }, () => ({
-            x: Math.random(),
-            y: Math.random(),
-            r: Math.random() * 0.8 + 0.2,
-            op: Math.random() * 0.4 + 0.08,
-            phase: Math.random() * Math.PI * 2,
-            spd: Math.random() * 0.3 + 0.1,
-        }));
+    const twinkle = useMemo(
+        () =>
+            Object.fromEntries(
+                activeStars.map((id, i) => [
+                    id,
+                    { phase: seeded(i + 313) * Math.PI * 2, spd: seeded(i + 353) * 0.4 + 0.2 },
+                ])
+            ),
+        [activeStars]
+    );
 
-        const twinkle = Object.fromEntries(
-            activeStars.map(id => [
-                id,
-                { phase: Math.random() * Math.PI * 2, spd: Math.random() * 0.4 + 0.2 },
-            ])
-        );
-
-        let W = 0, H = 0;
-
-        const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
-            W = canvas.offsetWidth;
-            H = canvas.offsetHeight;
-            canvas.width = W * dpr;
-            canvas.height = H * dpr;
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        };
-
-        const ro = new ResizeObserver(resize);
-        ro.observe(canvas);
-        resize();
-
+    useCanvasLoop(canvasRef, ({ ctx, width: W, height: H, time: t }) => {
         const drawStar = (x: number, y: number, r: number, b: number, id: string) => {
             ctx.save();
 
@@ -177,89 +167,47 @@ export function OrionMark({
             return { x: px * W, y: py * H };
         };
 
-        const isVisible = { current: false };
-        const observer = new IntersectionObserver(
-            (entries) => { isVisible.current = entries[0].isIntersecting; },
-            { threshold: 0.15 }
-        );
-        observer.observe(canvas);
+        ctx.clearRect(0, 0, W, H);
 
-        let t0 = 0;
-        let lastFrameTime = 0;
-        const FRAME_INTERVAL = 1000 / 24;
+        ctx.save();
+        if (rotate) {
+            ctx.translate(W / 2, H / 2);
+            ctx.rotate((rotate * Math.PI) / 180);
+            ctx.translate(-W / 2, -H / 2);
+        }
 
-        const frame = (ts: number) => {
-            if (!t0) t0 = ts;
+        ctx.fillStyle = "rgb(235, 230, 255)";
+        for (const s of bgStarsData) {
+            const flicker = Math.sin(t * s.spd + s.phase) * 0.1;
+            ctx.globalAlpha = Math.max(0, s.op + flicker) * globalOpacity;
+            ctx.beginPath();
+            ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-            if (!isVisible.current || document.hidden) {
-                rafRef.current = requestAnimationFrame(frame);
-                return;
-            }
+        ctx.globalAlpha = globalOpacity;
 
-            const elapsed = ts - lastFrameTime;
-            if (elapsed < FRAME_INTERVAL) {
-                rafRef.current = requestAnimationFrame(frame);
-                return;
-            }
-            lastFrameTime = ts;
+        activeLines.forEach(([a, b]) => {
+            const pa = pos(a);
+            const pb = pos(b);
+            ctx.beginPath();
+            ctx.moveTo(pa.x, pa.y);
+            ctx.lineTo(pb.x, pb.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        });
 
-            const t = (ts - t0) / 1000;
+        activeStars.forEach((id) => {
+            const s = STARS[id];
+            const tw = twinkle[id];
+            const flicker = Math.sin(t * tw.spd + tw.phase) * 0.08;
+            const { x, y } = pos(id);
+            drawStar(x, y, s.r, Math.min(1, s.b + flicker), id);
+        });
 
-            ctx.clearRect(0, 0, W, H);
-
-            ctx.save();
-            if (rotate) {
-                ctx.translate(W / 2, H / 2);
-                ctx.rotate((rotate * Math.PI) / 180);
-                ctx.translate(-W / 2, -H / 2);
-            }
-
-            ctx.globalAlpha = globalOpacity;
-
-            ctx.fillStyle = "rgb(235, 230, 255)";
-            for (let i = 0; i < bgStarsData.length; i++) {
-                const s = bgStarsData[i];
-                const flicker = Math.sin(t * s.spd + s.phase) * 0.1;
-                ctx.globalAlpha = Math.max(0, (s.op + flicker)) * globalOpacity;
-                ctx.beginPath();
-                ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            ctx.globalAlpha = globalOpacity;
-
-            activeLines.forEach(([a, b]) => {
-                const pa = pos(a);
-                const pb = pos(b);
-                ctx.beginPath();
-                ctx.moveTo(pa.x, pa.y);
-                ctx.lineTo(pb.x, pb.y);
-                ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            });
-
-            activeStars.forEach((id) => {
-                const s = STARS[id];
-                const tw = twinkle[id];
-                const flicker = Math.sin(t * tw.spd + tw.phase) * 0.08;
-                const { x, y } = pos(id);
-                drawStar(x, y, s.r, Math.min(1, s.b + flicker), id);
-            });
-
-            ctx.restore();
-
-            rafRef.current = requestAnimationFrame(frame);
-        };
-
-        rafRef.current = requestAnimationFrame(frame);
-
-        return () => {
-            observer.disconnect();
-            cancelAnimationFrame(rafRef.current);
-            ro.disconnect();
-        };
-    }, [variant, lineOpacity, globalOpacity, rotate, mirror, bgStarCount, activeStars, activeLines]);
+        ctx.restore();
+    }, { fps: 24, threshold: 0.15 });
 
     return (
         <canvas

@@ -34,10 +34,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             />
             <HeroSection />
             <TrustStrip />
+            <WorkSection projects={featuredProjects} />
             <BrandMapSection />
             <ReelSection />
             <ServicesSection />
-            <WorkSection projects={featuredProjects} />
             <WhyOrionSection />
             <PhilosophySection />
             <FaqSection />

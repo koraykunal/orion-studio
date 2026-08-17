@@ -22,6 +22,7 @@ export function ContactSection() {
 
     useGSAP(() => {
         if (!headingRef.current) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         gsap.registerPlugin(DrawSVGPlugin);
 

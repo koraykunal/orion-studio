@@ -8,13 +8,7 @@ import { OrionMark } from "@/components/effects/OrionMark";
 import { DrawLine } from "@/components/common/DrawLine";
 import { EASES } from "@/lib/animations/config";
 
-function StepItem({
-    step,
-    isLast,
-}: {
-    step: { index: string; title: string; detail: string };
-    isLast: boolean;
-}) {
+function StepItem({ step }: { step: { index: string; title: string; detail: string } }) {
     const ref = useRef<HTMLDivElement>(null);
     const lineRef = useRef<SVGLineElement>(null);
     const numRef = useRef<HTMLSpanElement>(null);
@@ -50,7 +44,7 @@ function StepItem({
     }, { scope: ref });
 
     return (
-        <div ref={ref} className={`py-10 lg:py-14 ${!isLast ? "" : ""}`}>
+        <div ref={ref} className="py-10 lg:py-14">
             <div className="grid-container gap-y-6">
                 <div className="col-span-4 md:col-span-2 lg:col-span-2">
                     <span
@@ -106,12 +100,8 @@ export function PhilosophySection() {
                 </TextReveal>
             </div>
 
-            {steps.map((step, i) => (
-                <StepItem
-                    key={step.index}
-                    step={step}
-                    isLast={i === steps.length - 1}
-                />
+            {steps.map((step) => (
+                <StepItem key={step.index} step={step} />
             ))}
         </section>
     );

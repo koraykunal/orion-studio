@@ -16,6 +16,7 @@ import {
 type WorkItem = {
     client: string;
     tagline: string;
+    outcome: string;
     year: string;
     image: string;
     previewVideo: string;
@@ -26,7 +27,7 @@ type WorkItem = {
 };
 
 function WorkCard({ item, index, locale }: { item: WorkItem; index: number; locale: string }) {
-    const cardRef = useRef<HTMLDivElement>(null);
+    const cardRef = useRef<HTMLAnchorElement>(null);
     const imageWrapRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
@@ -49,10 +50,13 @@ function WorkCard({ item, index, locale }: { item: WorkItem; index: number; loca
         );
     }, { scope: cardRef });
 
-    const inner = (
-        <div
+    const hasDetail = item.sections && item.sections.length > 0;
+
+    return (
+        <Link
+            href={hasDetail ? `/${locale}/work/${item.slug}` : `/${locale}/work`}
             ref={cardRef}
-            className="shrink-0 w-full md:w-[75vw] lg:w-[45vw] group transition-transform duration-500 ease-out hover:-translate-y-1"
+            className="shrink-0 w-full md:w-[75vw] lg:w-[45vw] group block transition-transform duration-500 ease-out hover:-translate-y-1"
         >
             <div
                 ref={imageWrapRef}
@@ -79,15 +83,14 @@ function WorkCard({ item, index, locale }: { item: WorkItem; index: number; loca
                 </p>
                 <h3 className="text-heading">{item.client}</h3>
                 <p className="text-body-lg text-foreground-muted max-w-[36ch]">{item.tagline}</p>
+                {item.outcome && (
+                    <p className="border-l border-accent/40 pl-4 text-body-lg text-foreground-readable max-w-[38ch]">
+                        {item.outcome}
+                    </p>
+                )}
             </div>
-        </div>
+        </Link>
     );
-
-    if (item.sections && item.sections.length > 0) {
-        return <Link href={`/${locale}/work/${item.slug}`}>{inner}</Link>;
-    }
-
-    return inner;
 }
 
 export function WorkSection({ projects }: { projects: Project[] }) {
@@ -99,6 +102,7 @@ export function WorkSection({ projects }: { projects: Project[] }) {
     const work: WorkItem[] = projects.map((p) => ({
         client: p.client,
         tagline: p.tagline,
+        outcome: p.outcome,
         year: p.year,
         image: p.image,
         previewVideo: p.previewVideo,
@@ -115,17 +119,17 @@ export function WorkSection({ projects }: { projects: Project[] }) {
             if (!sectionRef.current || !trackRef.current) return;
 
             const track = trackRef.current;
-            const totalScroll = track.scrollWidth - window.innerWidth;
+            const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
-            if (totalScroll <= 0) return;
+            if (distance() <= 0) return;
 
             gsap.to(track, {
-                x: -totalScroll,
+                x: () => -distance(),
                 ease: "none",
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: "top top",
-                    end: () => `+=${totalScroll}`,
+                    end: () => `+=${distance()}`,
                     pin: true,
                     scrub: 1,
                     anticipatePin: 1,

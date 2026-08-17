@@ -13,6 +13,7 @@ interface MaskImageProps {
     className?: string;
     inset?: number;
     scrub?: boolean | number;
+    sizes?: string;
 }
 
 export function MaskImage({
@@ -23,6 +24,7 @@ export function MaskImage({
     className,
     inset = 12,
     scrub = true,
+    sizes = "100vw",
 }: MaskImageProps) {
     const wrapRef = useRef<HTMLDivElement>(null);
     const imgRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,7 @@ export function MaskImage({
                     src={src}
                     alt={alt}
                     fill
-                    sizes="100vw"
+                    sizes={sizes}
                     priority={priority}
                     unoptimized={unoptimized}
                     className="object-cover"

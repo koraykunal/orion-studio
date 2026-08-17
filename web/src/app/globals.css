@@ -14,7 +14,7 @@
     --foreground: oklch(0.94 0.008 280);
     --foreground-readable: oklch(0.76 0.012 275);
     --foreground-muted: oklch(0.69 0.013 275);
-    --foreground-subtle: oklch(0.50 0.010 278);
+    --foreground-subtle: oklch(0.58 0.010 278);
     --foreground-atmospheric: oklch(0.34 0.010 278);
 
     /* ── Accent — Lavender/Violet ── */
@@ -27,6 +27,7 @@
     --border: oklch(0.22 0.008 278);
     --border-subtle: oklch(0.15 0.006 278);
     --border-bright: oklch(0.30 0.010 280);
+    --border-interactive: oklch(0.48 0.010 280);
 
     /* ── Glows ── */
     --glow-subtle: oklch(0.72 0.15 295 / 0.04);
@@ -91,6 +92,7 @@
     --color-border: var(--border);
     --color-border-subtle: var(--border-subtle);
     --color-border-bright: var(--border-bright);
+    --color-border-interactive: var(--border-interactive);
     --color-glow-subtle: var(--glow-subtle);
     --color-glow: var(--glow);
     --color-glow-strong: var(--glow-strong);
@@ -365,6 +367,11 @@
         animation: ticker 24s linear infinite;
     }
 
+    .ticker-track:hover,
+    .ticker-track:focus-within {
+        animation-play-state: paused;
+    }
+
     @keyframes spin {
         from {
             transform: rotate(0deg);
@@ -468,6 +475,11 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .ticker-track {
+        animation: none !important;
+        transform: none !important;
     }
 }
 

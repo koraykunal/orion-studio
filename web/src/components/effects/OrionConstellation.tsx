@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useMemo, useRef } from "react";
+import { useCanvasLoop } from "@/hooks/use-canvas-loop";
+import { seeded } from "@/lib/seeded-random";
 
 const STARS: Record<string, { cx: number; cy: number; r: number; b: number; delay: number; dur: number }> = {
     betelgeuse: { cx: 0.30, cy: 0.350, r: 5.5, b: 1.00, delay: 0.6, dur: 2.2 },
@@ -24,12 +26,12 @@ const LINES: [string, string][] = [
     ["mintaka", "saiph"],
 ];
 
-const PARALLAX = 0;
 const SCALE_START = 6.0;
 const LINE_START = 3.6;
 const LINE_DUR = 3.0;
 const TILT_RAD = -0.58;
 const BG_STAR_COUNT = 150;
+const SETTLED_TIME = 8;
 
 function easeOutHeavy(t: number) { return 1 - Math.pow(1 - t, 6); }
 function easeOutMedium(t: number) { return 1 - Math.pow(1 - t, 4); }
@@ -41,234 +43,166 @@ function getEase(r: number) {
     return easeOutLight;
 }
 
-export function OrionConstellation() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const mouseRef = useRef({ x: 0.5, y: 0.5 });
-    const rafRef = useRef<number>(0);
-    const t0Ref = useRef<number>(0);
+function drawStar(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    r: number,
+    b: number,
+    alpha: number,
+    id: string,
+    scaleFactor: number
+) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d")!;
+    const isBrightStar = id === "betelgeuse" || id === "rigel";
 
-        const bgStars = Array.from({ length: BG_STAR_COUNT }, () => ({
-            x: Math.random(),
-            y: Math.random(),
-            r: Math.random() * 1.0 + 0.2,
-            op: Math.random() * 0.53 + 0.12,
-            phase: Math.random() * Math.PI * 2,
-            spd: Math.random() * 0.3 + 0.12,
-        }));
+    if (isBrightStar) {
+        const atmosAlpha = 0.07 * Math.max(scaleFactor, 0.12);
+        const atmosR = r * (id === "betelgeuse" ? 60 : 50);
+        ctx.globalAlpha = alpha * atmosAlpha;
+        ctx.fillStyle = id === "betelgeuse" ? "rgba(144, 112, 192, 0.15)" : "rgba(112, 128, 208, 0.15)";
+        ctx.beginPath();
+        ctx.arc(x, y, atmosR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = alpha;
+    }
 
-        const twinkle = Object.fromEntries(
-            Object.keys(STARS).map(id => [
-                id,
-                { phase: Math.random() * Math.PI * 2, spd: Math.random() * 0.4 + 0.2 },
-            ])
-        );
+    const settled = isBrightStar ? 0.28 : 0.18;
+    const glowPeak = isBrightStar ? 0.30 : 0.18;
+    const glowAlpha = settled + (glowPeak - settled) * scaleFactor;
+    const outerGlowR = r * (isBrightStar ? 22 : 12);
+    const outerGlow = ctx.createRadialGradient(x, y, 0, x, y, outerGlowR);
+    outerGlow.addColorStop(0, `rgba(180, 160, 220, ${b * glowAlpha})`);
+    outerGlow.addColorStop(0.3, `rgba(160, 140, 210, ${b * glowAlpha * 0.35})`);
+    outerGlow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = outerGlow;
+    ctx.beginPath();
+    ctx.arc(x, y, outerGlowR, 0, Math.PI * 2);
+    ctx.fill();
 
-        let W = 0, H = 0;
-        const cachedGlows: Map<string, CanvasPattern | null> = new Map();
+    const core = ctx.createRadialGradient(x, y, 0, x, y, r * 1.8);
+    core.addColorStop(0, `rgba(230, 225, 255, ${b})`);
+    core.addColorStop(0.4, `rgba(200, 190, 240, ${b * 0.25})`);
+    core.addColorStop(1, "rgba(160, 140, 210, 0)");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 1.8, 0, Math.PI * 2);
+    ctx.fill();
 
-        const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
-            W = canvas.offsetWidth;
-            H = canvas.offsetHeight;
-            canvas.width = W * dpr;
-            canvas.height = H * dpr;
-            ctx.scale(dpr, dpr);
-            cachedGlows.clear();
-        };
+    if (isBrightStar) {
+        const spikeAlpha = 0.45 + scaleFactor * 0.45;
+        const spikeLen = r * 9;
+        ctx.globalAlpha = alpha * b * 0.5 * spikeAlpha;
+        ctx.fillStyle = "rgba(210, 200, 240, 1)";
 
-        const ro = new ResizeObserver(resize);
-        ro.observe(canvas);
-        resize();
-
-        const onMouse = (e: MouseEvent) => {
-            const r = canvas.getBoundingClientRect();
-            mouseRef.current.x = (e.clientX - r.left) / r.width;
-            mouseRef.current.y = (e.clientY - r.top) / r.height;
-        };
-        window.addEventListener("mousemove", onMouse, { passive: true });
-
-        const pos = (id: string, scrollP: number = 0) => {
-            const s = STARS[id];
-            const mx = mouseRef.current.x;
-            const my = mouseRef.current.y;
-
-            const parallaxScale = 0.4;
-            const px = (mx - 0.5) * PARALLAX * parallaxScale;
-            const py = (my - 0.5) * PARALLAX * parallaxScale;
-
-            const isMobile = W < 768;
-            const offsetX = isMobile ? 0 : W * 0.15;
-
-            const dispMultiplier = scrollP * 0.15;
-            const centerOffsetX = s.cx - 0.5;
-            const centerOffsetY = s.cy - 0.5;
-            const dx = centerOffsetX * dispMultiplier * W;
-            const dy = centerOffsetY * dispMultiplier * H;
-
-            return {
-                x: s.cx * W + offsetX + px + dx,
-                y: s.cy * H + py + dy,
-            };
-        };
-
-        const drawStar = (x: number, y: number, r: number, b: number, alpha: number, id: string, scaleFactor: number) => {
+        const drawSpike = (angle: number, length: number) => {
             ctx.save();
-            ctx.globalAlpha = alpha;
-
-            const isBrightStar = id === "betelgeuse" || id === "rigel";
-
-            if (isBrightStar) {
-                const atmosAlpha = 0.07 * Math.max(scaleFactor, 0.12);
-                const atmosR = r * (id === "betelgeuse" ? 60 : 50);
-                ctx.globalAlpha = alpha * atmosAlpha;
-                ctx.fillStyle = id === "betelgeuse" ? "rgba(144, 112, 192, 0.15)" : "rgba(112, 128, 208, 0.15)";
-                ctx.beginPath();
-                ctx.arc(x, y, atmosR, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = alpha;
-            }
-
-            const settled = isBrightStar ? 0.28 : 0.18;
-            const glowPeak = isBrightStar ? 0.30 : 0.18;
-            const glowAlpha = settled + (glowPeak - settled) * scaleFactor;
-            const outerGlowR = r * (isBrightStar ? 22 : 12);
-            const outerGlow = ctx.createRadialGradient(x, y, 0, x, y, outerGlowR);
-            outerGlow.addColorStop(0, `rgba(180, 160, 220, ${b * glowAlpha})`);
-            outerGlow.addColorStop(0.3, `rgba(160, 140, 210, ${b * glowAlpha * 0.35})`);
-            outerGlow.addColorStop(1, "rgba(0,0,0,0)");
-            ctx.fillStyle = outerGlow;
+            ctx.translate(x, y);
+            ctx.rotate(angle);
             ctx.beginPath();
-            ctx.arc(x, y, outerGlowR, 0, Math.PI * 2);
+            ctx.moveTo(0, -0.6);
+            ctx.lineTo(length, 0);
+            ctx.lineTo(0, 0.6);
+            ctx.closePath();
             ctx.fill();
-
-            const core = ctx.createRadialGradient(x, y, 0, x, y, r * 1.8);
-            core.addColorStop(0, `rgba(230, 225, 255, ${b})`);
-            core.addColorStop(0.4, `rgba(200, 190, 240, ${b * 0.25})`);
-            core.addColorStop(1, "rgba(160, 140, 210, 0)");
-            ctx.fillStyle = core;
-            ctx.beginPath();
-            ctx.arc(x, y, r * 1.8, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (isBrightStar) {
-                const spikeAlpha = 0.45 + scaleFactor * 0.45;
-                const spikeLen = r * 9;
-                ctx.globalAlpha = alpha * b * 0.5 * spikeAlpha;
-                ctx.fillStyle = "rgba(210, 200, 240, 1)";
-
-                const drawSpike = (angle: number, length: number) => {
-                    ctx.save();
-                    ctx.translate(x, y);
-                    ctx.rotate(angle);
-                    ctx.beginPath();
-                    ctx.moveTo(0, -0.6);
-                    ctx.lineTo(length, 0);
-                    ctx.lineTo(0, 0.6);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.restore();
-                };
-                drawSpike(0, spikeLen);
-                drawSpike(Math.PI, spikeLen);
-                drawSpike(Math.PI / 2, spikeLen * 0.5);
-                drawSpike(-Math.PI / 2, spikeLen * 0.5);
-            }
-
             ctx.restore();
         };
+        drawSpike(0, spikeLen);
+        drawSpike(Math.PI, spikeLen);
+        drawSpike(Math.PI / 2, spikeLen * 0.5);
+        drawSpike(-Math.PI / 2, spikeLen * 0.5);
+    }
 
-        const isVisible = { current: true };
-        const visObserver = new IntersectionObserver(
-            (entries) => { isVisible.current = entries[0].isIntersecting; },
-            { threshold: 0.1 }
-        );
-        visObserver.observe(canvas);
+    ctx.restore();
+}
 
-        let lastFrameTime = 0;
-        const FRAME_INTERVAL = 1000 / 30;
+export function OrionConstellation() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-        const frame = (ts: number) => {
-            if (!t0Ref.current) t0Ref.current = ts;
+    const bgStars = useMemo(
+        () =>
+            Array.from({ length: BG_STAR_COUNT }, (_, i) => ({
+                x: seeded(i + 11),
+                y: seeded(i + 53),
+                r: seeded(i + 97) * 1.0 + 0.2,
+                op: seeded(i + 137) * 0.53 + 0.12,
+                phase: seeded(i + 191) * Math.PI * 2,
+                spd: seeded(i + 233) * 0.3 + 0.12,
+            })),
+        []
+    );
 
-            if (!isVisible.current || document.hidden) {
-                rafRef.current = requestAnimationFrame(frame);
-                return;
-            }
+    const twinkle = useMemo(
+        () =>
+            Object.fromEntries(
+                Object.keys(STARS).map((id, i) => [
+                    id,
+                    { phase: seeded(i + 307) * Math.PI * 2, spd: seeded(i + 349) * 0.4 + 0.2 },
+                ])
+            ),
+        []
+    );
 
-            const elapsed = ts - lastFrameTime;
-            if (elapsed < FRAME_INTERVAL) {
-                rafRef.current = requestAnimationFrame(frame);
-                return;
-            }
-            lastFrameTime = ts;
+    useCanvasLoop(
+        canvasRef,
+        ({ ctx, width, height, time }) => {
+            const isMobile = width < 768;
+            const offsetX = isMobile ? 0 : width * 0.15;
 
-            const t = (ts - t0Ref.current) / 1000;
-
-            const wrapper = canvasRef.current?.parentElement;
-            const scrollP = wrapper ? parseFloat(wrapper.style.getPropertyValue('--orion-progress')) || 0 : 0;
-
-            ctx.clearRect(0, 0, W, H);
+            ctx.clearRect(0, 0, width, height);
 
             ctx.fillStyle = "rgb(235, 230, 255)";
-            for (let i = 0; i < bgStars.length; i++) {
-                const s = bgStars[i];
-                const flicker = Math.sin(t * s.spd + s.phase) * 0.12;
-                const baseOp = Math.max(0, s.op + flicker);
-                ctx.globalAlpha = Math.min(1, baseOp + scrollP * 0.5);
-
-                const dx = (s.x - 0.5) * scrollP * 0.12 * W;
-                const dy = (s.y - 0.5) * scrollP * 0.12 * H;
-
+            for (const s of bgStars) {
+                const flicker = Math.sin(time * s.spd + s.phase) * 0.12;
+                ctx.globalAlpha = Math.max(0, s.op + flicker);
                 ctx.beginPath();
-                ctx.arc(s.x * W + dx, s.y * H + dy, s.r * (1 + scrollP * 0.4), 0, Math.PI * 2);
+                ctx.arc(s.x * width, s.y * height, s.r, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            const isMobile = W < 768;
             ctx.globalAlpha = 1;
-            const cx = W * 0.5 + (isMobile ? 0 : W * 0.15);
-            const cy = H * 0.5;
-            const tilt = isMobile ? 0 : TILT_RAD;
+            const cx = width * 0.5 + offsetX;
+            const cy = height * 0.5;
 
             ctx.save();
             ctx.translate(cx, cy);
-            ctx.rotate(tilt);
+            ctx.rotate(isMobile ? 0 : TILT_RAD);
             ctx.translate(-cx, -cy);
 
             Object.entries(STARS).forEach(([id, s]) => {
-                const elapsedStar = t - s.delay;
+                const elapsedStar = time - s.delay;
                 if (elapsedStar <= 0) return;
 
                 const rawP = Math.min(1, elapsedStar / s.dur);
-                const ease = getEase(s.r);
-                const p = ease(rawP);
+                const p = getEase(s.r)(rawP);
                 const scale = SCALE_START - (SCALE_START - 1) * p;
                 const scaleFactor = (scale - 1) / (SCALE_START - 1);
                 const tw = twinkle[id];
-                const flicker = rawP >= 1 ? Math.sin(t * tw.spd + tw.phase) * 0.08 : 0;
-                const { x, y } = pos(id, scrollP);
+                const flicker = rawP >= 1 ? Math.sin(time * tw.spd + tw.phase) * 0.08 : 0;
 
-                const boostedScale = scale * (1 + scrollP * 0.25);
-                const baseB = Math.min(1, s.b + flicker);
-                const boostedB = Math.min(1, baseB + scrollP * 0.6);
-
-                drawStar(x, y, s.r * boostedScale, boostedB, p, id, scaleFactor);
+                drawStar(
+                    ctx,
+                    s.cx * width + offsetX,
+                    s.cy * height,
+                    s.r * scale,
+                    Math.min(1, s.b + flicker),
+                    p,
+                    id,
+                    scaleFactor
+                );
             });
 
-            const lineOpacity = (isMobile ? 0.07 : 0.22) * (1 - scrollP * 0.8);
-            const lineP = Math.min(1, Math.max(0, (t - LINE_START) / LINE_DUR));
+            const lineOpacity = isMobile ? 0.07 : 0.22;
+            const lineP = Math.min(1, Math.max(0, (time - LINE_START) / LINE_DUR));
 
-            if (lineP > 0 && lineOpacity > 0.01) {
+            if (lineP > 0) {
                 ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
                 ctx.lineWidth = 1;
                 LINES.forEach(([a, b]) => {
-                    const pa = pos(a, scrollP);
-                    const pb = pos(b, scrollP);
+                    const pa = { x: STARS[a].cx * width + offsetX, y: STARS[a].cy * height };
+                    const pb = { x: STARS[b].cx * width + offsetX, y: STARS[b].cy * height };
                     const d = Math.hypot(pb.x - pa.x, pb.y - pa.y);
 
                     ctx.beginPath();
@@ -282,23 +216,14 @@ export function OrionConstellation() {
             }
 
             ctx.restore();
-
-            rafRef.current = requestAnimationFrame(frame);
-        };
-
-        rafRef.current = requestAnimationFrame(frame);
-
-        return () => {
-            visObserver.disconnect();
-            cancelAnimationFrame(rafRef.current);
-            ro.disconnect();
-            window.removeEventListener("mousemove", onMouse);
-        };
-    }, []);
+        },
+        { stillTime: SETTLED_TIME }
+    );
 
     return (
         <canvas
             ref={canvasRef}
+            aria-hidden="true"
             style={{
                 position: "absolute",
                 inset: 0,

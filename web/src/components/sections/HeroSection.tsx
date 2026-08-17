@@ -25,6 +25,7 @@ export function HeroSection() {
 
     useGSAP(() => {
         if (!titleRef.current) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         const split = SplitText.create(titleRef.current, {
             type: "chars",

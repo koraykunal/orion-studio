@@ -18,13 +18,13 @@ type OrionButtonProps = {
 };
 
 const PILL_CLASS =
-    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-border-bright bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
+    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-border-interactive bg-surface-2 text-label text-foreground hover:border-accent hover:text-accent transition-all duration-500 overflow-hidden whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
 
 const PRIMARY_CLASS =
     "group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-accent text-accent-foreground text-label hover:bg-accent-bright transition-all duration-500 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
 
 const GHOST_CLASS =
-    "group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-border-bright bg-surface-2/90 text-label text-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_18px_50px_rgba(0,0,0,0.35)] hover:text-accent hover:border-accent transition-all duration-500 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
+    "group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-border-interactive bg-surface-2/90 text-label text-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_18px_50px_rgba(0,0,0,0.35)] hover:text-accent hover:border-accent transition-all duration-500 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
 
 const UNDERLINE_CLASS =
     "group inline-flex items-center gap-3 text-label border-b border-border pb-1 hover:border-accent transition-colors duration-300";

@@ -168,7 +168,7 @@ export function Navbar() {
 
                         <button
                             onClick={switchLocale}
-                            className="hidden md:flex items-center gap-1.5 text-label border border-border-bright rounded-full px-3 py-1.5 hover:border-foreground-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+                            className="hidden md:flex items-center gap-1.5 text-label border border-border-interactive rounded-full px-3 py-1.5 hover:border-foreground-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
                             style={{ transitionDuration: "350ms" }}
                             aria-label={otherLocale === "en" ? t("switchToEnglish") : t("switchToTurkish")}
                         >
@@ -224,7 +224,7 @@ export function Navbar() {
                         ))}
                         <button
                             onClick={() => { switchLocale(); setMenuOpen(false); }}
-                            className="flex items-center gap-2 text-label border border-border-bright rounded-full px-5 py-2 mt-2 hover:border-foreground-muted transition-colors"
+                            className="flex items-center gap-2 text-label border border-border-interactive rounded-full px-5 py-2 mt-2 hover:border-foreground-muted transition-colors"
                             style={{ transitionDuration: "350ms" }}
                         >
                             <span className="font-semibold text-foreground">{locale.toUpperCase()}</span>

@@ -20,6 +20,7 @@ export function ReelSection() {
                     alt="Orion Studio"
                     aspect="21/9"
                     inset={10}
+                    sizes="(min-width: 88rem) 1280px, 100vw"
                     className="rounded-lg lg:rounded-xl"
                 />
 

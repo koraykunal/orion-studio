@@ -1,25 +1,8 @@
 import { gsap } from "gsap";
-import {
-  ScrollTrigger,
-  Flip,
-  Observer,
-  ScrollToPlugin,
-  SplitText,
-  DrawSVGPlugin,
-  CustomEase,
-} from "gsap/all";
+import { ScrollTrigger, SplitText, DrawSVGPlugin, CustomEase } from "gsap/all";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(
-  ScrollTrigger,
-  Flip,
-  Observer,
-  ScrollToPlugin,
-  SplitText,
-  DrawSVGPlugin,
-  CustomEase,
-  useGSAP
-);
+gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, CustomEase, useGSAP);
 
 const prefersReducedMotion =
   typeof window !== "undefined" &&
@@ -42,4 +25,4 @@ CustomEase.create("orion.out",    "M0,0 C0.05,0 0.133,1 1,1");
 CustomEase.create("orion.inOut",  "M0,0 C0.37,0 0.63,1 1,1");
 CustomEase.create("orion.spring", "M0,0 C0.175,0 0.32,1.275 1,1");
 
-export { gsap, ScrollTrigger, Flip, Observer, SplitText, DrawSVGPlugin, CustomEase, useGSAP };
+export { gsap, ScrollTrigger, SplitText, DrawSVGPlugin, CustomEase, useGSAP };
