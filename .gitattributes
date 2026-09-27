@@ -1,0 +1,24 @@
+# Normalize line endings: LF in repo, LF in working tree on every platform.
+# deploy.sh, nginx.conf and Dockerfile MUST stay LF or the server breaks
+# (bad interpreter: /bin/bash^M) when a Windows machine with core.autocrlf
+# checks the repository out.
+* text=auto eol=lf
+
+# Binary assets must never be touched by EOL normalization.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.woff  binary
+*.woff2 binary
+*.mp4  binary
+*.webm binary
+*.mov  binary
+*.pdf  binary
+
+# Lockfiles and generated clients stay untouched.
+package-lock.json linguist-generated=true -diff
+prisma/migrations/** linguist-generated=true

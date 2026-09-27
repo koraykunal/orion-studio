@@ -1,7 +1,30 @@
+# Keep the build context small and free of local state. Anything listed here
+# cannot be COPYed into the image, so keep this list in sync with what the
+# Dockerfile actually needs to build.
 node_modules
 .next
 .git
+.gitignore
+.gitattributes
 .env*
 .idea
 .figma
 *.log
+
+# Local QA artifacts — 12MB+ of screenshots, never needed to build.
+/shots/
+
+# Build/debug scratch
+*.tsbuildinfo
+noise-b64.txt
+
+# Documentation is not needed at runtime.
+*.md
+docs/
+
+# User uploads are a runtime volume mount, never baked into the image.
+public/uploads/
+
+# docker-compose / deploy assets live outside this build context.
+/Dockerfile
+/.dockerignore
