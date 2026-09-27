@@ -98,6 +98,33 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  # -------------------------------------------------------------------------
+  # Migration runner
+  # -------------------------------------------------------------------------
+  # The Prisma CLI is a devDependency, so the production image does not contain
+  # it and `prisma migrate deploy` cannot be run from the running container.
+  #
+  # Declared as a service rather than invoked as a bare `docker run` so compose
+  # attaches it to the right network and supplies env_file. A hardcoded
+  # `--network app-network` is wrong, because compose prefixes the project name
+  # and the real network is orion-studio_app-network.
+  #
+  # The `tools` profile keeps it out of `up -d`; it is only ever run on demand.
+  migrate:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: migrate
+    image: orion-studio-web:migrate
+    profiles: ["tools"]
+    env_file:
+      - ./web/.env.production
+    networks:
+      - app-network
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+    logging: *default-logging
+
   certbot:
     image: certbot/certbot:latest
     volumes:

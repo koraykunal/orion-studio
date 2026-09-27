@@ -18,7 +18,6 @@ cd "$(dirname "$0")"
 readonly SERVICE="web"
 readonly IMAGE="orion-studio-web"
 readonly ENV_FILE="web/.env.production"
-readonly MIGRATION_IMAGE="${IMAGE}:migrate"
 
 # Compose reads ${VAR} for interpolation from the shell or from a .env file
 # next to the compose file, never from a service env_file. Naming the file
@@ -123,46 +122,46 @@ EOF
 # ---------------------------------------------------------------------------
 snapshot_current() {
     log "Snapshotting the running image for rollback"
-    local current
-    current=$(docker inspect --format '{{.Image}}' "$SERVICE" 2>/dev/null || true)
-    if [[ -n "$current" ]]; then
-        docker tag "$current" "${IMAGE}:previous" || warn "could not tag the previous image"
-        echo "$current" > .deploy-previous-image
-    else
+
+    # Resolve the container through compose rather than assuming the container
+    # is named after the service. `docker inspect web` looks for a container
+    # literally called "web", the real one is "orion-studio-web-1", so the
+    # lookup silently found nothing and rollback had no image to return to.
+    local container current
+    container=$(compose ps -q "$SERVICE" 2>/dev/null | head -1 || true)
+
+    if [[ -z "$container" ]]; then
         rm -f .deploy-previous-image
-        warn "no running container found; rollback will require a manual image id"
+        die "cannot find the running $SERVICE container, so a rollback would have no image. Aborting before any change is made."
     fi
+
+    current=$(docker inspect --format '{{.Image}}' "$container" 2>/dev/null || true)
+    if [[ -z "$current" ]]; then
+        rm -f .deploy-previous-image
+        die "cannot read the image id of $container. Aborting before any change is made."
+    fi
+
+    docker tag "$current" "${IMAGE}:previous"
+    printf '%s\n' "$current" > .deploy-previous-image
+    log "Rollback target: ${current:0:19}"
 }
 
 # ---------------------------------------------------------------------------
-# Migrations run against the database from an image built at the target commit,
-# before the application is restarted.
+# Migrations run before the application is restarted, from an image that carries
+# the Prisma CLI and the migrations directory.
 # ---------------------------------------------------------------------------
 migrate() {
     log "Applying database migrations"
 
-    # The Prisma CLI is a devDependency, so the production image does not
-    # contain it. The Dockerfile has a dedicated `migrate` target that carries
-    # only the CLI, the schema and the migrations directory, so this is fast and
-    # does not require building the application.
+    # Declared as a compose service behind the `tools` profile so compose
+    # attaches it to the right network and supplies env_file. A bare
+    # `docker run --network app-network` fails: compose prefixes the network
+    # with the project name, so the real one is orion-studio_app-network.
     #
     # `migrate deploy` applies committed migrations only. It never generates a
     # migration, never resets, and never drops data.
-    local database_url
-    database_url=$(grep -E '^DATABASE_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
-    [[ -n "$database_url" ]] || die "DATABASE_URL is not set in $ENV_FILE"
-
-    docker build \
-        --target migrate \
-        --build-arg DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build" \
-        -t "$MIGRATION_IMAGE" \
-        -f web/Dockerfile \
-        web >/dev/null
-
-    docker run --rm \
-        --env-file "$ENV_FILE" \
-        --network app-network \
-        "$MIGRATION_IMAGE"
+    compose build migrate
+    compose run --rm --no-deps migrate
 
     log "Migrations applied"
 }
@@ -222,7 +221,8 @@ renew_certificates() {
 smoke_test() {
     log "Smoke testing"
     local origin
-    origin=$(grep -E '^NEXT_PUBLIC_SITE_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
+    origin=$(env_value NEXT_PUBLIC_SITE_URL)
+    [[ -n "$origin" ]] || die "NEXT_PUBLIC_SITE_URL is not readable from $ENV_FILE"
 
     for path in "/api/health" "/en" "/tr" "/en/work" "/en/services" "/sitemap.xml" "/robots.txt"; do
         local code
