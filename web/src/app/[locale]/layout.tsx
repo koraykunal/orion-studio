@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Red_Hat_Display, Bricolage_Grotesque, Red_Hat_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -9,10 +8,8 @@ import { rootGraph, buildLanguageAlternates, BASE_URL } from "@/lib/schema";
 import { toLocale } from "@/lib/locales";
 import { DreamEasterEgg } from "@/components/effects/DreamEasterEgg";
 import "../globals.css";
+import { fontVariables } from "@/lib/fonts";
 
-const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700"] });
-const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap", weight: ["400", "500", "600", "700"] });
-const redHatMono = Red_Hat_Mono({ subsets: ["latin"], variable: "--font-rh-mono", display: "swap", weight: ["400", "500"] });
 
 export const viewport: Viewport = {
     width: "device-width",
@@ -20,9 +17,6 @@ export const viewport: Viewport = {
     themeColor: "#0a0a12",
 };
 
-const fontVariables = [
-    redHatDisplay.variable, bricolage.variable, redHatMono.variable,
-].join(" ");
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
