@@ -21,8 +21,16 @@ services:
       args:
         # NEXT_PUBLIC_* are inlined at build time, so they have to be passed
         # here or the shipped bundle has empty contact links.
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL in web/.env.production}
-        NEXT_PUBLIC_WHATSAPP: ${NEXT_PUBLIC_WHATSAPP:?set NEXT_PUBLIC_WHATSAPP in web/.env.production}
+        #
+        # Compose resolves ${VAR} for interpolation from the shell environment
+        # or from a .env file beside this file. It does NOT read the service's
+        # `env_file`. Run through ./deploy.sh, which passes
+        # --env-file web/.env.production, or set them in the shell yourself.
+        #
+        # The values are quoted because the default message contains ": ",
+        # which is not legal inside an unquoted YAML scalar.
+        NEXT_PUBLIC_SITE_URL: "${NEXT_PUBLIC_SITE_URL:?not set. Use ./deploy.sh, or add --env-file web/.env.production}"
+        NEXT_PUBLIC_WHATSAPP: "${NEXT_PUBLIC_WHATSAPP:?not set. Use ./deploy.sh, or add --env-file web/.env.production}"
     restart: unless-stopped
     env_file:
       - ./web/.env.production

@@ -20,6 +20,13 @@ readonly IMAGE="orion-studio-web"
 readonly ENV_FILE="web/.env.production"
 readonly MIGRATION_IMAGE="${IMAGE}:migrate"
 
+# Compose reads ${VAR} for interpolation from the shell or from a .env file
+# next to the compose file, never from a service env_file. Naming the file
+# explicitly is what makes the NEXT_PUBLIC_* build args resolve.
+compose() {
+    docker compose --env-file "$ENV_FILE" "$@"
+}
+
 log()  { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mxx\033[0m %s\n' "$*" >&2; exit 1; }
@@ -35,15 +42,48 @@ preflight() {
     command -v docker >/dev/null || die "docker is not installed"
     docker compose version >/dev/null || die "docker compose v2 is required"
 
-    [[ -f "$ENV_FILE" ]] || die "$ENV_FILE not found. Copy web/.env.example and fill it in."
+    if [[ ! -f "$ENV_FILE" ]]; then
+        cat >&2 <<EOF
 
-    # The compose file interpolates these into build args, so a missing value is
-    # a silent dead-CTA bug rather than a build error unless we check it here.
-    local site_url whatsapp
-    site_url=$(grep -E '^NEXT_PUBLIC_SITE_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' || true)
-    whatsapp=$(grep -E '^NEXT_PUBLIC_WHATSAPP=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' || true)
-    [[ -n "$site_url" ]] || die "NEXT_PUBLIC_SITE_URL is not set in $ENV_FILE"
-    [[ -n "$whatsapp" ]] || die "NEXT_PUBLIC_WHATSAPP is not set in $ENV_FILE"
+  $ENV_FILE not found.
+
+  It is gitignored, because it holds secrets. Create it once on this host:
+
+    cp web/.env.example "$ENV_FILE"
+    chmod 600 "$ENV_FILE"
+    \$EDITOR "$ENV_FILE"
+
+  At minimum set:
+    NEXT_PUBLIC_SITE_URL   canonical origin, e.g. https://orionstud.io
+    NEXT_PUBLIC_WHATSAPP   digits only, no +, no spaces
+    AUTH_SECRET             openssl rand -base64 32
+    AUTH_TRUST_HOST         true   (required behind a reverse proxy)
+    DATABASE_URL            managed PostgreSQL
+    SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
+
+EOF
+        exit 1
+    fi
+
+    chmod 600 "$ENV_FILE" 2>/dev/null || true
+
+    # Compose interpolates ${VAR} from this file only because deploy.sh passes
+    # --env-file. The two NEXT_PUBLIC_* values are inlined into the bundle at
+    # build time, so a missing one ships dead contact links rather than an
+    # error. The rest fail at runtime instead, which is worse.
+    local missing=()
+    for key in NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_WHATSAPP AUTH_SECRET AUTH_TRUST_HOST DATABASE_URL \
+               SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS; do
+        grep -qE "^${key}=.+" "$ENV_FILE" || missing+=("$key")
+    done
+
+    if (( ${#missing[@]} > 0 )); then
+        die "missing or empty in $ENV_FILE: ${missing[*]}"
+    fi
+
+    # Next throws UntrustedHost behind a reverse proxy without this one.
+    grep -qE '^AUTH_TRUST_HOST=(true|1)$' "$ENV_FILE" ||
+        die "AUTH_TRUST_HOST must be true: nginx is the only trusted hop and Auth.js rejects the Host header otherwise."
 
     command -v git >/dev/null || die "git is not installed"
     git diff --quiet -- prisma/ || warn "uncommitted Prisma changes present; deploy.sh will use what is committed"
@@ -111,13 +151,13 @@ migrate() {
 deploy() {
     log "Building and starting the new release"
 
-    docker compose build "$SERVICE"
-    docker compose up -d --no-deps "$SERVICE"
+    compose build "$SERVICE"
+    compose up -d --no-deps "$SERVICE"
 
     # Wait for the app's own readiness route, which checks the database too.
     log "Waiting for the service to report healthy"
     local deadline=$((SECONDS + 180))
-    until docker compose exec -T "$SERVICE" node -e \
+    until compose exec -T "$SERVICE" node -e \
         "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" \
         >/dev/null 2>&1; do
         if (( SECONDS > deadline )); then
@@ -137,7 +177,7 @@ rollback() {
     local previous
     previous=$(cat .deploy-previous-image)
     docker tag "$previous" "${IMAGE}:latest" || return 1
-    docker compose up -d --no-build --no-deps "$SERVICE" || return 1
+    compose up -d --no-build --no-deps "$SERVICE" || return 1
     warn "rolled back to ${previous:0:12}"
 }
 
@@ -148,12 +188,12 @@ rollback() {
 # ---------------------------------------------------------------------------
 reload_nginx() {
     log "Reloading nginx"
-    docker compose exec -T nginx nginx -s reload || warn "nginx reload failed; run 'docker compose restart nginx'"
+    compose exec -T nginx nginx -s reload || warn "nginx reload failed; run 'docker compose restart nginx'"
 }
 
 renew_certificates() {
     log "Checking certificates"
-    docker compose run --rm --entrypoint certbot certbot renew --quiet --webroot -w /var/www/certbot \
+    compose run --rm --entrypoint certbot certbot renew --quiet --webroot -w /var/www/certbot \
         || warn "certificate renewal failed; check that port 80 is reachable"
 }
 
