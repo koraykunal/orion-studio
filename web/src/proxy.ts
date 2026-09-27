@@ -36,6 +36,30 @@ const adminMiddleware = auth((req) => {
     return NextResponse.next();
 }) as unknown as (req: NextRequest, event: NextFetchEvent) => ReturnType<NextMiddleware>;
 
+/**
+ * next-intl answers a bare "/" with 307, which means "this move is temporary".
+ * The locale prefix on a canonical URL never stops being correct, and crawlers
+ * read 307 and 308 as temporary, so the ranking signal does not consolidate the
+ * way it does for a 301. A client that does not follow temporary redirects
+ * simply gets an empty body from the site root, which is what a crawler
+ * fetching "/" reports as an unreadable page.
+ */
+function asPermanentRedirect(response: NextResponse): NextResponse {
+    if (response.status !== 307) return response;
+
+    // The set-cookie header is carried separately from the header list, so it
+    // is lifted out and re-applied rather than copied, to avoid emitting the
+    // locale cookie twice.
+    const cookies = response.cookies.getAll();
+    const headers = new Headers(response.headers);
+    headers.delete("set-cookie");
+
+    const permanent = new NextResponse(response.body, { status: 308, headers });
+    cookies.forEach((cookie) => permanent.cookies.set(cookie));
+
+    return permanent;
+}
+
 export function proxy(req: NextRequest, event: NextFetchEvent) {
     const { pathname } = req.nextUrl;
 
@@ -47,7 +71,7 @@ export function proxy(req: NextRequest, event: NextFetchEvent) {
         return NextResponse.next();
     }
 
-    return intlMiddleware(req);
+    return asPermanentRedirect(intlMiddleware(req));
 }
 
 export const config = {
