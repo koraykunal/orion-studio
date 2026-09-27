@@ -1,7 +1,5 @@
 import { Red_Hat_Display, Bricolage_Grotesque, Red_Hat_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { Sidebar } from "./components/Sidebar";
-import { auth } from "@/lib/auth";
 import "../globals.css";
 
 const redHatDisplay = Red_Hat_Display({ subsets: ["latin"], variable: "--font-rh-display", display: "swap", weight: ["400", "500", "600", "700", "800", "900"], style: ["normal", "italic"] });
@@ -13,27 +11,19 @@ export const metadata = {
     robots: { index: false, follow: false },
 };
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    const session = await auth();
-    const isLoggedIn = !!session?.user;
-
+/**
+ * Document shell for everything under /admin. It deliberately performs no
+ * authorisation: the login form has to render for anonymous visitors.
+ *
+ * The authenticated shell, including the redirect for unauthenticated
+ * requests, lives in (dashboard)/layout.tsx so that /admin/login is the only
+ * route reachable without a session.
+ */
+export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" className="dark">
             <body className={`${redHatDisplay.variable} ${bricolage.variable} ${redHatMono.variable}`}>
-                <SessionProvider session={session}>
-                    {isLoggedIn ? (
-                        <div className="flex min-h-screen bg-background">
-                            <Sidebar />
-                            <main className="flex-1 overflow-y-auto">
-                                <div className="max-w-6xl mx-auto px-6 lg:px-10 py-8">
-                                    {children}
-                                </div>
-                            </main>
-                        </div>
-                    ) : (
-                        children
-                    )}
-                </SessionProvider>
+                <SessionProvider>{children}</SessionProvider>
             </body>
         </html>
     );

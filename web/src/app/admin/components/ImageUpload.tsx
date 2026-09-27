@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useId } from "react";
 import NextImage from "next/image";
 import { isExternalImageSrc } from "@/lib/image-source";
 
@@ -34,6 +34,7 @@ export default function ImageUpload({
   const [error, setError] = useState("");
   const [naturalRatio, setNaturalRatio] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
 
   const handleUpload = async (file: File) => {
     setUploading(true);
@@ -64,18 +65,31 @@ export default function ImageUpload({
 
   return (
     <div>
-      {label && <label className="block text-sm text-foreground-muted mb-2">{label}</label>}
+      {/* The file input is visually hidden, so the label is explicitly
+          associated with it. Without htmlFor the control had no accessible
+          name at all. */}
+      {label && (
+        <label htmlFor={inputId} className="block text-sm text-foreground-muted mb-2">
+          {label}
+        </label>
+      )}
       <input
+        id={inputId}
         ref={inputRef}
         type="file"
         accept={acceptAttr}
+        aria-label={label ?? undefined}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleUpload(file);
         }}
       />
-      {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+      {error && (
+        <p role="alert" className="text-destructive text-xs mb-2">
+          {error}
+        </p>
+      )}
       {value ? (
         <div
           className="relative rounded-lg overflow-hidden border border-border bg-background"
@@ -85,6 +99,7 @@ export default function ImageUpload({
             <video
               src={value}
               className="absolute inset-0 h-full w-full object-contain"
+              aria-label={label ? `${label} preview` : "Uploaded video preview"}
               muted
               loop
               playsInline

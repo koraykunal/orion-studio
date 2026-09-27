@@ -1,39 +1,102 @@
+# Orion Studio production stack.
+#
+# There is deliberately no database service here. DATABASE_URL points at a
+# managed PostgreSQL instance, so the database has its own backups, failover
+# and connection limits. If you add one for local development, put it in a
+# separate docker-compose.override.yml rather than here: a compose file that
+# defines the database for both environments is how a `docker compose down -v`
+# on the wrong host destroys production data.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
 services:
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
-    restart: always
+      args:
+        # NEXT_PUBLIC_* are inlined at build time, so they have to be passed
+        # here or the shipped bundle has empty contact links.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL in web/.env.production}
+        NEXT_PUBLIC_WHATSAPP: ${NEXT_PUBLIC_WHATSAPP:?set NEXT_PUBLIC_WHATSAPP in web/.env.production}
+    restart: unless-stopped
     env_file:
       - ./web/.env.production
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - uploads:/app/public/uploads
     networks:
       - app-network
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    # Long enough for the SIGTERM handler in src/instrumentation.ts to drain
+    # the Postgres pool before the container is killed.
+    stop_grace_period: 30s
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          pids: 256
 
   nginx:
-    image: nginx:alpine
-    restart: always
+    image: nginx:1.29-alpine
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
       - uploads:/usr/share/nginx/uploads:ro
-    depends_on:
-      - web
     networks:
       - app-network
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:latest
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    # Run as a one-shot. Renewal is driven by deploy.sh or a host cron calling
+    # `docker compose run --rm certbot renew`, not by a long-lived container.
+    entrypoint: >
+      sh -c "trap exit TERM;
+             while :; do certbot renew --quiet --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done"
+    restart: unless-stopped
+    logging: *default-logging
 
 volumes:
   uploads:

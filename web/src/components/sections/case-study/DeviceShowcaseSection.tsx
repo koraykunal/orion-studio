@@ -5,26 +5,34 @@ import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { EASES } from "@/lib/animations/config";
 import { isExternalImageSrc } from "@/lib/image-source";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 import type { DeviceShowcaseData, DeviceItem } from "@/lib/project-types";
 
 function IPhone({ src, alt }: { src: string; alt: string }) {
     return (
         <div className="relative w-full" style={{ aspectRatio: "393/852" }}>
-            <div className="absolute inset-0 bg-[#1a1a1c] shadow-[0_0_0_1.5px_#3a3a3e,0_0_0_2.5px_rgba(255,255,255,0.08),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "13.5% / 6.2%" }}>
+            <div className="absolute inset-0 bg-[var(--device-body)] shadow-[0_0_0_1.5px_var(--device-edge),0_0_0_2.5px_rgba(255,255,255,0.08),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "13.5% / 6.2%" }}>
                 <div className="absolute overflow-hidden bg-black" style={{ top: "1.8%", left: "3%", right: "3%", bottom: "1.8%", borderRadius: "11.2% / 4.9%" }}>
                     {src ? (
                         <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 60vw, (max-width: 1024px) 35vw, 25vw" />
                     ) : (
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[var(--device-screen-top)] to-[var(--device-screen-bottom)]" />
                     )}
                     <div className="absolute top-[1%] left-1/2 -translate-x-1/2 h-[3.2%] bg-black z-10" style={{ width: "28%", borderRadius: "9999px" }} />
                 </div>
                 <div className="absolute bottom-[1%] left-1/2 -translate-x-1/2 w-[34%] h-[0.45%] bg-white/15 rounded-full z-20" />
-                <div className="absolute top-[18%] -right-[0.4%] w-[0.6%] h-[6%] bg-[#2a2a2e] rounded-l-sm" />
-                <div className="absolute top-[14%] -left-[0.4%] w-[0.6%] h-[3%] bg-[#2a2a2e] rounded-r-sm" />
-                <div className="absolute top-[20%] -left-[0.4%] w-[0.6%] h-[5.5%] bg-[#2a2a2e] rounded-r-sm" />
-                <div className="absolute top-[27%] -left-[0.4%] w-[0.6%] h-[5.5%] bg-[#2a2a2e] rounded-r-sm" />
+                <div className="absolute top-[18%] -right-[0.4%] w-[0.6%] h-[6%] bg-[var(--device-edge)] rounded-l-sm" />
+                <div className="absolute top-[14%] -left-[0.4%] w-[0.6%] h-[3%] bg-[var(--device-edge)] rounded-r-sm" />
+                <div className="absolute top-[20%] -left-[0.4%] w-[0.6%] h-[5.5%] bg-[var(--device-edge)] rounded-r-sm" />
+                <div className="absolute top-[27%] -left-[0.4%] w-[0.6%] h-[5.5%] bg-[var(--device-edge)] rounded-r-sm" />
             </div>
         </div>
     );
@@ -33,15 +41,15 @@ function IPhone({ src, alt }: { src: string; alt: string }) {
 function IPad({ src, alt }: { src: string; alt: string }) {
     return (
         <div className="relative w-full" style={{ aspectRatio: "820/1180" }}>
-            <div className="absolute inset-0 bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "3.5%" }}>
+            <div className="absolute inset-0 bg-[var(--device-body)] shadow-[0_0_0_2px_var(--device-edge),0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]" style={{ borderRadius: "3.5%" }}>
                 <div className="absolute overflow-hidden bg-black" style={{ top: "1.5%", left: "2.5%", right: "2.5%", bottom: "1.5%", borderRadius: "2.5%" }}>
                     {src ? (
                         <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 70vw, (max-width: 1024px) 40vw, 30vw" />
                     ) : (
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[var(--device-screen-top)] to-[var(--device-screen-bottom)]" />
                     )}
                 </div>
-                <div className="absolute top-[1%] left-1/2 -translate-x-1/2 w-[1.2%] aspect-square min-w-[3px] rounded-full bg-[#08080c] ring-1 ring-white/[0.04]" />
+                <div className="absolute top-[1%] left-1/2 -translate-x-1/2 w-[1.2%] aspect-square min-w-[3px] rounded-full bg-[var(--device-lens)] ring-1 ring-white/[0.04]" />
             </div>
         </div>
     );
@@ -51,20 +59,20 @@ function MacBook({ src, alt }: { src: string; alt: string }) {
     return (
         <div className="relative w-full">
             <div className="relative w-full" style={{ aspectRatio: "1440/900" }}>
-                <div className="absolute inset-0 rounded-t-[12px] max-[640px]:rounded-t-[6px] bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7)]">
+                <div className="absolute inset-0 rounded-t-[12px] max-[640px]:rounded-t-[6px] bg-[var(--device-body)] shadow-[0_0_0_2px_var(--device-edge),0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7)]">
                     <div className="absolute top-[2.8%] left-[2.5%] right-[2.5%] bottom-0 rounded-t-[4px] overflow-hidden bg-black">
                         {src ? (
                             <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
                         ) : (
-                            <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-[var(--device-screen-top)] to-[var(--device-screen-bottom)]" />
                         )}
                     </div>
-                    <div className="absolute top-[0.8%] left-1/2 -translate-x-1/2 w-[0.8%] aspect-square min-w-[4px] rounded-full bg-[#0a0a0e] ring-1 ring-white/[0.04]" />
+                    <div className="absolute top-[0.8%] left-1/2 -translate-x-1/2 w-[0.8%] aspect-square min-w-[4px] rounded-full bg-[var(--device-lens)] ring-1 ring-white/[0.04]" />
                 </div>
             </div>
             <div className="relative w-[106%] -ml-[3%]">
-                <div className="h-[5px] max-[640px]:h-[3px] bg-[#2a2a2e] rounded-b-[4px] shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_4px_12px_rgba(0,0,0,0.5)]" />
-                <div className="h-[3px] max-[640px]:h-[2px] bg-[#222225] mx-[24%] rounded-b-md" />
+                <div className="h-[5px] max-[640px]:h-[3px] bg-[var(--device-edge)] rounded-b-[4px] shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_4px_12px_rgba(0,0,0,0.5)]" />
+                <div className="h-[3px] max-[640px]:h-[2px] bg-[var(--device-bezel)] mx-[24%] rounded-b-md" />
             </div>
         </div>
     );
@@ -74,19 +82,19 @@ function DesktopMonitor({ src, alt }: { src: string; alt: string }) {
     return (
         <div className="relative w-full">
             <div className="relative w-full" style={{ aspectRatio: "16/10" }}>
-                <div className="absolute inset-0 rounded-[8px] max-[640px]:rounded-[4px] bg-[#1a1a1c] shadow-[0_0_0_2px_#2a2a2e,0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]">
+                <div className="absolute inset-0 rounded-[8px] max-[640px]:rounded-[4px] bg-[var(--device-body)] shadow-[0_0_0_2px_var(--device-edge),0_0_0_3px_rgba(255,255,255,0.06),0_8px_30px_-4px_rgba(0,0,0,0.7),0_2px_8px_rgba(0,0,0,0.4)]">
                     <div className="absolute top-[2%] left-[1.5%] right-[1.5%] bottom-[4%] rounded-[3px] overflow-hidden bg-black">
                         {src ? (
                             <Image src={src} alt={alt} fill unoptimized={isExternalImageSrc(src)} className="object-cover object-top" sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw" />
                         ) : (
-                            <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14]" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-[var(--device-screen-top)] to-[var(--device-screen-bottom)]" />
                         )}
                     </div>
                 </div>
             </div>
             <div className="flex flex-col items-center">
-                <div className="w-[5%] h-[clamp(12px,2vw,28px)] bg-[#1a1a1c] shadow-[0_0_0_1px_rgba(255,255,255,0.05)]" />
-                <div className="w-[18%] h-[clamp(4px,0.5vw,6px)] bg-[#1a1a1c] rounded-sm shadow-[0_0_0_1px_rgba(255,255,255,0.05)]" />
+                <div className="w-[5%] h-[clamp(12px,2vw,28px)] bg-[var(--device-body)] shadow-[0_0_0_1px_rgba(255,255,255,0.05)]" />
+                <div className="w-[18%] h-[clamp(4px,0.5vw,6px)] bg-[var(--device-body)] rounded-sm shadow-[0_0_0_1px_rgba(255,255,255,0.05)]" />
             </div>
         </div>
     );

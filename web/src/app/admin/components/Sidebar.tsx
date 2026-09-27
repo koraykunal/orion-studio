@@ -33,21 +33,25 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 space-y-0.5">
-        {navItems.map((item) => (
-          <Button
-            key={item.href}
-            variant="ghost"
-            asChild
-            className={`w-full justify-start px-3 py-2 text-label ${
-              isActive(item.href, item.exact)
-                ? "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent"
-                : "text-foreground-muted hover:text-foreground hover:bg-surface-2"
-            }`}
-          >
-            <Link href={item.href}>{item.label}</Link>
-          </Button>
-        ))}
+      <nav aria-label="Admin sections" className="flex-1 px-3 space-y-0.5">
+        {navItems.map((item) => {
+          const active = isActive(item.href, item.exact);
+          return (
+            <Button
+              key={item.href}
+              variant="ghost"
+              asChild
+              aria-current={active ? "page" : undefined}
+              className={`w-full justify-start px-3 py-2 text-label ${
+                active
+                  ? "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent"
+                  : "text-foreground-muted hover:text-foreground hover:bg-surface-2"
+              }`}
+            >
+              <Link href={item.href}>{item.label}</Link>
+            </Button>
+          );
+        })}
       </nav>
 
       <div className="px-3 py-4 space-y-0.5">

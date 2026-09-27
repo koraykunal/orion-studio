@@ -3,7 +3,15 @@
 import { useTranslations } from "next-intl";
 import { MaskImage } from "@/components/motion/MaskImage";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 
 export function ReelSection() {
     const t = useTranslations("home");

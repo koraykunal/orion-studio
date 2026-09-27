@@ -1,4 +1,24 @@
+import type { Locale } from "@/lib/locales";
+
+/**
+ * Case-study section model.
+ *
+ * `Section` is a discriminated union keyed on `type`, so narrowing it in a
+ * switch also narrows `data` with no casts. It used to be
+ * `{ id, type, data: SectionData }`, which meant every renderer, editor and
+ * validator had to write `section.data as GalleryData` and a renamed field
+ * would compile fine in one place and fail at runtime in another.
+ *
+ * SECTION_REGISTRY below is the single declaration of the section set. The
+ * editor's add-menu, the renderer's layout decision, the validator's type
+ * guard and the default-data factory all read from it, so adding a section type
+ * is one entry rather than five hand-maintained lists.
+ */
+
 export type ProjectCategory = "client" | "concept" | "studio";
+
+export const PROJECT_CATEGORIES: ProjectCategory[] = ["client", "concept", "studio"];
+
 export type ProjectServiceCategory =
     | "identity"
     | "web"
@@ -8,6 +28,17 @@ export type ProjectServiceCategory =
     | "ads"
     | "production"
     | "care";
+
+export const PROJECT_SERVICE_CATEGORIES: ProjectServiceCategory[] = [
+    "identity",
+    "web",
+    "apps",
+    "seo",
+    "social",
+    "ads",
+    "production",
+    "care",
+];
 
 export type SectionType =
     | "fullImage"
@@ -70,11 +101,111 @@ export type SectionData =
     | MediaData
     | VisualWallData;
 
-export type Section = {
-    id: string;
-    type: SectionType;
-    data: SectionData;
+/** Discriminated union: `section.data` is narrowed by `section.type`. */
+export type Section =
+    | { id: string; type: "fullImage"; data: FullImageData }
+    | { id: string; type: "textBlock"; data: TextBlockData }
+    | { id: string; type: "gallery"; data: GalleryData }
+    | { id: string; type: "metrics"; data: MetricsData }
+    | { id: string; type: "techStack"; data: TechStackData }
+    | { id: string; type: "quote"; data: QuoteData }
+    | { id: string; type: "beforeAfter"; data: BeforeAfterData }
+    | { id: string; type: "videoEmbed"; data: VideoEmbedData }
+    | { id: string; type: "deviceShowcase"; data: DeviceShowcaseData }
+    | { id: string; type: "media"; data: MediaData }
+    | { id: string; type: "visualWall"; data: VisualWallData };
+
+/** Narrows an arbitrary value to a section, checking only the outer shape. */
+export function isSection(value: unknown): value is Section {
+    if (typeof value !== "object" || value === null) return false;
+    const candidate = value as { id?: unknown; type?: unknown; data?: unknown };
+    return (
+        typeof candidate.id === "string" &&
+        typeof candidate.type === "string" &&
+        isSectionType(candidate.type) &&
+        typeof candidate.data === "object" &&
+        candidate.data !== null
+    );
+}
+
+/**
+ * How a section is laid out on the page.
+ *
+ * `full-bleed` sections render outside the case-study content container, which
+ * is what visualWall needs. Previously visualWall was special-cased in three
+ * places at once: the renderer returned null for it, the client filtered it out
+ * of the array, and the client rendered it in a fixed slot directly under the
+ * hero. That silently broke the "array order equals page order" invariant, so
+ * dragging a visual wall to position three had no effect and the editor gave no
+ * indication of that. Placement is now declared data, and ordering is honoured.
+ */
+export type SectionPlacement = "flow" | "full-bleed";
+
+export type SectionDefinition = {
+    label: string;
+    placement: SectionPlacement;
+    createDefault: () => SectionData;
 };
+
+export const SECTION_REGISTRY: Record<SectionType, SectionDefinition> = {
+    fullImage: { label: "Full Image", placement: "full-bleed", createDefault: () => ({ image: "", alt: "" }) },
+    textBlock: {
+        label: "Text Block",
+        placement: "flow",
+        createDefault: () => ({ title: "", content: null, contentHtml: "", layout: "side" }),
+    },
+    gallery: { label: "Gallery", placement: "flow", createDefault: () => ({ columns: 2, images: [] }) },
+    metrics: {
+        label: "Metrics",
+        placement: "flow",
+        createDefault: () => ({ items: [{ value: "", label: "" }] }),
+    },
+    techStack: { label: "Tech Stack", placement: "flow", createDefault: () => ({ items: [] }) },
+    quote: { label: "Quote", placement: "flow", createDefault: () => ({ text: "", author: "", role: "" }) },
+    beforeAfter: {
+        label: "Before / After",
+        placement: "full-bleed",
+        createDefault: () => ({
+            before: { src: "", alt: "", label: "Before" },
+            after: { src: "", alt: "", label: "After" },
+            aspectRatio: "auto",
+        }),
+    },
+    videoEmbed: { label: "Video Embed", placement: "full-bleed", createDefault: () => ({ url: "" }) },
+    deviceShowcase: {
+        label: "Device Showcase",
+        placement: "full-bleed",
+        createDefault: () => ({ devices: [{ type: "laptop", image: "", alt: "" }] }),
+    },
+    media: {
+        label: "Media (Video / GIF)",
+        placement: "flow",
+        createDefault: () => ({ src: "", poster: "", alt: "", autoplay: true, loop: true, controls: false }),
+    },
+    visualWall: { label: "Visual Wall", placement: "full-bleed", createDefault: () => ({ items: [] }) },
+};
+
+/** Derived from the registry, so it can never drift out of sync with it. */
+export const SECTION_TYPES = Object.keys(SECTION_REGISTRY) as SectionType[];
+
+export function isSectionType(value: unknown): value is SectionType {
+    return typeof value === "string" && Object.prototype.hasOwnProperty.call(SECTION_REGISTRY, value);
+}
+
+export const SECTION_TYPE_LABELS: Record<SectionType, string> = Object.fromEntries(
+    SECTION_TYPES.map((type) => [type, SECTION_REGISTRY[type].label]),
+) as Record<SectionType, string>;
+
+export function isFullBleed(section: Section): boolean {
+    return SECTION_REGISTRY[section.type].placement === "full-bleed";
+}
+
+export function createEmptySection(type: SectionType): Section {
+    const id = crypto.randomUUID();
+    // The cast is sound because the registry is keyed by SectionType, but the
+    // union cannot be built generically without it.
+    return { id, type, data: SECTION_REGISTRY[type].createDefault() } as Section;
+}
 
 export type Project = {
     slug: string;
@@ -91,100 +222,27 @@ export type Project = {
     sections: Section[];
 };
 
-export function getCategoryLabel(category: ProjectCategory, locale = "en"): string {
-    if (locale === "tr") {
-        const labels: Record<ProjectCategory, string> = {
-            client: "Müşteri Projesi",
-            concept: "Tasarım Keşfi",
-            studio: "Stüdyo Projesi",
-        };
-        return labels[category];
-    }
-    const labels: Record<ProjectCategory, string> = {
-        client: "Client Work",
-        concept: "Design Exploration",
-        studio: "Studio Showcase",
-    };
-    return labels[category];
-}
-
-export const PROJECT_SERVICE_CATEGORIES: ProjectServiceCategory[] = [
-    "identity",
-    "web",
-    "apps",
-    "seo",
-    "social",
-    "ads",
-    "production",
-    "care",
-];
-
-export function getServiceCategoryLabel(category: ProjectServiceCategory, locale = "en"): string {
-    if (locale === "tr") {
-        const labels: Record<ProjectServiceCategory, string> = {
-            identity: "Marka Kimliği",
-            web: "Web Tasarım ve Geliştirme",
-            apps: "Mobil ve Web Uygulamalar",
-            seo: "SEO ve Görünürlük",
-            social: "Sosyal Medya ve İçerik",
-            ads: "Reklam Yönetimi",
-            production: "Video ve Kreatif Prodüksiyon",
-            care: "Bakım ve Büyüme",
-        };
-        return labels[category];
-    }
-    const labels: Record<ProjectServiceCategory, string> = {
-        identity: "Brand Identity",
-        web: "Web Design and Development",
-        apps: "Mobile and Web Apps",
-        seo: "SEO and Visibility",
-        social: "Social Media and Content",
-        ads: "Ad Management",
-        production: "Video and Creative Production",
-        care: "Care and Growth",
-    };
-    return labels[category];
-}
-
-export const SECTION_TYPE_LABELS: Record<SectionType, string> = {
-    fullImage: "Full Image",
-    textBlock: "Text Block",
-    gallery: "Gallery",
-    metrics: "Metrics",
-    techStack: "Tech Stack",
-    quote: "Quote",
-    beforeAfter: "Before / After",
-    videoEmbed: "Video Embed",
-    deviceShowcase: "Device Showcase",
-    media: "Media (Video / GIF)",
-    visualWall: "Visual Wall",
+const CATEGORY_LABELS: Record<ProjectCategory, Record<Locale, string>> = {
+    client: { en: "Client Work", tr: "Müşteri Projesi" },
+    concept: { en: "Design Exploration", tr: "Tasarım Keşfi" },
+    studio: { en: "Studio Showcase", tr: "Stüdyo Projesi" },
 };
 
-export function createEmptySection(type: SectionType): Section {
-    const id = crypto.randomUUID();
-    const defaults: Record<SectionType, SectionData> = {
-        fullImage: { image: "", alt: "" },
-        textBlock: { title: "", content: null, contentHtml: "", layout: "side" },
-        gallery: { columns: 2, images: [] },
-        metrics: { items: [{ value: "", label: "" }] },
-        techStack: { items: [] },
-        quote: { text: "", author: "", role: "" },
-        beforeAfter: {
-            before: { src: "", alt: "", label: "Before" },
-            after: { src: "", alt: "", label: "After" },
-            aspectRatio: "auto",
-        },
-        videoEmbed: { url: "" },
-        deviceShowcase: { devices: [{ type: "laptop", image: "", alt: "" }] },
-        media: {
-            src: "",
-            poster: "",
-            alt: "",
-            autoplay: true,
-            loop: true,
-            controls: false,
-        },
-        visualWall: { items: [] },
-    };
-    return { id, type, data: defaults[type] };
+export function getCategoryLabel(category: ProjectCategory, locale: Locale = "en"): string {
+    return CATEGORY_LABELS[category][locale];
+}
+
+const SERVICE_CATEGORY_LABELS: Record<ProjectServiceCategory, Record<Locale, string>> = {
+    identity: { en: "Brand Identity", tr: "Marka Kimliği" },
+    web: { en: "Web Design and Development", tr: "Web Tasarım ve Geliştirme" },
+    apps: { en: "Mobile and Web Apps", tr: "Mobil ve Web Uygulamalar" },
+    seo: { en: "SEO and Visibility", tr: "SEO ve Görünürlük" },
+    social: { en: "Social Media and Content", tr: "Sosyal Medya ve İçerik" },
+    ads: { en: "Ad Management", tr: "Reklam Yönetimi" },
+    production: { en: "Video and Creative Production", tr: "Video ve Kreatif Prodüksiyon" },
+    care: { en: "Care and Growth", tr: "Bakım ve Büyüme" },
+};
+
+export function getServiceCategoryLabel(category: ProjectServiceCategory, locale: Locale = "en"): string {
+    return SERVICE_CATEGORY_LABELS[category][locale];
 }

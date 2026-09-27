@@ -1,0 +1,133 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel a superseded run on the same ref rather than queueing both.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        # `npm ci` fails on a lockfile that is out of sync with package.json,
+        # which is the behaviour we want: the lockfile is part of the contract.
+        run: npm ci
+
+      - name: Check for known vulnerabilities
+        working-directory: web
+        # The dependency set is at zero advisories. This fails the build if that
+        # stops being true, which is the only way a known RCE does not sit in
+        # production for five months unnoticed.
+        run: npm audit --audit-level=low
+
+      - name: Generate the Prisma client
+        working-directory: web
+        env:
+          DATABASE_URL: postgresql://build:build@127.0.0.1:5432/build
+        run: npx prisma generate
+
+      - name: Typecheck
+        working-directory: web
+        env:
+          DATABASE_URL: postgresql://build:build@127.0.0.1:5432/build
+        run: npm run typecheck
+
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+
+      - name: Unit tests
+        working-directory: web
+        run: npm test
+
+      - name: Build
+        working-directory: web
+        env:
+          DATABASE_URL: postgresql://build:build@127.0.0.1:5432/build
+          # NEXT_PUBLIC_* are inlined at build time. Without them the WhatsApp
+          # and telephone CTAs compile to empty strings, which is exactly the
+          # bug the Dockerfile ARGs exist to prevent.
+          NEXT_PUBLIC_SITE_URL: https://orionstud.io
+          NEXT_PUBLIC_WHATSAPP: "905000000000"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+      - name: Verify the build artefacts
+        working-directory: web
+        run: |
+          test -f .next/BUILD_ID
+          test -d .next/standalone
+          test -d .next/static
+          echo "standalone output present"
+
+  migrations:
+    name: migrations match the schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: orion
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Apply every committed migration
+        working-directory: web
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/orion
+        run: npx prisma migrate deploy
+
+      - name: Fail if the schema has drifted from the migrations
+        working-directory: web
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/orion
+          # Prisma 7 requires a shadow database to diff a migrations directory.
+          SHADOW_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/orion_shadow
+        # Exit code 2 means the diff is not empty, i.e. a migration is missing
+        # for a schema change. That is the drift this job exists to catch: the
+        # RateLimitBucket resetAt index was in a migration but not in the schema
+        # for several weeks, and only a real database would have found it.
+        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code

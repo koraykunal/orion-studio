@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
-import { LOCALES } from "@/lib/locales";
+import { toLocale, LOCALES } from "@/lib/locales";
 import { SERVICE_SLUGS, isServiceSlug, type ServiceSlug } from "@/lib/services";
 import { BASE_URL, buildLanguageAlternates, serviceSchema } from "@/lib/schema";
 import { ServiceDetailClient } from "./ServiceDetailClient";
@@ -22,7 +22,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug, locale } = await params;
+    const { slug, locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     if (!isServiceSlug(slug)) return { title: "Orion Studio" };
 
     const t = await getTranslations({ locale, namespace: "services" });
@@ -46,7 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-    const { slug, locale } = await params;
+    const { slug, locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
 
     if (!isServiceSlug(slug)) notFound();
 

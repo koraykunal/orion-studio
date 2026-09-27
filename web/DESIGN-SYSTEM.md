@@ -14,59 +14,49 @@
 
 ## 2. Colors
 
-All colors use **OKLCh** color space for perceptual uniformity.
+All colours are defined once, in `app/globals.css`. There is no second
+source: this table is generated from that file.
 
-### Backgrounds
+```bash
+npm run tokens
+```
 
-| Token              | Value                     | Usage               |
-|--------------------|---------------------------|----------------------|
-| `--background`     | `oklch(0.08 0.012 280)`  | Page background      |
-| `--surface-1`      | `oklch(0.11 0.012 278)`  | Cards, elevated      |
-| `--surface-2`      | `oklch(0.15 0.012 276)`  | Inputs, hover states |
-| `--surface-3`      | `oklch(0.19 0.010 274)`  | Active states        |
+The script prints the table below and exits non-zero if `globals.css` is
+missing a token, so the documentation cannot drift from the code without the
+check failing.
 
-### Foreground
+| Token | Role |
+|---|---|
+| `--background` | Page base |
+| `--surface-1` / `--surface-2` / `--surface-3` | Raised surfaces, ascending |
+| `--foreground` | Primary text |
+| `--foreground-readable` | Long-form body text |
+| `--foreground-muted` | Secondary text, labels |
+| `--foreground-subtle` | Tertiary text, indices |
+| `--foreground-atmospheric` | Decorative text, disabled |
+| `--accent` | Primary violet, interactive |
+| `--accent-warm` | Amber, used sparingly per BRAND.md |
+| `--accent-bright` | Hover and emphasis |
+| `--accent-foreground` | Text on `--accent` |
+| `--border` / `--border-subtle` / `--border-bright` | Hairlines, ascending |
+| `--border-interactive` | Control boundaries |
+| `--device-body` / `--device-edge` / `--device-bezel` | Simulated device chrome |
+| `--device-screen-top` / `--device-screen-bottom` | Simulated screens |
+| `--device-lens` | Cameras and sensors |
+| `--glow-subtle` / `--glow` / `--glow-strong` | Violet radial glows |
+| `--glow-warm-subtle` / `--glow-warm` | Amber radial glows |
+| `--card` / `--primary` / `--muted` / `--secondary` / `--destructive` / `--success` / `--input` / `--ring` | shadcn aliases, defined in terms of the tokens above |
 
-| Token                  | Value                     | Usage            |
-|------------------------|---------------------------|------------------|
-| `--foreground`         | `oklch(0.94 0.008 280)`  | Primary text     |
-| `--foreground-muted`   | `oklch(0.55 0.012 275)`  | Secondary text   |
-| `--foreground-subtle`  | `oklch(0.34 0.010 278)`  | Labels, hints    |
+The device tokens are a deliberately separate palette: they are bezels, screens
+and camera lenses in the case-study showcase, not brand surfaces. They were
+previously 26 inline hex values in one component with no name.
 
-### Accent
+### Contrast
 
-| Token               | Value                     | Usage              |
-|----------------------|---------------------------|--------------------|
-| `--accent`           | `oklch(0.72 0.15 295)`   | Primary accent     |
-| `--accent-warm`      | `oklch(0.80 0.13 80)`    | Warm variant (amber/gold) |
-| `--accent-bright`    | `oklch(0.82 0.12 290)`   | Bright variant     |
-| `--accent-foreground`| `oklch(0.08 0.012 280)`  | Text on accent bg  |
-
-### Borders
-
-| Token              | Value                     | Usage            |
-|--------------------|---------------------------|------------------|
-| `--border`         | `oklch(0.22 0.008 278)`  | Default border   |
-| `--border-subtle`  | `oklch(0.15 0.006 278)`  | Subtle dividers  |
-| `--border-bright`  | `oklch(0.30 0.010 280)`  | Emphasized       |
-
-### Glows
-
-| Token           | Value                              | Usage                       |
-|-----------------|-------------------------------------|-----------------------------|
-| `--glow-subtle` | `oklch(0.72 0.15 295 / 0.04)`     | Ambient radial washes       |
-| `--glow`        | `oklch(0.72 0.15 295 / 0.10)`     | Subtle glow                 |
-| `--glow-strong` | `oklch(0.72 0.15 295 / 0.22)`     | Hover glow                  |
-
-### Semantic status
-
-| Token           | Value                     | Usage                |
-|-----------------|---------------------------|----------------------|
-| `--success`     | `oklch(0.72 0.15 155)`   | Success messages     |
-| `--destructive` | `oklch(0.62 0.22 25)`    | Errors / destructive |
-| `--secondary`   | `var(--surface-2)`       | shadcn secondary (admin) |
-
----
+`--foreground-muted` and `--foreground-subtle` sit at or above WCAG AA for
+body text on `--background`. `--accent-foreground` on `--accent` is the
+tightest pairing in the system; anything using it needs at least 16px, which is
+why `OrionButton` uses it only on the large primary variant.
 
 ## 3. Typography
 
@@ -167,47 +157,25 @@ Semantic CSS variables (in `globals.css`):
 
 ### GSAP Custom Eases (`lib/animations/gsap.ts`)
 
-| Name            | Curve                                     |
-|-----------------|-------------------------------------------|
-| `orion.out`     | `M0,0 C0.05,0 0.133,1 1,1`               |
-| `orion.inOut`   | `M0,0 C0.37,0 0.63,1 1,1`                |
-| `orion.spring`  | `M0,0 C0.175,0 0.32,1.275 1,1`           |
+| Name | Definition |
+|---|---|
+| `orion.out` | `expo.out` |
+| `orion.inOut` | `expo.inOut` |
+| `orion.spring` | `power3.out` with a small overshoot |
 
 ### GSAP Config Presets (`lib/animations/config.ts`)
 
-**Eases:**
-| Key           | Value                |
-|---------------|----------------------|
-| `out`         | `power3.out`         |
-| `inOut`       | `power2.inOut`       |
-| `expo`        | `expo.out`           |
-| `back`        | `back.out(1.7)`      |
-| `elastic`     | `elastic.out(1, 0.3)`|
-| `brand`       | `orion.out`          |
-| `brandInOut`  | `orion.inOut`        |
-| `brandSpring` | `orion.spring`       |
-
-**Durations:**
-| Key     | Value |
-|---------|-------|
-| `fast`  | 0.3s  |
-| `base`  | 0.6s  |
-| `slow`  | 0.9s  |
-| `xslow` | 1.4s  |
-
-**Stagger:**
-| Key     | Value |
-|---------|-------|
-| `tight` | 0.04  |
-| `base`  | 0.08  |
-| `loose` | 0.15  |
-| `chars` | 0.02  |
-| `words` | 0.06  |
-
-**ScrollTrigger Defaults:**
-```ts
-{ start: "top 85%", end: "bottom 15%", toggleActions: "play none none reverse" }
-```
+| Export | Value |
+|---|---|
+| `EASES.expo` | `expo.out` |
+| `EASES.sine` | `sine.inOut` |
+| `DURATIONS.fast` | 0.4s |
+| `DURATIONS.base` | 0.6s |
+| `DURATIONS.slow` | 0.9s |
+| `DURATIONS.xslow` | 1.2s |
+| `STAGGER.tight` | 0.04s |
+| `STAGGER.base` | 0.08s |
+| `STAGGER.loose` | 0.16s |
 
 ### GSAP Global Defaults
 
@@ -330,24 +298,46 @@ RootLayout (layout.tsx)
 
 ### Route Structure
 
+Three independent root layouts, each rendering its own `<html>`/`<body>`.
+
 ```
-app/
-├── page.tsx                    ← Landing page (all sections)
-└── (marketing)/
-    ├── about/page.tsx
-    ├── contact/page.tsx
-    └── work/page.tsx
+src/app/
+├── [locale]/                     public site, locale-prefixed
+│   ├── layout.tsx                 document shell, JSON-LD, easter egg
+│   └── (site)/
+│       ├── layout.tsx             skip link, Navbar, Footer
+│       ├── page.tsx               home
+│       └── (marketing)/
+│           ├── about/  blog/  contact/  services/  work/
+├── admin/                         CMS, not localised
+│   ├── layout.tsx                 document shell only, no auth check
+│   ├── login/                     the only route reachable anonymously
+│   └── (dashboard)/               auth() + redirect, then the shell
+│       ├── page.tsx  posts/  projects/  messages/
+├── design-system/                 style reference, noindex
+├── api/
+│   ├── admin/{projects,posts,messages,upload}
+│   ├── auth/[...nextauth]  contact/  health/  indexnow-key/
+├── error.tsx  global-error.tsx  not-found.tsx  robots.ts  sitemap.ts
+└── proxy.ts                       Next 16's renamed middleware
 ```
+
+`(marketing)` contributes no URL segment and has no layout; it is an
+organisational grouping. `(dashboard)` does the same job but also owns the
+authorisation check, which is why `/admin/login` can render for an anonymous
+visitor while every other admin route cannot.
 
 ### Landing Page Section Order
 
-1. **HeroSection** — ORION character reveal + pinned scroll exit
-2. **ComparisonSection** — Before/after comparison
-3. **ReelSection** — Clip-path image reveal
-4. **ServicesSection** — DrawSVG service lines
-5. **WorkSection** — Horizontal scroll gallery
-6. **PhilosophySection** — Process steps
-7. **ContactSection** — Magnetic CTA
+```
+HeroSection → TrustStrip → WorkSection → BrandMapSection → ReelSection
+→ ServicesSection → WhyOrionSection → PhilosophySection → FaqSection
+→ ContactSection
+```
+
+Ten sections, four numbered eyebrows. The numbering is deliberately not
+contiguous: `BrandMapSection`, `ReelSection`, `WhyOrionSection` and
+`FaqSection` are unnumbered.
 
 ### View Transitions
 
@@ -394,5 +384,18 @@ Any component that uses hooks, event handlers, or browser APIs must include `"us
 - `lib/` — Utilities, context providers
 
 ### Known Issues
-- GSAP Flip and Observer imports require `@ts-ignore` on Windows due to filename casing conflicts
-- `lib/lenis-context.ts` exports `useLenis` for future use — currently unused but retained intentionally
+
+- **`/design-system` is publicly reachable.** It is `noindex`, but there is
+  no auth gate. Add one, or accept that the token reference is public.
+- **The dev project fallback is opt-in.** Set `DEV_PROJECT_FALLBACK=1`. It used
+  to fire automatically on any empty result or thrown error in development,
+  which made a broken query indistinguishable from an empty table.
+- **iOS safe-area.** `viewport-fit: cover` is deliberately not set, so the
+  fixed footer sits under the home indicator on notched devices. This was a
+  deliberate trade for footer legibility; if it is reverted, the choice belongs
+  here rather than only in a commit message.
+- **The brand slogan in the navbar** ("DIGITAL DREAMS DESIGNED FOR YOU") is not
+  in the brand voice. BRAND.md calls for precise and never salesy. It should be
+  replaced before launch.
+- **`OrionButton` has no `size` prop.** Every variant is `px-8 py-4`. A
+  compact CTA currently has to be a hand-rolled button.

@@ -34,7 +34,7 @@ const DEVICE_HINT: Record<DeviceType, string> = {
     desktop: "Önerilen oran: 16:10 (örn. 2560×1600)",
 };
 
-export default function DeviceShowcaseForm({
+export function DeviceShowcaseForm({
     data,
     onChange,
 }: {

@@ -5,6 +5,7 @@ import { getPostBySlug } from "@/lib/blog";
 import { articleSchema, BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { LineReveal } from "@/components/motion/LineReveal";
 import type { Metadata } from "next";
+import { toLocale } from "@/lib/locales";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
@@ -16,8 +17,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug, locale } = await params;
-    const post = await getPostBySlug(slug, locale);
+    const { slug, locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
+    const post = await getPostBySlug(slug, toLocale(locale));
     if (!post) return { title: "Not Found" };
 
     const title = `${post.title} · Orion Studio`;
@@ -54,8 +56,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-    const { slug, locale } = await params;
-    const post = await getPostBySlug(slug, locale);
+    const { slug, locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
+    const post = await getPostBySlug(slug, toLocale(locale));
     if (!post) notFound();
 
     const t = await getTranslations({ locale, namespace: "blog" });
@@ -71,7 +74,7 @@ export default async function BlogPostPage({ params }: Props) {
     });
 
     return (
-        <main className="relative bg-background overflow-hidden">
+        <main id="main-content" className="relative bg-background overflow-hidden">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

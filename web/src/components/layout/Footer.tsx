@@ -4,7 +4,15 @@ import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 import { SocialIcon } from "@/components/common/SocialIcon";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
 import { FOOTER_SOCIALS as socials, CONTACT_EMAIL } from "@/lib/socials";

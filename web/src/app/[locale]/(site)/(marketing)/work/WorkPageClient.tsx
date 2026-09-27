@@ -172,7 +172,7 @@ export function WorkPageClient({featured, others}: { featured: Project[]; others
     const hasProjects = visibleProjects.length > 0;
 
     return (
-        <main className="relative overflow-hidden bg-background">
+        <main id="main-content" className="relative overflow-hidden bg-background">
             {hasProjects && (
                 <section className="section-container pt-28 pb-[clamp(5rem,16vw,10rem)] lg:pt-32 lg:pb-[clamp(6rem,12vw,14rem)]">
                     <div className="mb-12 max-w-[42rem] space-y-5 lg:mb-20">

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
+import { toLocale } from "@/lib/locales";
 
 export async function generateMetadata({
     params,
 }: {
     params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "meta" });
 
     return {

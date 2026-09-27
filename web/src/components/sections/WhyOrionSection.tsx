@@ -2,7 +2,15 @@
 
 import { useTranslations } from "next-intl";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 import { useReveal } from "@/hooks/use-reveal";
 
 const POINTS = [0, 1, 2, 3, 4, 5] as const;

@@ -7,7 +7,7 @@ import type { MediaData } from "@/lib/project-types";
 
 const VIDEO_EXT_RE = /\.(mp4|webm|mov|m4v)$/i;
 
-export default function MediaForm({
+export function MediaForm({
   data,
   onChange,
 }: {

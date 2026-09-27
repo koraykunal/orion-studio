@@ -5,7 +5,15 @@ import { Link } from "next-view-transitions";
 import { useLocale, useTranslations } from "next-intl";
 import { gsap, SplitText, useGSAP } from "@/lib/animations/gsap";
 import { Marquee } from "@/components/motion/Marquee";
-import { OrionConstellation } from "@/components/effects/OrionConstellation";
+import dynamic from "next/dynamic";
+import type { OrionConstellationProps } from "@/components/effects/OrionConstellation";
+const OrionConstellation = dynamic<OrionConstellationProps>(
+    () => import("@/components/effects/OrionConstellation").then((module) => module.OrionConstellation),
+    {
+        ssr: false,
+        loading: () => <div className="absolute inset-0" aria-hidden="true" />,
+    },
+);
 import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 
 export function HeroSection() {

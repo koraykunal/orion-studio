@@ -6,6 +6,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { ViewTransitions } from "next-view-transitions";
 import { routing } from "../../../i18n/routing";
 import { rootGraph, buildLanguageAlternates, BASE_URL } from "@/lib/schema";
+import { toLocale } from "@/lib/locales";
 import { DreamEasterEgg } from "@/components/effects/DreamEasterEgg";
 import "../globals.css";
 
@@ -32,7 +33,8 @@ export async function generateMetadata({
 }: {
     params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "meta" });
 
     const keywords = locale === "tr"
@@ -88,7 +90,8 @@ export default async function LocaleLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
 
     if (!routing.locales.includes(locale as "en" | "tr")) {
         notFound();

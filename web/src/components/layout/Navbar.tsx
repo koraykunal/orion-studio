@@ -57,15 +57,56 @@ export function Navbar() {
         document.body.style.overflow = "hidden";
 
         const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setMenuOpen(false);
+            if (e.key === "Escape") {
+                setMenuOpen(false);
+                return;
+            }
+
+            // Trap focus inside the overlay. It covers the viewport, so without
+            // this a keyboard user tabs straight through it into the page
+            // content behind, which is invisible while the menu is open.
+            if (e.key !== "Tab" || !menuRef.current) return;
+
+            const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            );
+            if (focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            const active = document.activeElement;
+
+            if (e.shiftKey && (active === first || !menuRef.current.contains(active))) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && active === last) {
+                e.preventDefault();
+                first.focus();
+            }
         };
+
         window.addEventListener("keydown", onKeyDown);
+        // Move focus into the overlay so the next Tab starts where the user is
+        // looking, rather than at the top of the document behind it.
+        menuRef.current?.querySelector<HTMLElement>("a[href], button")?.focus();
 
         return () => {
             document.body.style.overflow = prevOverflow;
             window.removeEventListener("keydown", onKeyDown);
         };
     }, [menuOpen]);
+
+    // Return focus to the trigger on close. Without this, a keyboard user who
+    // opened the menu and pressed Escape lands at the top of the document, and
+    // the menu button is now several tabs away again.
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
+    const wasOpen = useRef(false);
+    useEffect(() => {
+        if (wasOpen.current && !menuOpen) menuButtonRef.current?.focus();
+        wasOpen.current = menuOpen;
+    }, [menuOpen]);
+
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const dreamRef = useRef<HTMLSpanElement>(null);
@@ -95,9 +136,14 @@ export function Navbar() {
                 .fromTo(inEl, { yPercent: 100 }, { yPercent: 0, duration: FLIP_DURATION, ease: "orion.inOut" }, 0);
         };
 
-        gsap.delayedCall(CYCLE_INTERVAL, function repeat() {
+        // The timer is created once and re-armed with .restart() rather than by
+        // calling gsap.delayedCall again from inside its own callback. A nested
+        // delayedCall is created outside the useGSAP context, so it is never
+        // collected: the original version left an unbounded chain firing
+        // against a detached node long after the Navbar unmounted.
+        const cycle = gsap.delayedCall(CYCLE_INTERVAL, () => {
             flip();
-            gsap.delayedCall(CYCLE_INTERVAL, repeat);
+            cycle.restart();
         });
     }, { scope: containerRef });
 
@@ -187,6 +233,7 @@ export function Navbar() {
                         </Link>
 
                         <button
+                            ref={menuButtonRef}
                             onClick={toggleMenu}
                             className="md:hidden relative w-11 h-11 -mr-2 flex items-center justify-center"
                             aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
@@ -210,7 +257,13 @@ export function Navbar() {
             </nav>
 
             {menuOpen && (
-                <div className="fixed inset-0 z-40 bg-background/95 backdrop-blur-md md:hidden">
+                <div
+                    ref={menuRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={t("openMenu")}
+                    className="fixed inset-0 z-40 bg-background/95 backdrop-blur-md md:hidden"
+                >
                     <div className="flex flex-col items-center justify-center h-full gap-8">
                         {routes.map((route) => (
                             <Link

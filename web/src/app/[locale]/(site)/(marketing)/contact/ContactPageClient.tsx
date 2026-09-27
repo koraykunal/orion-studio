@@ -4,7 +4,15 @@ import { useRef, useState, useCallback, type FormEvent } from "react";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 import { OrionButton } from "@/components/common/OrionButton";
 import { SocialIcon } from "@/components/common/SocialIcon";
 import { EASES, DURATIONS, STAGGER } from "@/lib/animations/config";
@@ -156,7 +164,7 @@ export function ContactPageClient({
     );
 
     return (
-        <main ref={pageRef} className="relative min-h-screen bg-background overflow-hidden">
+        <main id="main-content" ref={pageRef} className="relative min-h-screen bg-background overflow-hidden">
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
@@ -238,11 +246,12 @@ export function ContactPageClient({
                         onSubmit={handleSubmit}
                     >
                         <div className="form-field grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <label className="space-y-3">
+                            <label htmlFor="contact-name" className="space-y-3">
                                 <span className="text-label text-foreground-muted block">
                                     {copy.fieldName} <span className="text-accent">*</span>
                                 </span>
                                 <input
+                                    id="contact-name"
                                     name="name"
                                     type="text"
                                     required
@@ -264,11 +273,12 @@ export function ContactPageClient({
                             </label>
                         </div>
 
-                        <label className="form-field space-y-3 block">
+                        <label htmlFor="contact-company" className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
                                 {copy.fieldCompany}
                             </span>
                             <input
+                                id="contact-company"
                                 name="company"
                                 type="text"
                                 placeholder={copy.fieldCompanyPlaceholder}
@@ -341,11 +351,12 @@ export function ContactPageClient({
                             </fieldset>
                         </div>
 
-                        <label className="form-field space-y-3 block">
+                        <label htmlFor="contact-brief" className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
                                 {copy.fieldBrief} <span className="text-accent">*</span>
                             </span>
                             <textarea
+                                id="contact-brief"
                                 name="brief"
                                 required
                                 rows={6}
@@ -354,11 +365,12 @@ export function ContactPageClient({
                             />
                         </label>
 
-                        <label className="form-field space-y-3 block">
+                        <label htmlFor="contact-referral" className="form-field space-y-3 block">
                             <span className="text-label text-foreground-muted block">
                                 {copy.fieldReferral}
                             </span>
                             <input
+                                id="contact-referral"
                                 name="referral"
                                 type="text"
                                 placeholder={copy.fieldReferralPlaceholder}

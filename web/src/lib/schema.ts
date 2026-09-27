@@ -1,9 +1,20 @@
 import { CONTACT_EMAIL } from "@/lib/socials";
 import { SITE_URL } from "@/lib/site-url";
+import { DEFAULT_LOCALE, LOCALES } from "@/lib/locales";
 
 export const BASE_URL = SITE_URL;
-export const LOCALES = ["en", "tr"] as const;
-export const DEFAULT_LOCALE = "en";
+export { DEFAULT_LOCALE, LOCALES };
+
+/**
+ * Joins a site-relative path onto the canonical origin. Accepts an absolute
+ * URL and returns it unchanged, so it is safe to call on values that may
+ * already be absolute.
+ */
+export function absoluteUrl(path = "/"): string {
+    if (/^https?:\/\//i.test(path)) return path;
+    const suffix = path === "/" ? "" : path.startsWith("/") ? path : `/${path}`;
+    return `${BASE_URL}${suffix}`;
+}
 
 export function buildLanguageAlternates(path: string): Record<string, string> {
     const suffix = path === "/" ? "" : path.startsWith("/") ? path : `/${path}`;

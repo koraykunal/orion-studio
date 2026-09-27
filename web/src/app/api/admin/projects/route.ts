@@ -3,11 +3,32 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
 import { buildProjectWriteData, validateProjectWrite } from "@/lib/project-validation";
+import { requireAdmin } from "@/lib/admin-guard";
+import { revalidateContent } from "@/lib/cache-tags";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const { failure } = await requireAdmin();
+  if (failure) return failure;
+
   try {
     const projects = await prisma.project.findMany({
       orderBy: { order: "asc" },
+      select: {
+        id: true,
+        slug: true,
+        client: true,
+        year: true,
+        image: true,
+        category: true,
+        serviceCategory: true,
+        featured: true,
+        status: true,
+        order: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json(projects);
@@ -18,6 +39,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { failure } = await requireAdmin();
+  if (failure) return failure;
+
   try {
     const body = await request.json();
     const data = buildProjectWriteData(body);
@@ -26,15 +50,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errors[0], errors }, { status: 400 });
     }
 
-    const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
-    const nextOrder = (maxOrder._max.order ?? -1) + 1;
-
-    const project = await prisma.project.create({
-      data: {
-        ...data,
-        order: nextOrder,
-      },
+    // Assign the next slot inside the same transaction that inserts the row,
+    // so two concurrent creates cannot claim the same position.
+    const project = await prisma.$transaction(async (tx) => {
+      const maxOrder = await tx.project.aggregate({ _max: { order: true } });
+      return tx.project.create({
+        data: { ...data, order: (maxOrder._max.order ?? -1) + 1 },
+      });
     });
+
+    revalidateContent("projects", { slug: project.slug });
 
     if (project.status === "published") {
       void pingIndexNow([`/work/${project.slug}`, "/work"]);

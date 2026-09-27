@@ -2,7 +2,7 @@
 
 import {usePathname} from "next/navigation";
 import {useEffect} from "react";
-import Lenis from "lenis";
+import type Lenis from "lenis";
 
 export function useScrollReset(lenis?: Lenis | null) {
     const pathname = usePathname();

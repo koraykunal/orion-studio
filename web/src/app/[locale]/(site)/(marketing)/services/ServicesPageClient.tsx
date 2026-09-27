@@ -3,7 +3,15 @@
 import { Link } from "next-view-transitions";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
-import { OrionMark } from "@/components/effects/OrionMark";
+import dynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = dynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        ssr: false,
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
 import { ServiceSymbol } from "@/components/effects/ServiceSymbol";
 import { ArrowUpRight } from "@/components/common/ArrowUpRight";
 import type { ServiceSlug } from "@/lib/services";
@@ -28,7 +36,7 @@ export function ServicesPageClient({
     services: ServiceSummary[];
 }) {
     return (
-        <main className="relative bg-background overflow-hidden">
+        <main id="main-content" className="relative bg-background overflow-hidden">
             <section className="relative section-py pt-28 lg:pt-32 overflow-hidden">
                 <div className="absolute -left-[12%] top-[5%] w-[50%] h-[80%] pointer-events-none">
                     <OrionMark variant="full" lineOpacity={0.05} globalOpacity={0.32} rotate={-8} mirror />

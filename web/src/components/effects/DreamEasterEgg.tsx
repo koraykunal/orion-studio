@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Modal } from "@/components/common/Modal";
 
 const SEQUENCE = "dream";
 const VOW = "always, yours";
@@ -57,12 +58,13 @@ export function DreamEasterEgg() {
     if (!open) return null;
 
     return (
-        <div
+        <Modal
+            open={open}
+            onClose={close}
+            label="A note from Orion Studio"
             className="dream-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="28.11"
-            onClick={close}
+            panelClassName="dream-overlay-panel"
+            showCloseButton={false}
         >
             <div className="dream-stars" aria-hidden>
                 {STARS.map((s, i) => (
@@ -86,6 +88,6 @@ export function DreamEasterEgg() {
                 </span>
                 <span className="dream-vow">{VOW}</span>
             </div>
-        </div>
+        </Modal>
     );
 }

@@ -2,20 +2,29 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-guard";
+import { buildPostWriteData, validatePostWrite } from "@/lib/post-validation";
+import { revalidateContent } from "@/lib/cache-tags";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const { failure } = await requireAdmin();
+  if (failure) return failure;
+
   try {
     const posts = await prisma.post.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
         title_en: true,
+        title_tr: true,
         slug: true,
         status: true,
         tags: true,
         publishedAt: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -27,14 +36,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  try {
-    const session = await auth();
-    const sessionUserId = (session?.user as { id?: string } | undefined)?.id;
-    if (!sessionUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const { session, failure } = await requireAdmin();
+  if (failure) return failure;
 
-    const author = await prisma.user.findUnique({ where: { id: sessionUserId } });
+  try {
+    // authorId is always derived from the session, never from the request
+    // body, so authorship cannot be forged on create.
+    const author = await prisma.user.findUnique({ where: { id: session.userId }, select: { id: true } });
     if (!author) {
       return NextResponse.json(
         { error: "Session user no longer exists. Sign out and sign in again." },
@@ -43,31 +51,21 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-
-    if (!body.title_en || !body.title_en.trim()) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
-    }
-
-    if (!body.slug || !body.slug.trim()) {
-      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    const data = buildPostWriteData(body);
+    const errors = validatePostWrite(data);
+    if (errors.length) {
+      return NextResponse.json({ error: errors[0], errors }, { status: 400 });
     }
 
     const post = await prisma.post.create({
       data: {
-        title_en: body.title_en,
-        title_tr: body.title_tr ?? null,
-        slug: body.slug,
-        description: body.description ?? "",
-        content: body.content ?? null,
-        contentHtml_en: body.contentHtml_en ?? "",
-        contentHtml_tr: body.contentHtml_tr ?? null,
-        tags: body.tags ?? [],
-        coverImage: body.coverImage ?? null,
-        status: body.status ?? "draft",
-        publishedAt: body.status === "published" ? new Date() : null,
+        ...data,
+        publishedAt: data.status === "published" ? new Date() : null,
         authorId: author.id,
       },
     });
+
+    revalidateContent("posts", { slug: post.slug });
 
     if (post.status === "published") {
       void pingIndexNow([`/blog/${post.slug}`, "/blog"]);

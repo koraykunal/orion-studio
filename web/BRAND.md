@@ -1,4 +1,10 @@
-# Orion Studio - Brand Language
+# Orion Studio — Brand System
+
+> **Colour values in this document are narrative, not normative.** The
+> normative values live in `web/src/app/globals.css` and are printed by
+> `npm run tokens`. Where the two disagree, the CSS is correct. This file
+> describes the intent behind the palette; DESIGN-SYSTEM.md describes the
+> implementation.
 
 > The single source of truth for how Orion looks, moves, and speaks across every surface: website, ads, social, decks, email.
 > `DESIGN-SYSTEM.md` is the technical token reference (the *what*). This file is the *how* and the *why*.

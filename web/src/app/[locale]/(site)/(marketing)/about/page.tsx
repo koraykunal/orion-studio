@@ -2,13 +2,16 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { AboutPageClient } from "./AboutPageClient";
+import { keyed } from "@/lib/i18n";
+import { toLocale } from "@/lib/locales";
 
 type Props = {
     params: Promise<{ locale: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "meta" });
 
     const title = t("aboutTitle");
@@ -29,8 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function AboutPage({ params }: Props) {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "about" });
+    const tk = keyed(t);
 
     return (
         <AboutPageClient
@@ -44,8 +49,8 @@ export default async function AboutPage({ params }: Props) {
                 valuesDescription: t("valuesDescription"),
                 values: [0, 1, 2, 3].map((i) => ({
                     index: String(i + 1).padStart(2, "0"),
-                    title: t(`value${i}Title`),
-                    body: t(`value${i}Body`),
+                    title: tk(`value${i}Title`),
+                    body: tk(`value${i}Body`),
                 })),
                 teamLabel: t("teamLabel"),
                 teamTitle: t("teamTitle"),
@@ -57,7 +62,7 @@ export default async function AboutPage({ params }: Props) {
                 capsLabel: t("capsLabel"),
                 capsTitle: t("capsTitle"),
                 capsDescription: t("capsDescription"),
-                capabilities: [0, 1, 2, 3, 4].map((i) => t(`cap${i}`)),
+                capabilities: [0, 1, 2, 3, 4].map((i) => tk(`cap${i}`)),
                 availabilityLabel: t("availabilityLabel"),
                 ctaTitle: t("ctaTitle"),
                 ctaDescription: t("ctaDescription"),

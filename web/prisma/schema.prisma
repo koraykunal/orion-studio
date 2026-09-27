@@ -36,7 +36,10 @@ enum MessageStatus {
 
 model User {
   id        String   @id @default(cuid())
+  /// Stored lowercased and trimmed; sign-in normalises before lookup so the
+  /// unique index is a real uniqueness guarantee rather than case-sensitive.
   email     String   @unique
+  /// bcrypt hash. Never a plaintext value, never returned by an API route.
   password  String
   name      String?
   posts     Post[]
@@ -45,60 +48,100 @@ model User {
 }
 
 model Post {
-  id             String     @id @default(cuid())
-  title_en       String
-  title_tr       String?
-  slug           String     @unique
-  description    String     @default("")
+  id String @id @default(cuid())
+
+  title_en String
+  title_tr String?
+  slug     String @unique
+
+  /// Legacy single-locale description, kept so existing rows and any external
+  /// consumer keep working. New writes populate description_en/_tr.
+  description    String @default("")
+  description_en String @default("")
+  description_tr String?
+
+  /// Tiptap document. Stored so the editor can round-trip. It is never
+  /// rendered: the sanitised contentHtml_* columns are the render source.
   content        Json?
-  contentHtml_en String     @default("")
+  contentHtml_en String @default("")
   contentHtml_tr String?
-  tags           String[]
-  coverImage     String?
-  status         PostStatus @default(draft)
-  publishedAt    DateTime?
-  author         User       @relation(fields: [authorId], references: [id])
-  authorId       String
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+
+  tags       String[]
+  coverImage String?
+  status     PostStatus @default(draft)
+  publishedAt DateTime?
+
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The public blog index filters on status and orders by publishedAt; without
+  // this it is a sequential scan with a sort on every uncached request.
+  @@index([status, publishedAt(sort: Desc)])
+  // Foreign keys are not indexed automatically in Postgres, and the author
+  // relation is ON DELETE RESTRICT which is checked on every user delete.
+  @@index([authorId])
 }
 
 model Project {
-  id              String                 @id @default(cuid())
-  slug            String                 @unique
-  client          String
-  tagline_en      String                 @default("")
-  tagline_tr      String?
-  year            String                 @default("")
-  services        String[]
-  outcome_en      String                 @default("")
-  outcome_tr      String?
-  image           String                 @default("")
-  previewVideo    String                 @default("")
-  category        ProjectCategory        @default(client)
+  id     String @id @default(cuid())
+  slug   String @unique
+  client String
+
+  tagline_en String
+  tagline_tr String?
+
+  /// Free year as text: the site displays "2024" and sometimes "2024-2025".
+  year String @default("")
+
+  services String[]
+
+  outcome_en String
+  outcome_tr String?
+
+  image        String                 @default("")
+  previewVideo String                 @default("")
+  category     ProjectCategory        @default(client)
   serviceCategory ProjectServiceCategory @default(web)
-  sections        Json                   @default("[]")
-  featured        Boolean                @default(false)
-  order           Int                    @default(0)
-  status          PostStatus             @default(draft)
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  /// Section blocks, validated by lib/project-validation.ts on write.
+  sections     Json                   @default("[]")
+  featured     Boolean                @default(false)
+  order        Int                    @default(0)
+  status       PostStatus             @default(draft)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Covers the three public reads: published list, featured list, admin order.
+  @@index([status, order])
+  @@index([featured])
+  @@index([serviceCategory])
 }
 
 model Message {
-  id        String        @id @default(cuid())
-  name      String
-  email     String
-  company   String?
-  services  String[]
-  budget    String?
-  timeline  String?
-  brief     String
-  referral  String?
-  status    MessageStatus @default(unread)
-  notes     String?
-  createdAt DateTime      @default(now())
+  id String @id @default(cuid())
+
+  // Personal data. Retained only as long as an inquiry is actionable;
+  // see the DELETE handler on /api/admin/messages/[id] for erasure.
+  name    String
+  email   String
+  company String?
+
+  services String[]
+  budget   String?
+  timeline String?
+  brief    String
+  referral String?
+
+  status MessageStatus @default(unread)
+  notes  String?
+
+  createdAt DateTime @default(now())
   readAt    DateTime?
+
+  @@index([status, createdAt(sort: Desc)])
 }
 
 model RateLimitBucket {
@@ -106,4 +149,9 @@ model RateLimitBucket {
   count     Int
   resetAt   DateTime
   updatedAt DateTime @updatedAt
+
+  // The opportunistic sweep in lib/rate-limit.ts deletes on resetAt. The index
+  // existed in the migration but not in the schema, so the next migrate dev
+  // would have generated a DROP INDEX.
+  @@index([resetAt])
 }

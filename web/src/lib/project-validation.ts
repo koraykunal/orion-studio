@@ -1,5 +1,7 @@
 import {
+    PROJECT_CATEGORIES,
     PROJECT_SERVICE_CATEGORIES,
+    isSection,
     type BeforeAfterData,
     type DeviceShowcaseData,
     type FullImageData,
@@ -10,30 +12,16 @@ import {
     type ProjectServiceCategory,
     type QuoteData,
     type Section,
-    type SectionType,
     type TechStackData,
     type TextBlockData,
     type VideoEmbedData,
     type VisualWallData,
 } from "@/lib/project-types";
 import { getSafeVideoEmbedUrl } from "@/lib/video-embed";
+import { enumValue, hasText, isValidSlug, LIMITS, nullableStringValue, stringArrayValue, stringValue } from "@/lib/validation";
 
-const PROJECT_CATEGORIES: ProjectCategory[] = ["client", "concept", "studio"];
 const PROJECT_STATUSES = ["draft", "published"] as const;
 const VIDEO_FILE_RE = /\.(mp4|webm|mov|m4v)(\?.*)?$/i;
-const SECTION_TYPES: SectionType[] = [
-    "fullImage",
-    "textBlock",
-    "gallery",
-    "metrics",
-    "techStack",
-    "quote",
-    "beforeAfter",
-    "videoEmbed",
-    "deviceShowcase",
-    "media",
-    "visualWall",
-];
 
 type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
@@ -91,54 +79,21 @@ export type ProjectWriteData = {
     status: ProjectStatus;
 };
 
-function stringValue(value: unknown, fallback = ""): string {
-    return typeof value === "string" ? value.trim() : fallback;
-}
-
-function nullableStringValue(value: unknown): string | null {
-    const text = stringValue(value);
-    return text ? text : null;
-}
-
-function stringArrayValue(value: unknown): string[] {
-    if (!Array.isArray(value)) return [];
-    return value
-        .filter((item): item is string => typeof item === "string")
-        .map((item) => item.trim())
-        .filter(Boolean);
-}
-
 function sectionArrayValue(value: unknown): Section[] {
     if (!Array.isArray(value)) return [];
-    return value.filter((section): section is Section => {
-        if (!section || typeof section !== "object") return false;
-        const candidate = section as Partial<Section>;
-        return (
-            typeof candidate.id === "string" &&
-            typeof candidate.type === "string" &&
-            SECTION_TYPES.includes(candidate.type as SectionType) &&
-            candidate.data !== null &&
-            typeof candidate.data === "object"
-        );
-    });
+    return value.slice(0, LIMITS.sections).filter(isSection);
 }
 
 function categoryValue(value: unknown): ProjectCategory {
-    return PROJECT_CATEGORIES.includes(value as ProjectCategory)
-        ? (value as ProjectCategory)
-        : "client";
+    return enumValue(value, PROJECT_CATEGORIES, "client");
 }
 
 function serviceCategoryValue(value: unknown): ProjectServiceCategory {
-    return PROJECT_SERVICE_CATEGORIES.includes(value as ProjectServiceCategory)
-        ? (value as ProjectServiceCategory)
-        : "web";
+    return enumValue(value, PROJECT_SERVICE_CATEGORIES, "web");
 }
 
 function statusValue(value: unknown): ProjectStatus {
-    return PROJECT_STATUSES.includes(value as ProjectStatus)
-        ? (value as ProjectStatus)
-        : "draft";
+    return enumValue(value, PROJECT_STATUSES, "draft");
 }
 
 export function buildProjectWriteData(
@@ -157,7 +112,7 @@ export function buildProjectWriteData(
         services:
             input.services === undefined
                 ? existing?.services ?? []
-                : stringArrayValue(input.services),
+                : stringArrayValue(input.services, { max: LIMITS.tags, itemMax: LIMITS.shortText }),
         outcome_en: stringValue(input.outcome_en, existing?.outcome_en ?? ""),
         outcome_tr:
             input.outcome_tr === undefined
@@ -184,6 +139,9 @@ export function validateProjectWrite(data: ProjectWriteData): string[] {
 
     if (!data.client) errors.push("Client name is required");
     if (!data.slug) errors.push("Slug is required");
+    else if (!isValidSlug(data.slug)) {
+        errors.push("Slug must be lowercase letters, numbers and single hyphens");
+    }
     if (data.previewVideo && !VIDEO_FILE_RE.test(data.previewVideo)) {
         errors.push("Preview video must be an MP4, WebM, MOV, or M4V file");
     }
@@ -192,14 +150,11 @@ export function validateProjectWrite(data: ProjectWriteData): string[] {
         if (!data.year) errors.push("Year is required before publishing");
         if (!data.image) errors.push("Hero image is required before publishing");
         if (data.services.length === 0) errors.push("At least one service is required before publishing");
+        if (!data.tagline_en) errors.push("Tagline is required before publishing");
         errors.push(...validatePublishedSections(data.sections));
     }
 
     return errors;
-}
-
-function hasText(value: unknown): value is string {
-    return typeof value === "string" && value.trim().length > 0;
 }
 
 function validatePublishedSections(sections: Section[]): string[] {
@@ -210,19 +165,19 @@ function validatePublishedSections(sections: Section[]): string[] {
 
         switch (section.type) {
             case "fullImage": {
-                const data = section.data as FullImageData;
+                const data: FullImageData = section.data;
                 if (!hasText(data.image)) errors.push(`${label}: image is required`);
                 if (!hasText(data.alt)) errors.push(`${label}: alt text is required`);
                 break;
             }
             case "textBlock": {
-                const data = section.data as TextBlockData;
+                const data: TextBlockData = section.data;
                 if (!hasText(data.title)) errors.push(`${label}: title is required`);
                 if (!hasText(data.contentHtml)) errors.push(`${label}: content is required`);
                 break;
             }
             case "gallery": {
-                const data = section.data as GalleryData;
+                const data: GalleryData = section.data;
                 if (!Array.isArray(data.images) || data.images.length === 0) {
                     errors.push(`${label}: at least one gallery image is required`);
                     break;
@@ -234,7 +189,7 @@ function validatePublishedSections(sections: Section[]): string[] {
                 break;
             }
             case "metrics": {
-                const data = section.data as MetricsData;
+                const data: MetricsData = section.data;
                 if (!Array.isArray(data.items) || data.items.length === 0) {
                     errors.push(`${label}: at least one metric is required`);
                     break;
@@ -246,20 +201,20 @@ function validatePublishedSections(sections: Section[]): string[] {
                 break;
             }
             case "techStack": {
-                const data = section.data as TechStackData;
+                const data: TechStackData = section.data;
                 if (!Array.isArray(data.items) || data.items.filter(hasText).length === 0) {
                     errors.push(`${label}: at least one technology is required`);
                 }
                 break;
             }
             case "quote": {
-                const data = section.data as QuoteData;
+                const data: QuoteData = section.data;
                 if (!hasText(data.text)) errors.push(`${label}: quote text is required`);
                 if (!hasText(data.author)) errors.push(`${label}: quote author is required`);
                 break;
             }
             case "beforeAfter": {
-                const data = section.data as BeforeAfterData;
+                const data: BeforeAfterData = section.data;
                 if (!hasText(data.before?.src)) errors.push(`${label}: before image is required`);
                 if (!hasText(data.before?.alt)) errors.push(`${label}: before alt text is required`);
                 if (!hasText(data.after?.src)) errors.push(`${label}: after image is required`);
@@ -267,14 +222,14 @@ function validatePublishedSections(sections: Section[]): string[] {
                 break;
             }
             case "videoEmbed": {
-                const data = section.data as VideoEmbedData;
+                const data: VideoEmbedData = section.data;
                 if (!hasText(data.url) || !getSafeVideoEmbedUrl(data.url)) {
                     errors.push(`${label}: supported YouTube or Vimeo URL is required`);
                 }
                 break;
             }
             case "deviceShowcase": {
-                const data = section.data as DeviceShowcaseData;
+                const data: DeviceShowcaseData = section.data;
                 if (!Array.isArray(data.devices) || data.devices.length === 0) {
                     errors.push(`${label}: at least one device is required`);
                     break;
@@ -286,13 +241,13 @@ function validatePublishedSections(sections: Section[]): string[] {
                 break;
             }
             case "media": {
-                const data = section.data as MediaData;
+                const data: MediaData = section.data;
                 if (!hasText(data.src)) errors.push(`${label}: media source is required`);
                 if (!hasText(data.alt)) errors.push(`${label}: alt text is required`);
                 break;
             }
             case "visualWall": {
-                const data = section.data as VisualWallData;
+                const data: VisualWallData = section.data;
                 if (!Array.isArray(data.items) || data.items.length === 0) {
                     errors.push(`${label}: at least one visual wall item is required`);
                     break;

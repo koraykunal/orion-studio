@@ -3,13 +3,16 @@ import type { Metadata } from "next";
 import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { SERVICE_SLUGS } from "@/lib/services";
 import { ContactPageClient } from "./ContactPageClient";
+import { keyed } from "@/lib/i18n";
+import { toLocale } from "@/lib/locales";
 
 type Props = {
     params: Promise<{ locale: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "meta" });
 
     const title = t("contactTitle");
@@ -30,11 +33,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ContactPage({ params }: Props) {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const [t, tServices] = await Promise.all([
         getTranslations({ locale, namespace: "contact" }),
         getTranslations({ locale, namespace: "services" }),
     ]);
+    const tk = keyed(t);
 
     return (
         <ContactPageClient
@@ -68,8 +73,8 @@ export default async function ContactPage({ params }: Props) {
                 errorBody: t("errorBody"),
             }}
             services={[...SERVICE_SLUGS.map((slug) => tServices(`${slug}Name`)), t("servicesUnknown")]}
-            budgets={[0, 1, 2, 3, 4].map((i) => t(`budget${i}`)).concat(t("budgetUnknown"))}
-            timelines={[0, 1, 2, 3, 4].map((i) => t(`timeline${i}`)).concat(t("timelineUnknown"))}
+            budgets={[0, 1, 2, 3, 4].map((i) => tk(`budget${i}`)).concat(t("budgetUnknown"))}
+            timelines={[0, 1, 2, 3, 4].map((i) => tk(`timeline${i}`)).concat(t("timelineUnknown"))}
         />
     );
 }

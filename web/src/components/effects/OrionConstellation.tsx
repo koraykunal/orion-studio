@@ -118,7 +118,13 @@ function drawStar(
     ctx.restore();
 }
 
-export function OrionConstellation() {
+export type OrionConstellationProps = {
+    className?: string;
+    stillTime?: number;
+};
+
+export function OrionConstellation(_props: OrionConstellationProps) {
+    void _props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const bgStars = useMemo(
@@ -223,7 +229,8 @@ export function OrionConstellation() {
     return (
         <canvas
             ref={canvasRef}
-            aria-hidden="true"
+            role="img"
+        aria-label="Decorative star field"
             style={{
                 position: "absolute",
                 inset: 0,

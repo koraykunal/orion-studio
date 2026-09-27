@@ -16,6 +16,8 @@ import Highlight from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { useEffect, useRef, useCallback, useState } from "react";
 import type { Editor } from "@tiptap/react";
+import { Modal } from "@/components/common/Modal";
+import { sanitizeRichHtml } from "@/lib/sanitize";
 
 interface TiptapEditorProps {
   content: object | null;
@@ -110,17 +112,36 @@ function MenuBar({ editor, onPreview }: { editor: Editor | null; onPreview: () =
   );
 }
 
+/**
+ * Preview of the stored body.
+ *
+ * The HTML is sanitised before it is rendered here. It used to be injected
+ * raw while the public read path sanitised the same column, so the CMS origin
+ * rendered unsanitised editor HTML from a field the public site treated as
+ * untrusted. Sanitising on write means the stored value is already safe.
+ */
 function PreviewModal({ html, onClose }: { html: string; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-xl p-8 mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-label text-foreground-muted">Preview</span>
-          <button onClick={onClose} className="text-foreground-muted hover:text-foreground text-sm transition-colors">Close</button>
-        </div>
-        <article className="prose-orion" dangerouslySetInnerHTML={{ __html: html }} />
+    <Modal
+      open
+      onClose={onClose}
+      label="Content preview"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm"
+      panelClassName="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-xl p-8 mx-4"
+      showCloseButton={false}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-label text-foreground-muted">Preview</span>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-foreground-muted hover:text-foreground text-sm transition-colors"
+        >
+          Close
+        </button>
       </div>
-    </div>
+      <article className="prose-orion" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(html) }} />
+    </Modal>
   );
 }
 

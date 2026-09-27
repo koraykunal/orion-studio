@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import TiptapEditor from "../../components/TiptapEditor";
-import ImageUpload from "../../components/ImageUpload";
-import ChipInput from "../../components/ChipInput";
+import TiptapEditor from "../../../components/TiptapEditor";
+import ImageUpload from "../../../components/ImageUpload";
+import ChipInput from "../../../components/ChipInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

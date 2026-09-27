@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { PortfolioPreviewMedia } from "@/components/common/PortfolioPreviewMedia";
 import { gsap, useGSAP } from "@/lib/animations/gsap";
 import { TextReveal } from "@/components/motion/TextReveal";
+import { toLocale } from "@/lib/locales";
 import {
     getCategoryLabel,
     getServiceCategoryLabel,
@@ -76,10 +77,10 @@ function WorkCard({ item, index, locale }: { item: WorkItem; index: number; loca
                 <div className="flex items-center gap-4 text-index">
                     <span className="text-foreground-subtle">0{index + 1}</span>
                     <span className="text-foreground-subtle">{item.year}</span>
-                    <span className="text-foreground-muted">{getCategoryLabel(item.category, locale)}</span>
+                    <span className="text-foreground-muted">{getCategoryLabel(item.category, toLocale(locale))}</span>
                 </div>
                 <p className="text-caption text-accent">
-                    {getServiceCategoryLabel(item.serviceCategory, locale)}
+                    {getServiceCategoryLabel(item.serviceCategory, toLocale(locale))}
                 </p>
                 <h3 className="text-heading">{item.client}</h3>
                 <p className="text-body-lg text-foreground-muted max-w-[36ch]">{item.tagline}</p>

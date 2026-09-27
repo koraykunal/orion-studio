@@ -49,7 +49,7 @@ const VARIANT_LINES: Record<Variant, [string, string][]> = {
     ],
 };
 
-interface OrionMarkProps {
+export type OrionMarkProps = {
     variant?: Variant;
     className?: string;
     lineOpacity?: number;
@@ -218,7 +218,8 @@ export function OrionMark({
                 height: "100%",
                 pointerEvents: "none",
             }}
-            aria-hidden="true"
+            role="img"
+            aria-label="Orion constellation mark"
         />
     );
 }

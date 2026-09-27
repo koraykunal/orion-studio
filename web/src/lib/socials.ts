@@ -22,7 +22,3 @@ export const WHATSAPP_NUMBER = WHATSAPP_RAW.replace(/[^\d]/g, "");
 export const WHATSAPP_HREF = WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}` : "";
 
 export const PHONE_HREF = WHATSAPP_NUMBER ? `tel:+${WHATSAPP_NUMBER}` : "";
-
-export const WHATSAPP_DISPLAY = WHATSAPP_NUMBER
-    ? `+${WHATSAPP_NUMBER.replace(/^(\d{2})(\d{3})(\d{3})(\d{2})(\d{2})$/, "$1 $2 $3 $4 $5")}`
-    : "";

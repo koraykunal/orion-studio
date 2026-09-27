@@ -6,10 +6,11 @@ interface ChipInputProps {
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
+  /** Names the group and the text field, so neither is announced as unlabelled. */
+  label?: string;
 }
 
-export default function ChipInput({ value, onChange, placeholder = "Add tag..." }: ChipInputProps) {
-  const [input, setInput] = useState("");
+export default function ChipInput({ value, onChange, placeholder = "Add tag...", label }: ChipInputProps) {  const [input, setInput] = useState("");
 
   const addChip = (raw: string) => {
     const chip = raw.trim();
@@ -34,15 +35,27 @@ export default function ChipInput({ value, onChange, placeholder = "Add tag..." 
   };
 
   return (
-    <div className="flex flex-wrap gap-2 p-3 bg-surface-1 border border-border rounded-lg min-h-[48px]">
+    <div
+      className="flex flex-wrap gap-2 p-3 bg-surface-1 border border-border rounded-lg min-h-[48px]"
+      role="group"
+      aria-label={label}
+    >
       {value.map((chip, i) => (
         <span key={chip} className="px-3 py-1 bg-accent/10 text-accent text-xs rounded-full flex items-center gap-1">
           {chip}
-          <button type="button" onClick={() => removeChip(i)} className="hover:text-foreground">&times;</button>
+          <button
+            type="button"
+            onClick={() => removeChip(i)}
+            className="hover:text-foreground"
+            aria-label={`Remove ${chip}`}
+        >
+            &times;
+        </button>
         </span>
       ))}
       <input
         type="text"
+        aria-label={label ? `Add ${label.toLowerCase()}` : placeholder}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}

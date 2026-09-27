@@ -4,7 +4,7 @@ import ChipInput from "../ChipInput";
 import { Label } from "@/components/ui/label";
 import type { TechStackData } from "@/lib/project-types";
 
-export default function TechStackForm({
+export function TechStackForm({
   data,
   onChange,
 }: {

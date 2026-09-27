@@ -19,7 +19,7 @@ const LAYOUT_OPTIONS: { value: TextBlockLayout; label: string }[] = [
   { value: "stackedRight", label: "Üstte - Sağa hizalı" },
 ];
 
-export default function TextBlockForm({
+export function TextBlockForm({
   data,
   onChange,
 }: {

@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import ImageUpload from "../../components/ImageUpload";
-import ChipInput from "../../components/ChipInput";
-import { SectionEditor } from "../../components/SectionEditor";
+import ImageUpload from "../../../components/ImageUpload";
+import ChipInput from "../../../components/ChipInput";
+import { SectionEditor } from "../../../components/SectionEditor";
 import {
   PROJECT_SERVICE_CATEGORIES,
   getServiceCategoryLabel,
@@ -23,12 +23,7 @@ import {
 } from "@/components/ui/select";
 import { slugify } from "@/lib/slug";
 
-export default function EditProjectPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = use(params);
+export default function NewProjectPage() {
   const router = useRouter();
 
   const [client, setClient] = useState("");
@@ -41,29 +36,13 @@ export default function EditProjectPage({
   const [serviceCategory, setServiceCategory] = useState<ProjectServiceCategory>("web");
   const [services, setServices] = useState<string[]>([]);
   const [featured, setFeatured] = useState(false);
+  const [taglineEn, setTaglineEn] = useState("");
+  const [taglineTr, setTaglineTr] = useState("");
+  const [outcomeEn, setOutcomeEn] = useState("");
+  const [outcomeTr, setOutcomeTr] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch(`/api/admin/projects/${id}`)
-      .then((res) => res.json())
-      .then((project) => {
-        setClient(project.client);
-        setSlug(project.slug);
-        setYear(project.year ?? "");
-        setSections((project.sections as Section[]) || []);
-        setImage(project.image ?? "");
-        setPreviewVideo(project.previewVideo ?? "");
-        setCategory(project.category ?? "client");
-        setServiceCategory(project.serviceCategory ?? "web");
-        setServices(project.services ?? []);
-        setFeatured(project.featured ?? false);
-        setStatus(project.status);
-        setLoading(false);
-      });
-  }, [id]);
 
   const handleClientChange = (value: string) => {
     setClient(value);
@@ -79,11 +58,15 @@ export default function EditProjectPage({
     setError("");
 
     try {
-      const res = await fetch(`/api/admin/projects/${id}`, {
-        method: "PUT",
+      const res = await fetch("/api/admin/projects", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client,
+          tagline_en: taglineEn,
+          tagline_tr: taglineTr,
+          outcome_en: outcomeEn,
+          outcome_tr: outcomeTr,
           slug,
           year,
           sections,
@@ -111,34 +94,11 @@ export default function EditProjectPage({
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
-
-    try {
-      const res = await fetch(`/api/admin/projects/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data.error || "Failed to delete project");
-        return;
-      }
-      router.push("/admin/projects");
-    } catch {
-      setError("Failed to delete project");
-    }
-  };
-
-  if (loading) {
-    return <p className="text-foreground-muted">Loading...</p>;
-  }
-
   return (
     <>
       <div className="flex items-center justify-between border-b border-border pb-4">
-        <h1 className="text-title text-foreground">Edit Project</h1>
+        <h1 className="text-title text-foreground">New Project</h1>
         <div className="flex items-center gap-3">
-          <Button variant="destructive" onClick={handleDelete}>
-            Delete
-          </Button>
           <Select value={status} onValueChange={(v) => setStatus(v as "draft" | "published")}>
             <SelectTrigger className="w-[130px]">
               <SelectValue />
@@ -243,6 +203,7 @@ export default function EditProjectPage({
 
           <label className="flex items-center gap-2 text-sm text-foreground">
             <input
+              id="project-featured"
               type="checkbox"
               checked={featured}
               onChange={(e) => setFeatured(e.target.checked)}
@@ -252,6 +213,53 @@ export default function EditProjectPage({
           </label>
         </div>
       </div>
+        <fieldset className="space-y-4 border-t border-border pt-6">
+          <legend className="text-sm font-medium text-foreground">Positioning</legend>
+          <p className="text-xs text-foreground-muted">
+            Tagline and outcome appear on the work index and the case study hero. Required before publishing.
+          </p>
+
+          <div className="space-y-2">
+            <Label htmlFor="tagline-en">Tagline (EN)</Label>
+            <Input
+              id="tagline-en"
+              value={taglineEn}
+              onChange={(e) => setTaglineEn(e.target.value)}
+              placeholder="One line that frames the work"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tagline-tr">Tagline (TR)</Label>
+            <Input
+              id="tagline-tr"
+              value={taglineTr}
+              onChange={(e) => setTaglineTr(e.target.value)}
+              placeholder="Türkçe karşılık"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="outcome-en">Outcome (EN)</Label>
+            <Input
+              id="outcome-en"
+              value={outcomeEn}
+              onChange={(e) => setOutcomeEn(e.target.value)}
+              placeholder="What the result was, in one line"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="outcome-tr">Outcome (TR)</Label>
+            <Input
+              id="outcome-tr"
+              value={outcomeTr}
+              onChange={(e) => setOutcomeTr(e.target.value)}
+              placeholder="Türkçe karşılık"
+            />
+          </div>
+        </fieldset>
+
 
       <SectionEditor sections={sections} onChange={setSections} />
     </>

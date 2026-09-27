@@ -36,36 +36,46 @@ export function PortfolioPreviewMedia({
         void videoEl.play().catch(() => undefined);
     }, [alwaysShowVideo]);
 
-    const playPreview = () => {
-        if (videoMode !== "hover") return;
+    /**
+     * The hover preview is attached with native listeners rather than React
+     * props. The wrapper is decorative and sits inside a card that is already a
+     * link, so making it a JSX element with a click or hover handler would
+     * either nest interactive elements or leave a div pretending to be
+     * interactive. Registering pointerenter/pointerleave on the node gives the
+     * same behaviour with no accessibility contract to honour.
+     */
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
-        const videoEl = videoRef.current;
-        if (!videoEl) return;
+    useEffect(() => {
+        const wrapper = wrapperRef.current;
+        if (!wrapper || videoMode !== "hover") return;
 
-        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reducedMotion) return;
+        // Defined inside the effect so the listener identity is stable and the
+        // effect has no dependencies beyond videoMode.
+        const play = () => {
+            const videoEl = videoRef.current;
+            if (!videoEl) return;
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            void videoEl.play().catch(() => undefined);
+        };
 
-        void videoEl.play().catch(() => undefined);
-    };
+        const stop = () => {
+            const videoEl = videoRef.current;
+            if (!videoEl) return;
+            videoEl.pause();
+            videoEl.currentTime = 0;
+        };
 
-    const stopPreview = () => {
-        if (videoMode !== "hover") return;
-
-        const videoEl = videoRef.current;
-        if (!videoEl) return;
-
-        videoEl.pause();
-        videoEl.currentTime = 0;
-    };
+        wrapper.addEventListener("pointerenter", play);
+        wrapper.addEventListener("pointerleave", stop);
+        return () => {
+            wrapper.removeEventListener("pointerenter", play);
+            wrapper.removeEventListener("pointerleave", stop);
+        };
+    }, [videoMode]);
 
     return (
-        <div
-            className="absolute inset-0"
-            onMouseEnter={playPreview}
-            onMouseLeave={stopPreview}
-            onFocus={playPreview}
-            onBlur={stopPreview}
-        >
+        <div ref={wrapperRef} className="absolute inset-0">
             {image && !imageFailed ? (
                 <Image
                     src={image}

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import type { GalleryData } from "@/lib/project-types";
 
-export default function GalleryForm({
+export function GalleryForm({
   data,
   onChange,
 }: {

@@ -5,15 +5,24 @@ import { getAllPosts } from "@/lib/blog";
 import { getTranslations } from "next-intl/server";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { LineReveal } from "@/components/motion/LineReveal";
-import { OrionMark } from "@/components/effects/OrionMark";
+import nextDynamic from "next/dynamic";
+import type { OrionMarkProps } from "@/components/effects/OrionMark";
+const OrionMark = nextDynamic<OrionMarkProps>(
+    () => import("@/components/effects/OrionMark").then((module) => module.OrionMark),
+    {
+        loading: () => <span className="inline-block" aria-hidden="true" />,
+    },
+);
+import { toLocale } from "@/lib/locales";
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
-    const { locale } = await params;
-    const posts = await getAllPosts(locale);
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
+    const posts = await getAllPosts(toLocale(locale));
     const t = await getTranslations({ locale, namespace: "blog" });
 
     return (
-        <main className="relative bg-background overflow-hidden">
+        <main id="main-content" className="relative bg-background overflow-hidden">
             <section className="relative section-py pt-32 overflow-hidden">
                 <div className="absolute -right-[10%] top-[5%] w-[45%] h-[75%] pointer-events-none">
                     <OrionMark variant="minimal" lineOpacity={0.05} globalOpacity={0.3} rotate={10} />

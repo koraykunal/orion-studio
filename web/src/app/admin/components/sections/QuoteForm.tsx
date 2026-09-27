@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import type { QuoteData } from "@/lib/project-types";
 
-export default function QuoteForm({
+export function QuoteForm({
   data,
   onChange,
 }: {

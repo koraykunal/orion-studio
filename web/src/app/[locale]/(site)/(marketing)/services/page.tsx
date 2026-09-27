@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { BASE_URL, buildLanguageAlternates } from "@/lib/schema";
 import { SERVICE_SLUGS } from "@/lib/services";
 import { ServicesPageClient } from "./ServicesPageClient";
+import { toLocale } from "@/lib/locales";
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -11,7 +12,8 @@ type Props = {
 export const dynamic = "error";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "services" });
 
     const title = `${t("pageTitle")} | Orion Studio`;
@@ -32,7 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServicesPage({ params }: Props) {
-    const { locale } = await params;
+    const { locale: rawLocale } = await params;
+    const locale = toLocale(rawLocale);
     const t = await getTranslations({ locale, namespace: "services" });
 
     return (

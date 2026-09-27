@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { VideoEmbedData } from "@/lib/project-types";
 
-export default function VideoEmbedForm({
+export function VideoEmbedForm({
   data,
   onChange,
 }: {

@@ -20,7 +20,7 @@ const ASPECT_OPTIONS: { value: BeforeAfterAspect; label: string }[] = [
   { value: "3/2", label: "3 / 2" },
 ];
 
-export default function BeforeAfterForm({
+export function BeforeAfterForm({
   data,
   onChange,
 }: {

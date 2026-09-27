@@ -476,7 +476,12 @@ export function BrandMapSection() {
     return (
         <section id="brand-map" ref={sectionRef} className="relative h-[300svh] bg-background">
             <div className="sticky top-0 h-svh overflow-hidden">
-                <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 h-full w-full"
+                    role="img"
+                    aria-label="Animated map of the studio approach"
+                />
 
                 <div
                     className="pointer-events-none absolute inset-0"
@@ -484,7 +489,7 @@ export function BrandMapSection() {
                         background:
                             "linear-gradient(180deg, var(--background) 0%, transparent 16%, transparent 76%, var(--background) 100%), radial-gradient(ellipse 60% 46% at 50% 52%, transparent 42%, rgb(8 8 10 / 0.82) 100%)",
                     }}
-                    aria-hidden
+                    role="presentation"
                 />
 
                 <div ref={copyRef} className="pointer-events-none absolute inset-0 z-20" style={{ perspective: "1200px" }}>
