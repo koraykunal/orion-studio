@@ -82,8 +82,13 @@ services:
     networks:
       - app-network
     depends_on:
+      # Start-order only, deliberately. Waiting for service_healthy would mean
+      # nginx refuses to start whenever the app is unhealthy, including while a
+      # migration or a database blip is in progress, turning a degraded backend
+      # into a total outage. nginx serving 502 for a few seconds is the smaller
+      # failure.
       web:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 60s

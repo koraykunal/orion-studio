@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+
+const PAGE_SIZE = 25;
 
 type Message = {
   id: string;
@@ -25,30 +27,42 @@ type Message = {
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<Message | null>(null);
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let ignore = false;
+  /**
+   * The list is paged. The route returns an envelope rather than a bare array
+   * so the total is known without a second request, which means the consumer
+   * has to read `.messages` rather than treating the response as the list.
+   */
+  const load = useCallback(async (nextOffset: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/messages?limit=${PAGE_SIZE}&offset=${nextOffset}`);
+      if (!res.ok) throw new Error(`Failed to load messages (${res.status})`);
+      const data: { messages: Message[]; total: number } = await res.json();
 
-    fetch("/api/admin/messages")
-      .then((res) => res.json())
-      .then((data) => {
-        if (ignore) return;
-        setMessages(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (ignore) return;
-        setLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
+      setMessages(data.messages);
+      setTotal(data.total);
+      setOffset(nextOffset);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void load(0);
+  }, [load]);
+
+  const canGoBack = offset > 0;
+  const canGoForward = offset + PAGE_SIZE < total;
+
 
   const handleSelect = async (msg: Message) => {
     setSelected(msg);
@@ -107,13 +121,39 @@ export default function MessagesPage() {
     archived: "bg-foreground-muted/10 text-foreground-muted",
   };
 
-  if (loading) {
+  if (loading && messages.length === 0) {
     return <p className="text-foreground-muted">Loading...</p>;
   }
 
   return (
     <>
-      <h1 className="text-title text-foreground mb-6">Messages</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-title text-foreground">Messages</h1>
+        <p className="text-sm text-foreground-muted" aria-live="polite">
+          {total === 0
+            ? "No messages"
+            : `${offset + 1}–${Math.min(offset + PAGE_SIZE, total)} of ${total}`}
+        </p>
+      </div>
+
+      {total > PAGE_SIZE ? (
+        <div className="mb-4 flex items-center gap-2">
+          <Button
+            variant="ghost"
+            disabled={!canGoBack || loading}
+            onClick={() => void load(Math.max(0, offset - PAGE_SIZE))}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="ghost"
+            disabled={!canGoForward || loading}
+            onClick={() => void load(offset + PAGE_SIZE)}
+          >
+            Next
+          </Button>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 min-h-[70vh]">
         <div className="space-y-2 overflow-y-auto max-h-[75vh] pr-1">
