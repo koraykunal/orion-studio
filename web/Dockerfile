@@ -43,6 +43,17 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx prisma generate
+# Turbopack 16.3.6 cannot resolve its own next/font/google module on the
+# linux-x64-musl build that node:22-alpine selects:
+#
+#   Module not found: Can't resolve
+#   '@vercel/turbopack-next/internal/font/google/font'
+#   next/font/google queries have exactly one entry
+#
+# The same commit builds clean on glibc and on win32, so it is the musl build of
+# the native binary, not the font configuration. webpack has no such path and
+# produces the same standalone output. If this ever becomes unnecessary, drop
+# --webpack from the build script in one place and re-verify here.
 RUN npm run build
 
 
