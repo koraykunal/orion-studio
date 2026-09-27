@@ -119,6 +119,11 @@ services:
     profiles: ["tools"]
     env_file:
       - ./web/.env.production
+    # The database is a host service, not a container, so it is reached through
+    # the host gateway. Without this the name does not resolve here and Prisma
+    # reports an unreachable server even though the address is correct.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - app-network
     command: ["npx", "prisma", "migrate", "deploy"]

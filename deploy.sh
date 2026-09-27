@@ -30,7 +30,10 @@ log()  { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mxx\033[0m %s\n' "$*" >&2; exit 1; }
 
-trap 'die "deployment failed on line $LINENO"' ERR
+# Reports where the failure actually happened. $LINENO inside the trap points at
+# the die() definition, so a bare trap made every failure look like it came from
+# the same three lines of this file.
+trap 'die "failed at line ${BASH_LINENO[0]}: ${BASH_COMMAND}"' ERR
 
 # ---------------------------------------------------------------------------
 # Env file reader
