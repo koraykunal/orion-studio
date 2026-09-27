@@ -34,6 +34,21 @@ die()  { printf '\033[1;31mxx\033[0m %s\n' "$*" >&2; exit 1; }
 trap 'die "deployment failed on line $LINENO"' ERR
 
 # ---------------------------------------------------------------------------
+# Env file reader
+# ---------------------------------------------------------------------------
+# Values in the env file may be quoted, commented or padded, and .env.example
+# ships them quoted. Matching the raw line rejected a correctly configured
+# value, which is a worse failure than accepting a sloppy one.
+env_value() {
+    sed -n "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*//p" "$ENV_FILE" \
+        | head -1 \
+        | sed -e 's/[[:space:]]*#.*$//' \
+              -e 's/^["'"'"']//' \
+              -e 's/["'"'"']$//' \
+              -e 's/[[:space:]]*$//'
+}
+
+# ---------------------------------------------------------------------------
 # Preflight
 # ---------------------------------------------------------------------------
 preflight() {
@@ -57,9 +72,10 @@ preflight() {
     NEXT_PUBLIC_SITE_URL   canonical origin, e.g. https://orionstud.io
     NEXT_PUBLIC_WHATSAPP   digits only, no +, no spaces
     AUTH_SECRET             openssl rand -base64 32
-    AUTH_TRUST_HOST         true   (required behind a reverse proxy)
     DATABASE_URL            managed PostgreSQL
-    SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
+
+  SMTP is optional: the contact form still works without it and inquiries are
+  readable at /admin/messages, you just get no notification email.
 
 EOF
         exit 1
@@ -72,31 +88,23 @@ EOF
     # build time, so a missing one ships dead contact links rather than an
     # error.
     local missing=()
-    for key in NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_WHATSAPP AUTH_SECRET AUTH_TRUST_HOST DATABASE_URL; do
-        grep -qE "^${key}=.+" "$ENV_FILE" || missing+=("$key")
+    for key in NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_WHATSAPP AUTH_SECRET DATABASE_URL; do
+        [[ -n "$(env_value "$key")" ]] || missing+=("$key")
     done
 
     if (( ${#missing[@]} > 0 )); then
         die "missing or empty in $ENV_FILE: ${missing[*]}"
     fi
 
-    # Next throws UntrustedHost behind a reverse proxy without this one.
-    grep -qE '^AUTH_TRUST_HOST=(true|1)$' "$ENV_FILE" ||
-        die "AUTH_TRUST_HOST must be true: nginx is the only trusted hop and Auth.js rejects the Host header otherwise."
-
-    # SMTP is a convenience, not a requirement. The contact route persists the
-    # inquiry first and only then attempts delivery, so with no SMTP configured
-    # the form still works and messages are readable at /admin/messages. It just
-    # does not send a notification.
-    local mail_missing=()
-    for key in SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS; do
-        grep -qE "^${key}=.+" "$ENV_FILE" || mail_missing+=("$key")
-    done
-
-    if (( ${#mail_missing[@]} > 0 )); then
-        warn "SMTP is not fully configured (missing: ${mail_missing[*]})."
-        warn "The contact form will still work and inquiries land in /admin/messages,"
-        warn "but no notification email will be sent."
+    # Auth.js needs a trusted Host header behind a reverse proxy. This is on by
+    # default in lib/auth.ts; only "false" turns it off, which would break
+    # /api/auth/* and every protected route, so it is called out here.
+    local trust_host
+    trust_host=$(printf '%s' "$(env_value AUTH_TRUST_HOST)" | tr '[:upper:]' '[:lower:]')
+    if [[ "$trust_host" == "false" || "$trust_host" == "0" || "$trust_host" == "no" ]]; then
+        die "AUTH_TRUST_HOST is '$trust_host'. nginx is the only trusted hop and Auth.js
+       rejects the Host header without it, which breaks /api/auth/* and every
+       protected route. Remove the line or set it to true."
     fi
 
     command -v git >/dev/null || die "git is not installed"

@@ -18,10 +18,18 @@ const SIGN_IN_MAX_PER_ACCOUNT = 5;
 const DUMMY_HASH = "$2b$12$C6UzMDM.H6dfI/f/IKcEeO8YUXzKMO88PbKUnFGXmoLNHniGiaLTCK";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    // The app is only ever served through our own nginx, which pins the Host
-    // header via server_name. Without this, Auth.js throws UntrustedHost on
-    // /api/auth/* and on every request that touches the middleware.
-    trustHost: true,
+    /**
+     * The app is only ever served through its own nginx, which pins the Host
+     * header via server_name, and behind a platform proxy the platform pins it.
+     * Without this, Auth.js throws UntrustedHost on /api/auth/* and on every
+     * request that touches the proxy.
+     *
+     * On by default rather than driven by an env var: making it a variable only
+     * creates a way to switch off the one setting that keeps the app reachable
+     * behind its own edge. Set AUTH_TRUST_HOST=false only if you deliberately
+     * want the strict check.
+     */
+    trustHost: process.env.AUTH_TRUST_HOST !== "false",
 
     providers: [
         Credentials({
