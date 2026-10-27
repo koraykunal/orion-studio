@@ -248,8 +248,8 @@ main() {
     git pull --ff-only origin main
     migrate
     deploy
-    reload_nginx
     renew_certificates
+    reload_nginx
     smoke_test
     log "Deployment complete: $(git rev-parse --short HEAD)"
 }

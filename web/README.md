@@ -118,9 +118,10 @@ Migrations run from a dedicated `migrate` build target in the Dockerfile.
 - **Backups.** `pg_dump` on a schedule and an export of the `uploads` volume are
   not automated by this repository. The uploads volume lives in
   `/var/lib/docker/volumes` on the host and is not covered by anything in git.
-- **Certificates.** The `certbot` service renews every 12 hours. The
-  `orion-studio.net` redirect block still needs a live certificate for that
-  domain, or nginx will not start.
+- **Certificates.** The
+  `certbot` service renews every 12 hours, and `deploy.sh` reloads nginx after
+  renewing so the new certificate is picked up. Without a deploy, run
+  `docker compose exec -T nginx nginx -s reload` after a renewal.
 
 ## Verification
 
