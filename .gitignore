@@ -44,3 +44,21 @@ next-env.d.ts
 
 # figma local
 .figma/
+
+# editors, IDEs and AI tooling (local state, never committed)
+*.iml
+.claude/
+.codex/
+.agents/
+.opencode/
+.cursor/
+.windsurf/
+.continue/
+.gemini/
+.aider*
+.playwright-mcp/
+.claude-mem/
+.mcp.json
+CLAUDE.local.md
+AGENTS.local.md
+graphify-out/
