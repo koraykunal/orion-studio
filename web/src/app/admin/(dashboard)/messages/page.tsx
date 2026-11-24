@@ -57,6 +57,8 @@ export default function MessagesPage() {
   }, []);
 
   useEffect(() => {
+    // Initial fetch on mount (syncs with the external API; `loading` already starts true).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load(0);
   }, [load]);
 
