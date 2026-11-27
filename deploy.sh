@@ -74,7 +74,7 @@ preflight() {
     NEXT_PUBLIC_SITE_URL   canonical origin, e.g. https://orionstud.io
     NEXT_PUBLIC_WHATSAPP   digits only, no +, no spaces
     AUTH_SECRET             openssl rand -base64 32
-    DATABASE_URL            managed PostgreSQL
+    DATABASE_URL            PostgreSQL on this server
 
   SMTP is optional: the contact form still works without it and inquiries are
   readable at /admin/messages, you just get no notification email.
@@ -206,13 +206,17 @@ rollback() {
 }
 
 # ---------------------------------------------------------------------------
-# nginx reload so it re-resolves the web container's IP. Docker reassigns the
+# Recreate nginx so it re-resolves the web container's IP. Docker reassigns the
 # container address on recreate and nginx caches the resolved name for the
 # lifetime of the process, so without this it keeps proxying to a dead IP.
+#
+# A reload is not enough: nginx.conf is bind-mounted as a single file, so after
+# git pull replaces it the running container can keep seeing the old one.
 # ---------------------------------------------------------------------------
 reload_nginx() {
-    log "Reloading nginx"
-    compose exec -T nginx nginx -s reload || warn "nginx reload failed; run 'docker compose restart nginx'"
+    log "Recreating nginx"
+    compose up -d --force-recreate --no-deps nginx ||
+        warn "nginx recreate failed; run 'docker compose --env-file $ENV_FILE up -d --force-recreate --no-deps nginx'"
 }
 
 renew_certificates() {

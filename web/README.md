@@ -26,7 +26,7 @@ npm run dev
 
 `DATABASE_URL` is the only value the app refuses to start without. A local
 Postgres is not part of this repository; point the variable at your own
-instance or a managed one.
+instance.
 
 ### Optional: development content fallback
 
@@ -62,7 +62,8 @@ broken query indistinguishable from an empty table.
 
 See `.env.example` for the annotated list. The values that matter most:
 
-- `DATABASE_URL` — managed PostgreSQL. Use `?sslmode=require` off localhost.
+- `DATABASE_URL` — PostgreSQL. In production it runs on the server itself.
+  Use `?sslmode=require` when the database is on another machine.
 - `AUTH_SECRET` — `openssl rand -base64 32`.
 - `AUTH_TRUST_HOST=true` — **required** behind a reverse proxy. Without it
   Auth.js throws `UntrustedHost` on `/api/auth/*`.
@@ -95,31 +96,33 @@ cannot revert an editor's changes.
 `deploy.sh` runs on the server from a working copy:
 
 ```bash
-cd /path/to/orion-studio
+cd /srv/apps/orion-studio
 ./deploy.sh
 ```
 
 It preflights the environment file, snapshots the running image for rollback,
 pulls, applies migrations **before** restarting the app, waits for
-`/api/health` to report healthy, reloads nginx so it re-resolves the container
-address, renews certificates if due, and smoke-tests the public routes. A failed
-health check rolls back to the previous image automatically.
+`/api/health` to report healthy, renews certificates if due, recreates nginx so
+it picks up config changes and re-resolves the container address, and
+smoke-tests the public routes. A failed health check rolls back to the previous
+image automatically.
 
 The Prisma CLI is a devDependency and is therefore not in the production image.
 Migrations run from a dedicated `migrate` build target in the Dockerfile.
 
 ### Operations notes
 
-- **No database service in docker-compose.** `DATABASE_URL` points at a managed
-  instance, so backups, failover and connection limits live there. If you add one
-  for local development, put it in a `docker-compose.override.yml`; a single
+- **No database service in docker-compose.** `DATABASE_URL` points at the
+  PostgreSQL installed on the server, so its backups and connection limits are
+  managed on the host. If you add one for local development, put it in a
+  `docker-compose.override.yml`; a single
   file that defines the database for both environments is how a
   `docker compose down -v` on the wrong host destroys production data.
 - **Backups.** `pg_dump` on a schedule and an export of the `uploads` volume are
   not automated by this repository. The uploads volume lives in
   `/var/lib/docker/volumes` on the host and is not covered by anything in git.
 - **Certificates.** The
-  `certbot` service renews every 12 hours, and `deploy.sh` reloads nginx after
+  `certbot` service renews every 12 hours, and `deploy.sh` recreates nginx after
   renewing so the new certificate is picked up. Without a deploy, run
   `docker compose exec -T nginx nginx -s reload` after a renewal.
 

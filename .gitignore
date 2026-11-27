@@ -11,6 +11,9 @@ dist/
 .env*
 !.env.example
 
+# rollback state written by deploy.sh
+.deploy-previous-image
+
 # TLS material: certbot/conf holds the ACME account private key and live
 # certificates. Never let a `git add .` on the production host commit it.
 /certbot/

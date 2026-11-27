@@ -1,8 +1,8 @@
 # Orion Studio production stack.
 #
-# There is deliberately no database service here. DATABASE_URL points at a
-# managed PostgreSQL instance, so the database has its own backups, failover
-# and connection limits. If you add one for local development, put it in a
+# There is deliberately no database service here. DATABASE_URL points at the
+# PostgreSQL installed on this server, outside compose, so no compose command
+# can touch its data. If you add one for local development, put it in a
 # separate docker-compose.override.yml rather than here: a compose file that
 # defines the database for both environments is how a `docker compose down -v`
 # on the wrong host destroys production data.
@@ -149,3 +149,7 @@ volumes:
 networks:
   app-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
